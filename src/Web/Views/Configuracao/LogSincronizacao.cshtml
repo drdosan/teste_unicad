@@ -1,0 +1,119 @@
+﻿@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Models
+@using Raizen.Framework.Utils.Extensions
+
+@model Raizen.UniCad.Web.Models.ModelSincronizacaoMotoritas
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        
+    });
+</script>
+@*Parte de Filtros*@
+<form id="frmPesquisa" class="form-horizontal">
+
+    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUDEdit" })
+    @Html.HiddenFor(model => model.ChavePrimaria)
+    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUD" })
+    @Html.HiddenFor(model => model.OperacaoSecundaria, new { @Id = "IdOperacaoSecundariaCRUD" })
+
+    @Html.HiddenFor(model => model.PaginadorDados.PaginaAtual)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdePaginas)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdeItensPagina)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdeTotalRegistros)
+    @Html.HiddenFor(model => model.PaginadorDados.Status)
+
+
+    <div class="row">
+        @Html.BootstrapDropDownListFor(model => model.Filtro.IsOk, new SelectList(GenericDelegate.VerdadeiroOuFalso(), "Flag", "Nome"), "Importado", null, new HtmlHelperOption() { colunas = "col-md-3" })
+        @Html.BootstrapTextBoxFor(model => model.Filtro.CNH, null, "CNH", new { maxlength = 20 }, new HtmlHelperOption() { colunas = "col-md-3" })
+        @Html.BootstrapTextBoxFor(model => model.Filtro.CPF, null, "CPF", new { maxlength = 14 }, new HtmlHelperOption() { colunas = "col-md-3" })
+        @Html.BootstrapTextBoxFor(model => model.Filtro.RG, null, "RG", new { maxlength = 15 }, new HtmlHelperOption() { colunas = "col-md-3" })
+    </div>
+    <div class="row">
+        @Html.BootstrapDateBoxFor(model => model.Filtro.DataInicio, "Data Início", null, new HtmlHelperOption() { colunas = "col-md-3" })
+        @Html.BootstrapDateBoxFor(model => model.Filtro.DataFim, "Data Fim", null, new HtmlHelperOption() { colunas = "col-md-3" })
+        @Html.BootstrapDateBoxFor(model => model.Filtro.Mensagem, "Mensagem", null, new HtmlHelperOption() { colunas = "col-md-6" })
+    </div>
+
+    <div class="row" id="containerBotoes">
+        <div class="col-md-5">
+            <div class="form-group">
+                <label class="col-sm-5 control-label"></label>
+                <div class="col-sm-12">
+                    <div class="btn-group center" style="float: none;">
+                        <button class="btn btn-custom" type="button" tabindex="4" onclick="raizenCoreJs.raizenCRUD.RealizarPesquisa();">
+                            <i class="fa fa-search"></i> Pesquisar
+                        </button>
+                        <button class="btn btn-custom" type="button" acaopermissao="add" tabindex="5" onclick="raizenCoreJs.raizenCRUD.Novo();">
+                            <i class="fa fa-plus-square-o"></i> Novo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<div class="divide-1"></div>
+
+@*Resultado da Pesquisa*@
+
+<div id="datatable2_wrapper" class="dataTables_wrapper form-inline" role="grid">
+    <div class="row">
+        @if (!Model.ListaSincronizacaoMotoritas.IsNullOrEmpty())
+        {
+            <div class="col-md-12">
+                <table id="datatable2" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th colspan="8" align="center">
+                                Foram encontrados: @Model.PaginadorDados.QtdeTotalRegistros.ToString() registros
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>CPF</th>
+                            <th>Motorista</th>
+                            <th>Operacao</th>
+                            <th>Importado</th>
+                            <th>Data</th>
+                            <th>Mensagem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var app in Model.ListaSincronizacaoMotoritas)
+                        {
+                            <tr class="gradeX">
+                                <td style="width: 10%; word-wrap: break-word">
+                                    @app.CPF
+                                </td>
+                                <td style="width: 20%; word-wrap: break-word">
+                                    @app.Motorista
+                                </td>
+                                <td style="width: 10%; word-wrap: break-word">
+                                    @app.Operacao
+                                </td>
+                                <td style="width: 10%; word-wrap: break-word">
+                                    @app.IsOk
+                                </td>
+                                <td style="width: 50%; word-wrap: break-word">
+                                    @app.Data
+                                </td>
+                                <td style="width: 50%; word-wrap: break-word">
+                                    @app.Mensagem
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+    <div class="row">
+        @Html.Partial("_Paginador", Model)
+    </div>
+</div>
+
+

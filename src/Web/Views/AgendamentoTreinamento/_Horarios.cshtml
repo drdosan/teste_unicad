@@ -1,0 +1,85 @@
+﻿
+@model List<Raizen.UniCad.Model.View.AgendamentoTreinamentoView>
+
+<div class="box border raizen" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event)">
+    <div class="box-title">
+        <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Históricos Disponíveis</span></h4>
+    </div>
+    <div class="box-body" style="max-height:170px; overflow-x:auto">
+        <table id="docTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+            <thead>
+                <tr class="table-raizen">
+                    <th style="word-wrap: break-word; width:20%">
+                        Tipo de Agenda
+                    </th>
+                    <th style="word-wrap: break-word; width:10%">
+                        Horário
+                    </th>
+                    <th style="word-wrap: break-word; width:40%">
+                        Endereço
+                    </th>
+                    <th style="word-wrap: break-word; width:20%">
+                        Cidade
+                    </th>
+                    <th style="word-wrap: break-word; width:5%">
+                        Vagas
+                    </th>
+                    <th style="word-wrap: break-word; width:5%">
+                        Operações
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int i = 0;}
+                @foreach (var horario in Model)
+                {
+                    if (i == 0 && horario.Anexo != null && !horario.Anexo.Contains("O caminho especificado"))
+                    {
+                        <script>
+
+                            var arquivo = '@(horario.Anexo)';
+                            var link = '@(Url.Action("Download", "Arquivo"))?file=@(horario.Anexo)';
+
+                            if (arquivo != '') {
+                                $('#download').attr('onclick', 'window.location.href = "' + link + '";');
+                                $('#download').fadeIn();
+                            }
+                            else {
+                                $('#download').attr('onclick', '');
+                                $('#download').fadeOut();
+                            }
+                        </script>
+                    }
+                    <tr>
+                        <td style="word-wrap: break-word">@horario.TipoTreinamento</td>
+                        <td style="word-wrap: break-word">@horario.Horario</td>
+                        <td style="word-wrap: break-word">@horario.Endereco</td>
+                        <td style="word-wrap: break-word">@horario.Cidade</td>
+                        <td style="word-wrap: break-word">@if (!horario.IsInscrito) { @horario.NumVagas; }</td>
+                        <td align="center" style="width: 15%;">
+                            <div class="btn-group center" style="float: none;">
+                                @if (!horario.IsInscrito)
+                                {
+                                    <button class="btn btn-custom" type="button" title="Inscrever" onclick="AgendamentoTreinamento.prototype.Inscrever(@horario.ID)">
+                                        <span class="fa fa-arrow-down"></span>
+                                        Inscrever
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-custom" disabled style="width: 100px;background-color:rgb(88, 185, 87); border-color:rgb(88, 185, 87)" type="button" title="Inscrito">
+                                        <span class="fa fa-check"></span>
+                                        Inscrito
+                                    </button>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<br />

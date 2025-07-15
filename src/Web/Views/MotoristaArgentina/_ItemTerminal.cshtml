@@ -1,0 +1,99 @@
+﻿@model Raizen.UniCad.Model.View.TerminalTreinamentoView
+<tr id="linha-terminal-@Model.IDTerminal" class="gradeX">
+    @using (Html.BeginCollectionItem("ListaTerminais"))
+    {
+        @Html.HiddenFor(model => model.IDTerminal, new { @class = "ID" })
+        @Html.HiddenFor(model => model.Nome)
+        @Html.HiddenFor(model => model.CodigoUsuario)
+        @Html.HiddenFor(model => model.Usuario)
+        @Html.HiddenFor(model => model.Anexo, new { @id = "Anexo-35" })
+        <td style="width: 20%; word-wrap: break-word">
+            @Html.PopoverTextFor(model => model.Nome, 80, "right")
+        </td>
+        <td style="width: 10%; word-wrap: break-word">
+            @Html.PopoverTextFor(model => model.CodigoUsuario, 80, "right")
+        </td>
+        <td style="width: 15%; word-wrap: break-word">
+            @Html.BootstrapDateBoxFor(model => model.dataValidade, null, new { @class = "dataValidade form-control", @onkeyup = "mascaraData(this);" }, new HtmlHelperOption { hideLabel = true, colunas = "col-md-12" }, null, true)
+        </td>
+        <td style="width: 35%; word-wrap: break-word">
+        
+                @if (string.IsNullOrEmpty(Model.Anexo))
+                {
+                    <input id="input-702" type="file" name="@Html.NameFor(p => p.Anexo)" class="anexoCount" data-buttonText="Seleccione" data-iconName="glyphicon glyphicon-file">
+                }
+                else
+                {
+                    <button type="button" style="float: left; margin-right: 10px;" tabindex="500;" id="limparAnexo1" title="Limpiar" class="btn btn-default fileinput-remove fileinput-remove-button" onclick="RemoverAnexo1();"><i class="glyphicon glyphicon-trash"></i> </button>
+                    <a href="@Url.Action("Download","Arquivo")?file=@(Model.Anexo)" style="margin-top:10px" class="anexoCount" target="_blank" title="@Model.Anexo" id="linkAnexo1">@Html.PopoverTextFor(model => model.Anexo, 50)</a>
+                    <div id="inputDiv1" style="display:none">
+                        <input id="input-701" type="file" name="@Html.NameFor(p => p.Anexo)" class="anexoCount" data-buttonText="Seleccione" data-iconName="glyphicon glyphicon-file">
+                    </div>
+                }
+            
+        </td>
+        <td style="width: 5%; word-wrap: break-word">
+            @Html.BootstrapButtonDelete("", "", ButtonType.BUTTON, "raizenCoreJs.Motorista.removerTerminal(" + Model.IDTerminal + ")")
+        </td>
+    }
+</tr>
+
+<script>
+    $("#input-702").fileinput({
+        uploadUrl: '@Url.Action("AnexarArquivo", "Arquivo")',
+        dropZoneEnabled: false,
+        showUpload: false,
+        showPreview: false,
+        browseLabel: '',
+        uploadLabel: '',
+        removeLabel: '',
+        layoutTemplates: {
+            progress: ''
+        },
+    });
+
+    function RemoverAnexo1(id) {
+        $('#Anexo-35').val('');
+        $('#limparAnexo1').hide();
+        $('#linkAnexo1').hide();
+        $("#inputDiv1").show(800);
+    };
+
+    $('#input-702').on('fileloaded', function (event, file, previewId, index, reader) {
+        var formData = new FormData();
+
+        formData.append('file', file);
+        raizenCoreJs.raizenHelpers.AbrirLoading();
+        $.ajax({
+            url: '@Url.Action("AnexarArquivo", "Arquivo")',
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            type: 'POST',
+            success: function (response) {
+                raizenCoreJs.raizenHelpers.FecharLoading();
+
+                if (response == 'O Arquivo selecionado está vazio!') {
+                    $('.glyphicon.glyphicon-trash').trigger('click');
+                    ShowErrorMenssage('¡El archivo seleccionado está vacío!');
+                }
+                else if (response == 'Tamanho Arquivo') {
+                    ShowErrorMenssage('El archivo debe tener menos de 20 MB, intente nuevamente', 20);
+                    $('.glyphicon.glyphicon-trash').trigger('click');
+                }
+                else if (response.indexOf('Formato de Arquivo Inválido') >= 0) {
+                    ShowErrorMenssage('Formato de archivo inválido', 20);
+                    $('.glyphicon.glyphicon-trash').trigger('click');
+                }
+                else {
+                    $('#Anexo-35').val(response);
+                }
+            },
+            error: function (response) {
+                ShowErrorMenssage('El archivo debe tener menos de 20 MB, intente nuevamente', 20);
+                raizenCoreJs.raizenHelpers.FecharLoading();
+            }
+        });
+    });
+</script>

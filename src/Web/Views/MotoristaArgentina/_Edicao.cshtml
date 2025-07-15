@@ -1,0 +1,148 @@
+﻿@using Raizen.Framework.Models
+@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Models
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.Framework.Web.MVC.Extensions;
+@using Raizen.UniCad.Model;
+
+<style>
+    .tab-pane {
+        border-left: 1px solid silver;
+        border-bottom: 1px solid silver;
+        border-right: 1px solid silver;
+        border-radius: 0px 0px 5px 5px;
+        padding: 30px;
+        margin-bottom: 20px;
+    }
+
+    .invisivel {
+        display: none;
+    }
+
+    .roxoRaizen {
+        background-color: #6f376c !important;
+    }
+
+    .modal-dialog {
+        max-width: 90% !important;
+    }
+</style>
+
+@model Raizen.UniCad.Web.Models.ModelMotoristaArgentina
+@{
+
+    var urlValidacao = @Url.Action("ValidarObjetos", "MotoristaArgentina");
+
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+
+}
+
+<link href="~/Content/css/Unicad.css" rel="stylesheet" />
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Motorista.js")"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        RaizenCoreJs.prototype.Motorista.urlBuscarMotorista = '@Url.Action("VerificarDniExiste", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlEditarMotorista = '@Url.Action("EditarMotorista", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlSalvar = '@Url.Action("Salvar", "MotoristaArgentina")';
+
+        RaizenCoreJs.prototype.Motorista.urlVoltar = '@Url.Action("Index", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlMotorista = '@Url.Action("Index", "MotoristaArgentina")';        
+
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        //raizenCoreJs.raizenMensagens.ExibirMensagemOperacao();
+        raizenCoreJs.raizenHelpers.urlValidacao = "@urlValidacao";
+         RaizenCoreJs.prototype.Motorista._idPais = 2;
+    });
+</script>
+<script type="text/javascript">
+    function VerificarSeFoiValidado(act) {   
+        if ($('#Motorista_DNIEdicao').val() == '' || $('#Motorista_DNIEdicao').val().length < 10) {   
+            ShowErrorMenssage('Por favor escriba un DNI');
+            return;
+        }
+        var validado = $('#validado').val();        
+        if (validado == 0) {            
+            raizenCoreJs.Motorista.buscarMotorista(null, true);
+        }
+        else {            
+            raizenCoreJs.Motorista.EditarMotorista(act);
+        }
+
+    }
+</script>
+
+<div class="box border raizen" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event);" id="containerEdicao">
+    <div class="box-title">
+        <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Edición del Conductor</span></h4>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-12">
+                @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUDEdit" })
+                @Html.HiddenFor(model => model.ChavePrimaria)
+                @Html.HiddenFor(model => model.UsuarioPerfil)
+                <input type="hidden" id="naoAprovado" />
+                <input type="hidden" id="validado" value="0" />
+                <input type="hidden" id="idTransportadora" />
+                
+                <div class="tab-content">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="row">
+                                @if (Model != null && Model.Motorista != null && (Model.Motorista.IDEmpresa == 0 || Model.Motorista.IDEmpresa == 3) && Model.Operacao != OperacoesCRUD.Editando)
+                                {
+                                    @Html.BootstrapDropDownListFor(model => model.Motorista.IDEmpresa, new SelectList(GenericDelegate.ListarComplex<Empresa>(x => x.ID == (int)EnumEmpresaArg.Combustibles), "ID", "NomeEs"), "Línea de Negocio", new {  onchange = "raizenCoreJs.Motorista.buscarMotorista(event, true)", id = "LinhaNegocio" }, new HtmlHelperOption() { colunas = "col-md-5", argentina = true })
+                                }
+                                else
+                                {
+                                    @Html.BootstrapDropDownListFor(model => model.Motorista.IDEmpresa, new SelectList(GenericDelegate.LinhaDeNegocioAgentina(), "ID", "Nome"), "Línea de Negocio", new { onchange = "raizenCoreJs.Motorista.buscarMotorista(event, true)", id = "LinhaNegocio" }, new HtmlHelperOption() { colunas = "col-md-5", argentina = true }, true)
+                                }
+                                @Html.BootstrapTextBoxFor(model => model.Motorista.DNIEdicao, null, "DNI", new { onpaste = "$('#validado').val('0');", maxlength = 10, onkeyup = "raizenCoreJs.Motorista.buscarMotorista(event,false)" }, new HtmlHelperOption() { colunas = "col-md-6" })
+                                @Html.BootstrapButtonEdit("btnEdit", null, ButtonType.BUTTON, "raizenCoreJs.Motorista.EditarMotorista(2)", "style='display:none; margin-top: 24px;margin-left:-12px;', title='Editar Conductor'")
+                                @Html.BootstrapButtonAdd("btnNovo", null, ButtonType.BUTTON, "VerificarSeFoiValidado(1);", "style='margin-top:24px;margin-left:-12px;' title='Nuevo Conductor'")
+                                @Html.BootstrapButtonAdd("btnClone", null, ButtonType.BUTTON, "VerificarSeFoiValidado(3);", "style='display:none; margin-top:24px;margin-left:-12px;' title='Clon Conductor'")
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="row">
+                                <label id="lblNome" style="margin-top:30px !important"></label>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                </div>
+                <div class="row" style="text-align:center">
+                    <div class="col-md-12">
+                        <button class="btn btn-custom voltar" type="button" tabindex="2" onclick="window.location = '@Url.Action("Index","Home")'">
+                            <i class="fa fa-long-arrow-left"></i> Volver
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modalcontainerEdicao" tabindex="-1" data-backdrop="static" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="ModalMotorista">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<form id="frmClientes" style="visibility:hidden"></form>

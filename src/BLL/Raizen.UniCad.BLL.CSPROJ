@@ -1,0 +1,286 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1723352D-4DB5-4D2C-A8D3-6BD487404913}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Raizen.UniCad.BLL</RootNamespace>
+    <AssemblyName>Raizen.UniCad.BLL</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <LangVersion>6</LangVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>Raizen.UniCad.BLL.Debug.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>Raizen.UniCad.BLL.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antix.Mail.Smtp.Impostor, Version=2.0.8.42000, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\smtp-impostor.2.0.8\lib\.NetFramework 4.0\Antix.Mail.Smtp.Impostor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ClosedXML, Version=0.86.0.0, Culture=neutral, PublicKeyToken=fd1eb21b62ae805b, processorArchitecture=MSIL">
+      <HintPath>..\packages\ClosedXML.0.86.0\lib\net40\ClosedXML.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.8.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.2.8.1\lib\net40\DocumentFormat.OpenXml.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus, Version=4.1.1.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.4.1.1\lib\net40\EPPlus.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="itextsharp, Version=5.5.12.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\iTextSharp.5.5.12\lib\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=3.0.3.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.3.0.3\lib\net462\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.8.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.TimeProvider, Version=8.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.TimeProvider.8.0.1\lib\net462\Microsoft.Bcl.TimeProvider.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Abstractions, Version=8.1.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Abstractions.8.1.2\lib\net472\Microsoft.IdentityModel.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.JsonWebTokens, Version=8.1.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.JsonWebTokens.8.1.2\lib\net472\Microsoft.IdentityModel.JsonWebTokens.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=8.1.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.8.1.2\lib\net472\Microsoft.IdentityModel.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=8.1.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.8.1.2\lib\net472\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Raizen.Framework, Version=1.8.5.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\binarios\Raizen.Framework\Raizen.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Raizen.SSO">
+      <HintPath>..\binarios\SSO\Raizen.SSO.dll</HintPath>
+    </Reference>
+    <Reference Include="Raizen.UserSystem.PasswordService">
+      <HintPath>..\binarios\UserSystem\Raizen.UserSystem.PasswordService.dll</HintPath>
+    </Reference>
+    <Reference Include="Raizen.UserSystem.SAL">
+      <HintPath>..\binarios\UserSystem\Raizen.UserSystem.SAL.dll</HintPath>
+    </Reference>
+    <Reference Include="Raizen.UserSystem.SAL.Model">
+      <HintPath>..\binarios\UserSystem\Raizen.UserSystem.SAL.Model.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=8.1.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.8.1.2\lib\net472\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Text.Encodings.Web, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.8.0.0\lib\net462\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=8.0.0.5, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.8.0.5\lib\net462\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="Zen.Barcode.Core, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Zen.Barcode.Core.Code128.3.1.0\lib\net45\Zen.Barcode.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="ImpressaoCrachaBusiness.cs" />
+    <Compile Include="ConfigBusiness.cs" />
+    <Compile Include="Extensions\PropertyExtension.cs" />
+    <Compile Include="Interfaces\IComposicaoBusiness.cs" />
+    <Compile Include="Interfaces\IConfigBusiness.cs" />
+    <Compile Include="Interfaces\IMotoristaBusiness.cs" />
+    <Compile Include="Interfaces\IPlacaBusiness.cs" />
+    <Compile Include="Interfaces\IPlacaClienteBusiness.cs" />
+    <Compile Include="LogDocumentosBusiness.cs" />
+    <Compile Include="LogExecucaoJobBusiness.cs" />
+    <Compile Include="LogSincronizacaoBusiness.cs" />
+    <Compile Include="AgendamentoTreinamentoBusiness.cs" />
+    <Compile Include="AgendamentoTerminalHorarioBusiness.cs" />
+    <Compile Include="ArquivoBusiness.cs" />
+    <Compile Include="Base\UniCadBusinessBase.cs" />
+    <Compile Include="CategoriaVeiculoBusiness.cs" />
+    <Compile Include="ChecklistComposicaoBusiness.cs" />
+    <Compile Include="ClienteAcsBusiness.cs" />
+    <Compile Include="ComposicaoPesquisaBusiness.cs" />
+    <Compile Include="ComposicaoEixoBusiness.cs" />
+    <Compile Include="HistoricoTreinamentoTeoricoMotoristaBusiness.cs" />
+    <Compile Include="HistorioBloqueioMotoristaBusiness.cs" />
+    <Compile Include="HistorioAtivarMotoristaBusiness.cs" />
+    <Compile Include="Log\CodigoExecucao.cs" />
+    <Compile Include="Log\ILogExecucao.cs" />
+    <Compile Include="Log\LogExecucao.cs" />
+    <Compile Include="MotoristaBusiness.cs" />
+    <Compile Include="EasyQueryBusiness.cs" />
+    <Compile Include="ComposicaoBusiness.cs" />
+    <Compile Include="EstadoBusiness.cs" />
+    <Compile Include="HistorioBloqueioComposicaoBusiness.cs" />
+    <Compile Include="JobBusiness.cs" />
+    <Compile Include="ConfiguracaoBusiness.cs" />
+    <Compile Include="MotoristaClienteBusiness.cs" />
+    <Compile Include="MotoristaPesquisaBusiness.cs" />
+    <Compile Include="MotoristaTipoComposicaoBusiness.cs" />
+    <Compile Include="MotoristaTipoProdutoBusiness.cs" />
+    <Compile Include="MotoristaTreinamentoTerminalBusiness.cs" />
+    <Compile Include="PaisBusiness.cs" />
+    <Compile Include="PlacaArgentinaBusiness.cs" />
+    <Compile Include="PlacaBrasilBusiness.cs" />
+    <Compile Include="PlacaBusiness.cs" />
+    <Compile Include="PlacaClienteBusiness.cs" />
+    <Compile Include="MotoristaDocumentoBusiness.cs" />
+    <Compile Include="PlacaDocumentoBusiness.cs" />
+    <Compile Include="PlacaSetaBusiness.cs" />
+    <Compile Include="AgendamentoTerminalBusiness.cs" />
+    <Compile Include="AgendamentoChecklistBusiness.cs" />
+    <Compile Include="Resources\Resource.pt-BR.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource.pt-BR.resx</DependentUpon>
+    </Compile>
+    <Compile Include="TerminalEmpresaBusiness.cs" />
+    <Compile Include="TipoAgendaBusiness.cs" />
+    <Compile Include="TerminalBusiness.cs" />
+    <Compile Include="ProdutoBusiness.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TipoCarregamentoBusiness.cs" />
+    <Compile Include="TipoComposicaoBusiness.cs" />
+    <Compile Include="TipoDocumentoBusiness.cs" />
+    <Compile Include="TipoDocumentoTipoComposicaoBusiness.cs" />
+    <Compile Include="TipoDocumentoTipoProdutoBusiness.cs" />
+    <Compile Include="TipoDocumentoTipoVeiculoBusiness.cs" />
+    <Compile Include="TipoProdutoBusiness.cs" />
+    <Compile Include="TipoVeiculoBusiness.cs" />
+    <Compile Include="TransportadoraBusiness.cs" />
+    <Compile Include="ClienteBusiness.cs" />
+    <Compile Include="PerfilBusiness.cs" />
+    <Compile Include="EmpresaBusiness.cs" />
+    <Compile Include="UsuarioBusiness.cs" />
+    <Compile Include="UsuarioClienteBusiness.cs" />
+    <Compile Include="UsuarioTransportadoraBusiness.cs" />
+    <Compile Include="Util\Config.cs" />
+    <Compile Include="Util\Email.cs" />
+    <Compile Include="Util\Excel.cs" />
+    <Compile Include="Util\Imagem.cs" />
+    <Compile Include="Util\Traducao.cs" />
+    <Compile Include="Util\PDFFooter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DAL\Raizen.UniCad.DAL.csproj">
+      <Project>{CE73C489-2553-4C37-9F86-D690681D8B11}</Project>
+      <Name>Raizen.UniCad.DAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Infraestructure\Raizen.UniCad.Infraestructure.csproj">
+      <Project>{04597aec-33f0-4ab5-95ec-5c78ad420d9f}</Project>
+      <Name>Raizen.UniCad.Infraestructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Model\Raizen.UniCad.Model.csproj">
+      <Project>{5F4045EC-8A4C-44DE-BE53-08DA2F93D784}</Project>
+      <Name>Raizen.UniCad.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Raizen.UniCad.Domain\Raizen.UniCad.Domain.csproj">
+      <Project>{9ca1f653-1216-4252-a284-190e5dd245dd}</Project>
+      <Name>Raizen.UniCad.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Raizen.UniCad.ExternalServices\Raizen.UniCad.ExternalServices.csproj">
+      <Project>{08905f97-aaf6-4b4b-a0ed-f6d25217502b}</Project>
+      <Name>Raizen.UniCad.ExternalServices</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Raizen.UniCad.SAL\Raizen.UniCad.SAL.csproj">
+      <Project>{3AF5149B-4889-4660-B0D7-51341BEF890B}</Project>
+      <Name>Raizen.UniCad.SAL</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".editorconfig" />
+    <None Include="app.config" />
+    <None Include="packages.config" />
+    <None Include="Raizen.UniCad.BLL.Debug.ruleset" />
+    <None Include="Raizen.UniCad.BLL.ruleset" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Resource.es-AR.resx" />
+    <EmbeddedResource Include="Resources\Resource.pt-BR.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.pt-BR.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

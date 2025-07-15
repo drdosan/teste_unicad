@@ -1,0 +1,3215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://easyquerywebservice.cosan.com.br/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://easyquerywebservice.cosan.com.br/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">EasyQuery Integration Services</wsdl:documentation>
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://easyquerywebservice.cosan.com.br/">
+      <s:import namespace="http://microsoft.com/wsdl/types/" />
+      <s:element name="CancelTicket">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="TicketNumber" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CancelTicketResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CancelTicketResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Authenticator" type="tns:Authenticator" />
+      <s:complexType name="Authenticator">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Username" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string" />
+        </s:sequence>
+        <s:anyAttribute />
+      </s:complexType>
+      <s:element name="DownloadTickets">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CustomerCode" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="Days" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="DownloadTicketsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="DownloadTicketsResult">
+              <s:complexType mixed="true">
+                <s:sequence>
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateTicket">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="SubcategoryID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="CustomerCode" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ResolutionGroupID" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ContactName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ContactEmail" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ContactPhone" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateTicketResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CreateTicketResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateTicketComplete">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="SubcategoryID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="CustomerCode" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ResolutionGroupID" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ContactName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ContactEmail" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ContactPhone" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="FromApp" type="s:boolean" />
+            <s:element minOccurs="0" maxOccurs="1" name="uuid" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateTicketCompleteResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CreateTicketCompleteResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateTicketByUnicad">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="SubcategoryID" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="ResolutionGroupID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Subject" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Email" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="NotifyClient" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateTicketByUnicadResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CreateTicketByUnicadResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateTicketAttachWithNotes">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="SubcategoryID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="CustomerCode" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ResolutionGroupID" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ContactName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ContactEmail" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ContactPhone" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Notes" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="AttachFile" type="tns:CallFile" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="CallFile">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:SqlElement">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Call" type="tns:Call" />
+              <s:element minOccurs="0" maxOccurs="1" name="Users" type="tns:Users" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Extension" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Created" nillable="true" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="Archive" type="s:base64Binary" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="SqlElement" abstract="true">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:NHEntity" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="NHEntity" abstract="true" />
+      <s:complexType name="PricingZone">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:SqlElement">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="ProblemArea">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:SqlElement">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Active" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Problem">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:SqlElement">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Active" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Criticity">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:SqlElement">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Active" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="SLADecrease" type="s:int" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Area">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:SqlElement">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Active" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="WorkGroup">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:SqlElement">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Area" type="tns:Area" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Active" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="SendEmail" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Category">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:SqlElement">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Active" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="SubCategory">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:SqlElement">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Category" type="tns:Category" />
+              <s:element minOccurs="0" maxOccurs="1" name="SLA" type="tns:SLA" />
+              <s:element minOccurs="0" maxOccurs="1" name="WorkGroup" type="tns:WorkGroup" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Help" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Active" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="SuggestionGroup" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="SmsOnCloseNotAttended" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="MsgSmsOnCloseNotAttended" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="SmsOnOpen" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="MsgSmsOnOpen" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="SLA">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:SqlElement">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="TotalTime" nillable="true" type="s:float" />
+              <s:element minOccurs="1" maxOccurs="1" name="StartTime" nillable="true" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="EndTime" nillable="true" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="SaturdayStart" nillable="true" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="SaturdayEnd" nillable="true" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="SundayStart" nillable="true" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="SundayEnd" nillable="true" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="HolidayStart" nillable="true" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="HolidayEnd" nillable="true" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Active" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Status">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:SqlElement">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Code" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Active" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="PauseSLA" nillable="true" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="ContactMood">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:SqlElement">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="ContactForm">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:SqlElement">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Active" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="GT">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:SqlElement">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Registration" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Email" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Active" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Users">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:SqlElement">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Id" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Active" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="EMailAddress" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="UserType" type="s:int" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Satisfaction">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:SqlElement">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Active" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Contact">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:SqlElement">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Client" type="tns:Client" />
+              <s:element minOccurs="0" maxOccurs="1" name="Code" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Phone" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Fax" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Email" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Deleted" nillable="true" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="Active" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="Source" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Client">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:SqlElement">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="PersonType" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Code" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name1" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name2" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Address" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="District" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="ZipCode" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Complement" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="City" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="State" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Country" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="CountryDoc" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="StateDoc" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Phone" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Phone2" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="MobilePhone" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Fax" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Email" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Gender" type="s1:char" />
+              <s:element minOccurs="1" maxOccurs="1" name="Birthday" nillable="true" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="Active" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="AllowModify" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="note" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="SmsPhone" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="AllowReceiveSms" nillable="true" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="ClientType">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:SqlElement">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Type" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Active" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Protocol">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:SqlElement">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Client" type="tns:Client" />
+              <s:element minOccurs="0" maxOccurs="1" name="ClientType" type="tns:ClientType" />
+              <s:element minOccurs="0" maxOccurs="1" name="SLA" type="tns:SLA" />
+              <s:element minOccurs="0" maxOccurs="1" name="Contact" type="tns:Contact" />
+              <s:element minOccurs="0" maxOccurs="1" name="Satisfaction" type="tns:Satisfaction" />
+              <s:element minOccurs="0" maxOccurs="1" name="Users" type="tns:Users" />
+              <s:element minOccurs="0" maxOccurs="1" name="CUsers" type="tns:Users" />
+              <s:element minOccurs="0" maxOccurs="1" name="GT" type="tns:GT" />
+              <s:element minOccurs="0" maxOccurs="1" name="ContactForm" type="tns:ContactForm" />
+              <s:element minOccurs="0" maxOccurs="1" name="ContactMood" type="tns:ContactMood" />
+              <s:element minOccurs="1" maxOccurs="1" name="Expires" nillable="true" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="Created" nillable="true" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="Closed" nillable="true" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="Status" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="Call">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:SqlElement">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="Id" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Protocol" type="tns:Protocol" />
+              <s:element minOccurs="0" maxOccurs="1" name="Users" type="tns:Users" />
+              <s:element minOccurs="0" maxOccurs="1" name="Status" type="tns:Status" />
+              <s:element minOccurs="0" maxOccurs="1" name="SubCategory" type="tns:SubCategory" />
+              <s:element minOccurs="0" maxOccurs="1" name="SLA" type="tns:SLA" />
+              <s:element minOccurs="0" maxOccurs="1" name="Criticity" type="tns:Criticity" />
+              <s:element minOccurs="0" maxOccurs="1" name="Problem" type="tns:Problem" />
+              <s:element minOccurs="0" maxOccurs="1" name="ProblemArea" type="tns:ProblemArea" />
+              <s:element minOccurs="1" maxOccurs="1" name="Founded" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="Created" type="s:dateTime" />
+              <s:element minOccurs="1" maxOccurs="1" name="Expires" nillable="true" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Closed" nillable="true" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="CUsers" type="tns:Users" />
+              <s:element minOccurs="0" maxOccurs="1" name="WorkGroup" type="tns:WorkGroup" />
+              <s:element minOccurs="1" maxOccurs="1" name="IdNum" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="Pricingzone" type="tns:PricingZone" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:element name="CreateTicketAttachWithNotesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CreateTicketAttachWithNotesResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateTicketWithNotes">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="SubcategoryID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="CustomerCode" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ResolutionGroupID" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ContactName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ContactEmail" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ContactPhone" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Notes" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateTicketWithNotesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CreateTicketWithNotesResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateTicketAttach">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="SubcategoryID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="CustomerCode" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ResolutionGroupID" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ContactName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ContactEmail" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ContactPhone" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="AttachFile" type="tns:CallFile" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateTicketAttachResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CreateTicketAttachResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateTicketAttachWithMessage">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="SubcategoryID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="CustomerCode" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ResolutionGroupID" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ContactName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ContactEmail" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ContactPhone" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="AttachFile" type="tns:CallFile" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateTicketAttachWithMessageResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CreateTicketAttachWithMessageResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateTicketPricingZone">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="SubcategoryID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="CustomerCode" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ResolutionGroupID" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ZonePricing" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="File" type="tns:CallFile" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateTicketPricingZoneResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CreateTicketPricingZoneResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateTicketPricingZoneWithNotes">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="SubcategoryID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="CustomerCode" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ResolutionGroupID" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ZonePricing" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Notes" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="File" type="tns:CallFile" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateTicketPricingZoneWithNotesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CreateTicketPricingZoneWithNotesResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdateClientContactInformation">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CustomerCode" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="PersonContact" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Telephone" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Fax" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Email" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdateClientContactInformationResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="UpdateClientContactInformationResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdateClientNote">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CustomerCode" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Note" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdateClientNoteResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="UpdateClientNoteResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetTicketReport">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CustomerCode" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetTicketReportResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetTicketReportResult" type="tns:ArrayOfCallReport" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfCallReport">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="CallReport" nillable="true" type="tns:CallReport" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="CallReport">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="TicketNumber" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Status" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="UserCreated" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="UserClosed" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Attended" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Subcategory" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="LastNotes" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="SubcategoryId" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="Created" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="Expires" nillable="true" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="Closed" nillable="true" type="s:dateTime" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetTicketByCustomer">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CustomerCode" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetTicketByCustomerResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetTicketByCustomerResult" type="tns:ArrayOfCallReport" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetTicketByNumber">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ListTickets" type="tns:ArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfString">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetTicketByNumberResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetTicketByNumberResult" type="tns:ArrayOfCallReport" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetCustomerContact">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CustomerCode" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetCustomerContactResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetCustomerContactResult" type="tns:ArrayOfClientContact" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfClientContact">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ClientContact" nillable="true" type="tns:ClientContact" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ClientContact">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Phone" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Fax" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Email" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="IBM" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Source" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetTicketStatus">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="TicketNumber" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetTicketStatusResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetTicketStatusResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CloseTicket">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="TicketNumber" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Notes" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Attended" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CloseTicketResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CloseTicketResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CloseTicketByUser">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="TicketNumber" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Notes" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Attended" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="userCode" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CloseTicketByUserResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CloseTicketByUserResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetSmsInformation">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="idSubCategories" type="tns:ArrayOfString" />
+            <s:element minOccurs="0" maxOccurs="1" name="customerCode" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetSmsInformationResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetSmsInformationResult" type="tns:SmsInformation" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="SmsInformation">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="SmsPhone" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="AllowReceiveSms" nillable="true" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="ListSmsOnCloseNotAttended" type="tns:ArrayOfString" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="SetSmsInformation">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="customerCode" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="smsPhone" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="allowReceiveSms" nillable="true" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="SetSmsInformationResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetTicketsSummary">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="dtIniFechamento" type="s:dateTime" />
+            <s:element minOccurs="1" maxOccurs="1" name="dtFimFechamento" type="s:dateTime" />
+            <s:element minOccurs="1" maxOccurs="1" name="idSubcategoria" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="ibmCliente" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetTicketsSummaryResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetTicketsSummaryResult" type="tns:ArrayOfCallSummary" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfCallSummary">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="CallSummary" nillable="true" type="tns:CallSummary" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="CallSummary">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="TicketNumber" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Status" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Attended" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ClientIBM" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="ListOpenAppTickets">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="customerCode" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ListOpenAppTicketsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ListOpenAppTicketsResult" type="tns:ArrayOfCallSummary" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateChatRequest">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="callId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="uuid" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="message" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateChatRequestResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CreateChatRequestResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ListChat">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="callId" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ListChatResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ListChatResult" type="tns:ArrayOfChatDto" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfChatDto">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ChatDto" nillable="true" type="tns:ChatDto" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ChatDto">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="CustomerId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Direction" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Message" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="MessageDate" nillable="true" type="s:dateTime" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="ListarTopTenRecentes">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="clientCode" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ListarTopTenRecentesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ListarTopTenRecentesResult" type="tns:ArrayOfCallForApp" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfCallForApp">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="CallForApp" nillable="true" type="tns:CallForApp" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="CallForApp">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="CallId" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="SubcategoryId" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="SubcategoryDescription" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="ListarConsultaApp">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="clientCode" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="numeroDeDias" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ListarConsultaAppResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ListarConsultaAppResult" type="tns:ArrayOfCallSummaryForApp" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfCallSummaryForApp">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="CallSummaryForApp" nillable="true" type="tns:CallSummaryForApp" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="CallSummaryForApp">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="CallId" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="DtCreated" nillable="true" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="SubcategoryId" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="SubcategoryDescription" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Closed" nillable="true" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="Attended" nillable="true" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="ChatLocked" nillable="true" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="LastMessage" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="HasChat" type="s:boolean" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="ListarConsultaAppCondicional">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="clientCode" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="numeroDeDias" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="closed" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ListarConsultaAppCondicionalResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ListarConsultaAppCondicionalResult" type="tns:ArrayOfCallSummaryForApp" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CsfacilSendChatMessage">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="SubCategoryId" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="ResolutionWorkGroupId" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="CallDescription" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="ChatMessage" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="Cpf" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CsfacilSendChatMessageResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CsfacilSendChatMessageResult" type="tns:ChatCSfacilDto" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ChatCSfacilDto">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="Id" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Direction" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Message" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="MessageDate" nillable="true" type="s:dateTime" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="CsfacilListChatMessage">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="cpf" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="workgroup" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="subcategrory" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="tamanhoPagina" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="bottomid" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="topId" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CsfacilListChatMessageResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CsfacilListChatMessageResult" type="tns:ArrayOfChatCSfacilDto" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfChatCSfacilDto">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ChatCSfacilDto" nillable="true" type="tns:ChatCSfacilDto" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="CsfacilCountChatMessage">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="cpf" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="workgroup" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="subcategrory" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="idInicial" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CsfacilCountChatMessageResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CsfacilCountChatMessageResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="string" nillable="true" type="s:string" />
+      <s:element name="ArrayOfCallReport" nillable="true" type="tns:ArrayOfCallReport" />
+      <s:element name="ArrayOfClientContact" nillable="true" type="tns:ArrayOfClientContact" />
+      <s:element name="ArrayOfCallSummary" nillable="true" type="tns:ArrayOfCallSummary" />
+      <s:element name="ArrayOfChatDto" nillable="true" type="tns:ArrayOfChatDto" />
+      <s:element name="ArrayOfCallForApp" nillable="true" type="tns:ArrayOfCallForApp" />
+      <s:element name="ArrayOfCallSummaryForApp" nillable="true" type="tns:ArrayOfCallSummaryForApp" />
+      <s:element name="ChatCSfacilDto" nillable="true" type="tns:ChatCSfacilDto" />
+      <s:element name="ArrayOfChatCSfacilDto" nillable="true" type="tns:ArrayOfChatCSfacilDto" />
+      <s:element name="int" type="s:int" />
+    </s:schema>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://microsoft.com/wsdl/types/">
+      <s:simpleType name="char">
+        <s:restriction base="s:unsignedShort" />
+      </s:simpleType>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="CancelTicketSoapIn">
+    <wsdl:part name="parameters" element="tns:CancelTicket" />
+  </wsdl:message>
+  <wsdl:message name="CancelTicketSoapOut">
+    <wsdl:part name="parameters" element="tns:CancelTicketResponse" />
+  </wsdl:message>
+  <wsdl:message name="CancelTicketAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="DownloadTicketsSoapIn">
+    <wsdl:part name="parameters" element="tns:DownloadTickets" />
+  </wsdl:message>
+  <wsdl:message name="DownloadTicketsSoapOut">
+    <wsdl:part name="parameters" element="tns:DownloadTicketsResponse" />
+  </wsdl:message>
+  <wsdl:message name="DownloadTicketsAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateTicket" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateTicketResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketCompleteSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateTicketComplete" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketCompleteSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateTicketCompleteResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketCompleteAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketByUnicadSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateTicketByUnicad" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketByUnicadSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateTicketByUnicadResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketByUnicadAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketAttachWithNotesSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateTicketAttachWithNotes" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketAttachWithNotesSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateTicketAttachWithNotesResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketAttachWithNotesAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketWithNotesSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateTicketWithNotes" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketWithNotesSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateTicketWithNotesResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketWithNotesAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketAttachSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateTicketAttach" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketAttachSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateTicketAttachResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketAttachAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketAttachWithMessageSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateTicketAttachWithMessage" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketAttachWithMessageSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateTicketAttachWithMessageResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketAttachWithMessageAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketPricingZoneSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateTicketPricingZone" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketPricingZoneSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateTicketPricingZoneResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketPricingZoneAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketPricingZoneWithNotesSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateTicketPricingZoneWithNotes" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketPricingZoneWithNotesSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateTicketPricingZoneWithNotesResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketPricingZoneWithNotesAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="UpdateClientContactInformationSoapIn">
+    <wsdl:part name="parameters" element="tns:UpdateClientContactInformation" />
+  </wsdl:message>
+  <wsdl:message name="UpdateClientContactInformationSoapOut">
+    <wsdl:part name="parameters" element="tns:UpdateClientContactInformationResponse" />
+  </wsdl:message>
+  <wsdl:message name="UpdateClientContactInformationAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="UpdateClientNoteSoapIn">
+    <wsdl:part name="parameters" element="tns:UpdateClientNote" />
+  </wsdl:message>
+  <wsdl:message name="UpdateClientNoteSoapOut">
+    <wsdl:part name="parameters" element="tns:UpdateClientNoteResponse" />
+  </wsdl:message>
+  <wsdl:message name="UpdateClientNoteAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketReportSoapIn">
+    <wsdl:part name="parameters" element="tns:GetTicketReport" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketReportSoapOut">
+    <wsdl:part name="parameters" element="tns:GetTicketReportResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketReportAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketByCustomerSoapIn">
+    <wsdl:part name="parameters" element="tns:GetTicketByCustomer" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketByCustomerSoapOut">
+    <wsdl:part name="parameters" element="tns:GetTicketByCustomerResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketByCustomerAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketByNumberSoapIn">
+    <wsdl:part name="parameters" element="tns:GetTicketByNumber" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketByNumberSoapOut">
+    <wsdl:part name="parameters" element="tns:GetTicketByNumberResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketByNumberAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="GetCustomerContactSoapIn">
+    <wsdl:part name="parameters" element="tns:GetCustomerContact" />
+  </wsdl:message>
+  <wsdl:message name="GetCustomerContactSoapOut">
+    <wsdl:part name="parameters" element="tns:GetCustomerContactResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetCustomerContactAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketStatusSoapIn">
+    <wsdl:part name="parameters" element="tns:GetTicketStatus" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketStatusSoapOut">
+    <wsdl:part name="parameters" element="tns:GetTicketStatusResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketStatusAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="CloseTicketSoapIn">
+    <wsdl:part name="parameters" element="tns:CloseTicket" />
+  </wsdl:message>
+  <wsdl:message name="CloseTicketSoapOut">
+    <wsdl:part name="parameters" element="tns:CloseTicketResponse" />
+  </wsdl:message>
+  <wsdl:message name="CloseTicketAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="CloseTicketByUserSoapIn">
+    <wsdl:part name="parameters" element="tns:CloseTicketByUser" />
+  </wsdl:message>
+  <wsdl:message name="CloseTicketByUserSoapOut">
+    <wsdl:part name="parameters" element="tns:CloseTicketByUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="CloseTicketByUserAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="GetSmsInformationSoapIn">
+    <wsdl:part name="parameters" element="tns:GetSmsInformation" />
+  </wsdl:message>
+  <wsdl:message name="GetSmsInformationSoapOut">
+    <wsdl:part name="parameters" element="tns:GetSmsInformationResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetSmsInformationAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="SetSmsInformationSoapIn">
+    <wsdl:part name="parameters" element="tns:SetSmsInformation" />
+  </wsdl:message>
+  <wsdl:message name="SetSmsInformationSoapOut">
+    <wsdl:part name="parameters" element="tns:SetSmsInformationResponse" />
+  </wsdl:message>
+  <wsdl:message name="SetSmsInformationAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketsSummarySoapIn">
+    <wsdl:part name="parameters" element="tns:GetTicketsSummary" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketsSummarySoapOut">
+    <wsdl:part name="parameters" element="tns:GetTicketsSummaryResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketsSummaryAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="ListOpenAppTicketsSoapIn">
+    <wsdl:part name="parameters" element="tns:ListOpenAppTickets" />
+  </wsdl:message>
+  <wsdl:message name="ListOpenAppTicketsSoapOut">
+    <wsdl:part name="parameters" element="tns:ListOpenAppTicketsResponse" />
+  </wsdl:message>
+  <wsdl:message name="ListOpenAppTicketsAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="CreateChatRequestSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateChatRequest" />
+  </wsdl:message>
+  <wsdl:message name="CreateChatRequestSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateChatRequestResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateChatRequestAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="ListChatSoapIn">
+    <wsdl:part name="parameters" element="tns:ListChat" />
+  </wsdl:message>
+  <wsdl:message name="ListChatSoapOut">
+    <wsdl:part name="parameters" element="tns:ListChatResponse" />
+  </wsdl:message>
+  <wsdl:message name="ListChatAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="ListarTopTenRecentesSoapIn">
+    <wsdl:part name="parameters" element="tns:ListarTopTenRecentes" />
+  </wsdl:message>
+  <wsdl:message name="ListarTopTenRecentesSoapOut">
+    <wsdl:part name="parameters" element="tns:ListarTopTenRecentesResponse" />
+  </wsdl:message>
+  <wsdl:message name="ListarTopTenRecentesAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="ListarConsultaAppSoapIn">
+    <wsdl:part name="parameters" element="tns:ListarConsultaApp" />
+  </wsdl:message>
+  <wsdl:message name="ListarConsultaAppSoapOut">
+    <wsdl:part name="parameters" element="tns:ListarConsultaAppResponse" />
+  </wsdl:message>
+  <wsdl:message name="ListarConsultaAppAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="ListarConsultaAppCondicionalSoapIn">
+    <wsdl:part name="parameters" element="tns:ListarConsultaAppCondicional" />
+  </wsdl:message>
+  <wsdl:message name="ListarConsultaAppCondicionalSoapOut">
+    <wsdl:part name="parameters" element="tns:ListarConsultaAppCondicionalResponse" />
+  </wsdl:message>
+  <wsdl:message name="ListarConsultaAppCondicionalAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="CsfacilSendChatMessageSoapIn">
+    <wsdl:part name="parameters" element="tns:CsfacilSendChatMessage" />
+  </wsdl:message>
+  <wsdl:message name="CsfacilSendChatMessageSoapOut">
+    <wsdl:part name="parameters" element="tns:CsfacilSendChatMessageResponse" />
+  </wsdl:message>
+  <wsdl:message name="CsfacilSendChatMessageAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="CsfacilListChatMessageSoapIn">
+    <wsdl:part name="parameters" element="tns:CsfacilListChatMessage" />
+  </wsdl:message>
+  <wsdl:message name="CsfacilListChatMessageSoapOut">
+    <wsdl:part name="parameters" element="tns:CsfacilListChatMessageResponse" />
+  </wsdl:message>
+  <wsdl:message name="CsfacilListChatMessageAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="CsfacilCountChatMessageSoapIn">
+    <wsdl:part name="parameters" element="tns:CsfacilCountChatMessage" />
+  </wsdl:message>
+  <wsdl:message name="CsfacilCountChatMessageSoapOut">
+    <wsdl:part name="parameters" element="tns:CsfacilCountChatMessageResponse" />
+  </wsdl:message>
+  <wsdl:message name="CsfacilCountChatMessageAuthenticator">
+    <wsdl:part name="Authenticator" element="tns:Authenticator" />
+  </wsdl:message>
+  <wsdl:message name="CancelTicketHttpGetIn">
+    <wsdl:part name="TicketNumber" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CancelTicketHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="DownloadTicketsHttpGetIn">
+    <wsdl:part name="CustomerCode" type="s:string" />
+    <wsdl:part name="Days" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="DownloadTicketsHttpGetOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketHttpGetIn">
+    <wsdl:part name="SubcategoryID" type="s:string" />
+    <wsdl:part name="CustomerCode" type="s:string" />
+    <wsdl:part name="Description" type="s:string" />
+    <wsdl:part name="ResolutionGroupID" type="s:string" />
+    <wsdl:part name="ContactName" type="s:string" />
+    <wsdl:part name="ContactEmail" type="s:string" />
+    <wsdl:part name="ContactPhone" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketCompleteHttpGetIn">
+    <wsdl:part name="SubcategoryID" type="s:string" />
+    <wsdl:part name="CustomerCode" type="s:string" />
+    <wsdl:part name="Description" type="s:string" />
+    <wsdl:part name="ResolutionGroupID" type="s:string" />
+    <wsdl:part name="ContactName" type="s:string" />
+    <wsdl:part name="ContactEmail" type="s:string" />
+    <wsdl:part name="ContactPhone" type="s:string" />
+    <wsdl:part name="FromApp" type="s:string" />
+    <wsdl:part name="uuid" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketCompleteHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketByUnicadHttpGetIn">
+    <wsdl:part name="SubcategoryID" type="s:string" />
+    <wsdl:part name="ResolutionGroupID" type="s:string" />
+    <wsdl:part name="Description" type="s:string" />
+    <wsdl:part name="Subject" type="s:string" />
+    <wsdl:part name="Email" type="s:string" />
+    <wsdl:part name="NotifyClient" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketByUnicadHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketWithNotesHttpGetIn">
+    <wsdl:part name="SubcategoryID" type="s:string" />
+    <wsdl:part name="CustomerCode" type="s:string" />
+    <wsdl:part name="Description" type="s:string" />
+    <wsdl:part name="ResolutionGroupID" type="s:string" />
+    <wsdl:part name="ContactName" type="s:string" />
+    <wsdl:part name="ContactEmail" type="s:string" />
+    <wsdl:part name="ContactPhone" type="s:string" />
+    <wsdl:part name="Notes" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketWithNotesHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="UpdateClientContactInformationHttpGetIn">
+    <wsdl:part name="CustomerCode" type="s:string" />
+    <wsdl:part name="PersonContact" type="s:string" />
+    <wsdl:part name="Telephone" type="s:string" />
+    <wsdl:part name="Fax" type="s:string" />
+    <wsdl:part name="Email" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="UpdateClientContactInformationHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="UpdateClientNoteHttpGetIn">
+    <wsdl:part name="CustomerCode" type="s:string" />
+    <wsdl:part name="Note" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="UpdateClientNoteHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketReportHttpGetIn">
+    <wsdl:part name="CustomerCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketReportHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfCallReport" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketByCustomerHttpGetIn">
+    <wsdl:part name="CustomerCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketByCustomerHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfCallReport" />
+  </wsdl:message>
+  <wsdl:message name="GetCustomerContactHttpGetIn">
+    <wsdl:part name="CustomerCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetCustomerContactHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfClientContact" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketStatusHttpGetIn">
+    <wsdl:part name="TicketNumber" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketStatusHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="CloseTicketHttpGetIn">
+    <wsdl:part name="TicketNumber" type="s:string" />
+    <wsdl:part name="Notes" type="s:string" />
+    <wsdl:part name="Attended" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CloseTicketHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="CloseTicketByUserHttpGetIn">
+    <wsdl:part name="TicketNumber" type="s:string" />
+    <wsdl:part name="Notes" type="s:string" />
+    <wsdl:part name="Attended" type="s:string" />
+    <wsdl:part name="userCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CloseTicketByUserHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketsSummaryHttpGetIn">
+    <wsdl:part name="dtIniFechamento" type="s:string" />
+    <wsdl:part name="dtFimFechamento" type="s:string" />
+    <wsdl:part name="idSubcategoria" type="s:string" />
+    <wsdl:part name="ibmCliente" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketsSummaryHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfCallSummary" />
+  </wsdl:message>
+  <wsdl:message name="ListOpenAppTicketsHttpGetIn">
+    <wsdl:part name="customerCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ListOpenAppTicketsHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfCallSummary" />
+  </wsdl:message>
+  <wsdl:message name="CreateChatRequestHttpGetIn">
+    <wsdl:part name="callId" type="s:string" />
+    <wsdl:part name="uuid" type="s:string" />
+    <wsdl:part name="message" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CreateChatRequestHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="ListChatHttpGetIn">
+    <wsdl:part name="callId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ListChatHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfChatDto" />
+  </wsdl:message>
+  <wsdl:message name="ListarTopTenRecentesHttpGetIn">
+    <wsdl:part name="clientCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ListarTopTenRecentesHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfCallForApp" />
+  </wsdl:message>
+  <wsdl:message name="ListarConsultaAppHttpGetIn">
+    <wsdl:part name="clientCode" type="s:string" />
+    <wsdl:part name="numeroDeDias" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ListarConsultaAppHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfCallSummaryForApp" />
+  </wsdl:message>
+  <wsdl:message name="ListarConsultaAppCondicionalHttpGetIn">
+    <wsdl:part name="clientCode" type="s:string" />
+    <wsdl:part name="numeroDeDias" type="s:string" />
+    <wsdl:part name="closed" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ListarConsultaAppCondicionalHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfCallSummaryForApp" />
+  </wsdl:message>
+  <wsdl:message name="CsfacilSendChatMessageHttpGetIn">
+    <wsdl:part name="SubCategoryId" type="s:string" />
+    <wsdl:part name="ResolutionWorkGroupId" type="s:string" />
+    <wsdl:part name="CallDescription" type="s:string" />
+    <wsdl:part name="ChatMessage" type="s:string" />
+    <wsdl:part name="Cpf" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CsfacilSendChatMessageHttpGetOut">
+    <wsdl:part name="Body" element="tns:ChatCSfacilDto" />
+  </wsdl:message>
+  <wsdl:message name="CsfacilListChatMessageHttpGetIn">
+    <wsdl:part name="cpf" type="s:string" />
+    <wsdl:part name="workgroup" type="s:string" />
+    <wsdl:part name="subcategrory" type="s:string" />
+    <wsdl:part name="tamanhoPagina" type="s:string" />
+    <wsdl:part name="bottomid" type="s:string" />
+    <wsdl:part name="topId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CsfacilListChatMessageHttpGetOut">
+    <wsdl:part name="Body" element="tns:ArrayOfChatCSfacilDto" />
+  </wsdl:message>
+  <wsdl:message name="CsfacilCountChatMessageHttpGetIn">
+    <wsdl:part name="cpf" type="s:string" />
+    <wsdl:part name="workgroup" type="s:string" />
+    <wsdl:part name="subcategrory" type="s:string" />
+    <wsdl:part name="idInicial" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CsfacilCountChatMessageHttpGetOut">
+    <wsdl:part name="Body" element="tns:int" />
+  </wsdl:message>
+  <wsdl:message name="CancelTicketHttpPostIn">
+    <wsdl:part name="TicketNumber" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CancelTicketHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="DownloadTicketsHttpPostIn">
+    <wsdl:part name="CustomerCode" type="s:string" />
+    <wsdl:part name="Days" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="DownloadTicketsHttpPostOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketHttpPostIn">
+    <wsdl:part name="SubcategoryID" type="s:string" />
+    <wsdl:part name="CustomerCode" type="s:string" />
+    <wsdl:part name="Description" type="s:string" />
+    <wsdl:part name="ResolutionGroupID" type="s:string" />
+    <wsdl:part name="ContactName" type="s:string" />
+    <wsdl:part name="ContactEmail" type="s:string" />
+    <wsdl:part name="ContactPhone" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketCompleteHttpPostIn">
+    <wsdl:part name="SubcategoryID" type="s:string" />
+    <wsdl:part name="CustomerCode" type="s:string" />
+    <wsdl:part name="Description" type="s:string" />
+    <wsdl:part name="ResolutionGroupID" type="s:string" />
+    <wsdl:part name="ContactName" type="s:string" />
+    <wsdl:part name="ContactEmail" type="s:string" />
+    <wsdl:part name="ContactPhone" type="s:string" />
+    <wsdl:part name="FromApp" type="s:string" />
+    <wsdl:part name="uuid" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketCompleteHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketByUnicadHttpPostIn">
+    <wsdl:part name="SubcategoryID" type="s:string" />
+    <wsdl:part name="ResolutionGroupID" type="s:string" />
+    <wsdl:part name="Description" type="s:string" />
+    <wsdl:part name="Subject" type="s:string" />
+    <wsdl:part name="Email" type="s:string" />
+    <wsdl:part name="NotifyClient" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketByUnicadHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketWithNotesHttpPostIn">
+    <wsdl:part name="SubcategoryID" type="s:string" />
+    <wsdl:part name="CustomerCode" type="s:string" />
+    <wsdl:part name="Description" type="s:string" />
+    <wsdl:part name="ResolutionGroupID" type="s:string" />
+    <wsdl:part name="ContactName" type="s:string" />
+    <wsdl:part name="ContactEmail" type="s:string" />
+    <wsdl:part name="ContactPhone" type="s:string" />
+    <wsdl:part name="Notes" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CreateTicketWithNotesHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="UpdateClientContactInformationHttpPostIn">
+    <wsdl:part name="CustomerCode" type="s:string" />
+    <wsdl:part name="PersonContact" type="s:string" />
+    <wsdl:part name="Telephone" type="s:string" />
+    <wsdl:part name="Fax" type="s:string" />
+    <wsdl:part name="Email" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="UpdateClientContactInformationHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="UpdateClientNoteHttpPostIn">
+    <wsdl:part name="CustomerCode" type="s:string" />
+    <wsdl:part name="Note" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="UpdateClientNoteHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketReportHttpPostIn">
+    <wsdl:part name="CustomerCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketReportHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfCallReport" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketByCustomerHttpPostIn">
+    <wsdl:part name="CustomerCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketByCustomerHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfCallReport" />
+  </wsdl:message>
+  <wsdl:message name="GetCustomerContactHttpPostIn">
+    <wsdl:part name="CustomerCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetCustomerContactHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfClientContact" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketStatusHttpPostIn">
+    <wsdl:part name="TicketNumber" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketStatusHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="CloseTicketHttpPostIn">
+    <wsdl:part name="TicketNumber" type="s:string" />
+    <wsdl:part name="Notes" type="s:string" />
+    <wsdl:part name="Attended" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CloseTicketHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="CloseTicketByUserHttpPostIn">
+    <wsdl:part name="TicketNumber" type="s:string" />
+    <wsdl:part name="Notes" type="s:string" />
+    <wsdl:part name="Attended" type="s:string" />
+    <wsdl:part name="userCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CloseTicketByUserHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketsSummaryHttpPostIn">
+    <wsdl:part name="dtIniFechamento" type="s:string" />
+    <wsdl:part name="dtFimFechamento" type="s:string" />
+    <wsdl:part name="idSubcategoria" type="s:string" />
+    <wsdl:part name="ibmCliente" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetTicketsSummaryHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfCallSummary" />
+  </wsdl:message>
+  <wsdl:message name="ListOpenAppTicketsHttpPostIn">
+    <wsdl:part name="customerCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ListOpenAppTicketsHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfCallSummary" />
+  </wsdl:message>
+  <wsdl:message name="CreateChatRequestHttpPostIn">
+    <wsdl:part name="callId" type="s:string" />
+    <wsdl:part name="uuid" type="s:string" />
+    <wsdl:part name="message" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CreateChatRequestHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="ListChatHttpPostIn">
+    <wsdl:part name="callId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ListChatHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfChatDto" />
+  </wsdl:message>
+  <wsdl:message name="ListarTopTenRecentesHttpPostIn">
+    <wsdl:part name="clientCode" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ListarTopTenRecentesHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfCallForApp" />
+  </wsdl:message>
+  <wsdl:message name="ListarConsultaAppHttpPostIn">
+    <wsdl:part name="clientCode" type="s:string" />
+    <wsdl:part name="numeroDeDias" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ListarConsultaAppHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfCallSummaryForApp" />
+  </wsdl:message>
+  <wsdl:message name="ListarConsultaAppCondicionalHttpPostIn">
+    <wsdl:part name="clientCode" type="s:string" />
+    <wsdl:part name="numeroDeDias" type="s:string" />
+    <wsdl:part name="closed" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="ListarConsultaAppCondicionalHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfCallSummaryForApp" />
+  </wsdl:message>
+  <wsdl:message name="CsfacilSendChatMessageHttpPostIn">
+    <wsdl:part name="SubCategoryId" type="s:string" />
+    <wsdl:part name="ResolutionWorkGroupId" type="s:string" />
+    <wsdl:part name="CallDescription" type="s:string" />
+    <wsdl:part name="ChatMessage" type="s:string" />
+    <wsdl:part name="Cpf" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CsfacilSendChatMessageHttpPostOut">
+    <wsdl:part name="Body" element="tns:ChatCSfacilDto" />
+  </wsdl:message>
+  <wsdl:message name="CsfacilListChatMessageHttpPostIn">
+    <wsdl:part name="cpf" type="s:string" />
+    <wsdl:part name="workgroup" type="s:string" />
+    <wsdl:part name="subcategrory" type="s:string" />
+    <wsdl:part name="tamanhoPagina" type="s:string" />
+    <wsdl:part name="bottomid" type="s:string" />
+    <wsdl:part name="topId" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CsfacilListChatMessageHttpPostOut">
+    <wsdl:part name="Body" element="tns:ArrayOfChatCSfacilDto" />
+  </wsdl:message>
+  <wsdl:message name="CsfacilCountChatMessageHttpPostIn">
+    <wsdl:part name="cpf" type="s:string" />
+    <wsdl:part name="workgroup" type="s:string" />
+    <wsdl:part name="subcategrory" type="s:string" />
+    <wsdl:part name="idInicial" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CsfacilCountChatMessageHttpPostOut">
+    <wsdl:part name="Body" element="tns:int" />
+  </wsdl:message>
+  <wsdl:portType name="wsEasyQueryACSSoap">
+    <wsdl:operation name="CancelTicket">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cancela um ticket no EasyQuery</wsdl:documentation>
+      <wsdl:input message="tns:CancelTicketSoapIn" />
+      <wsdl:output message="tns:CancelTicketSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="DownloadTickets">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Retorna lista dos chamados de um determinado cliente</wsdl:documentation>
+      <wsdl:input message="tns:DownloadTicketsSoapIn" />
+      <wsdl:output message="tns:DownloadTicketsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicket">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cria um ticket do ACS no EasyQuery</wsdl:documentation>
+      <wsdl:input message="tns:CreateTicketSoapIn" />
+      <wsdl:output message="tns:CreateTicketSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketComplete">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cria um ticket no EasyQuery</wsdl:documentation>
+      <wsdl:input message="tns:CreateTicketCompleteSoapIn" />
+      <wsdl:output message="tns:CreateTicketCompleteSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketByUnicad">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cria um ticket no EasyQuery utilizando um endereço de e-mail como identificação do usuário solicitante</wsdl:documentation>
+      <wsdl:input message="tns:CreateTicketByUnicadSoapIn" />
+      <wsdl:output message="tns:CreateTicketByUnicadSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketAttachWithNotes">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cria um ticket no EasyQuery com Anexo</wsdl:documentation>
+      <wsdl:input message="tns:CreateTicketAttachWithNotesSoapIn" />
+      <wsdl:output message="tns:CreateTicketAttachWithNotesSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketWithNotes">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cria um ticket do ACS no EasyQuery</wsdl:documentation>
+      <wsdl:input message="tns:CreateTicketWithNotesSoapIn" />
+      <wsdl:output message="tns:CreateTicketWithNotesSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketAttach">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cria um ticket no EasyQuery com Anexo</wsdl:documentation>
+      <wsdl:input message="tns:CreateTicketAttachSoapIn" />
+      <wsdl:output message="tns:CreateTicketAttachSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketAttachWithMessage">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cria um ticket no EasyQuery com Anexo com mensagem amigável</wsdl:documentation>
+      <wsdl:input message="tns:CreateTicketAttachWithMessageSoapIn" />
+      <wsdl:output message="tns:CreateTicketAttachWithMessageSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketPricingZone">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cria um chamado com Zona de Preco</wsdl:documentation>
+      <wsdl:input message="tns:CreateTicketPricingZoneSoapIn" />
+      <wsdl:output message="tns:CreateTicketPricingZoneSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketPricingZoneWithNotes">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cria um chamado com Zona de Preco</wsdl:documentation>
+      <wsdl:input message="tns:CreateTicketPricingZoneWithNotesSoapIn" />
+      <wsdl:output message="tns:CreateTicketPricingZoneWithNotesSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateClientContactInformation">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Atualiza o Contact de um Cliente</wsdl:documentation>
+      <wsdl:input message="tns:UpdateClientContactInformationSoapIn" />
+      <wsdl:output message="tns:UpdateClientContactInformationSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateClientNote">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Atualiza o campo Note (Observacao) de um Cliente</wsdl:documentation>
+      <wsdl:input message="tns:UpdateClientNoteSoapIn" />
+      <wsdl:output message="tns:UpdateClientNoteSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketReport">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar os chamados abertos / fechados / alterados do dia anterior de um cliente</wsdl:documentation>
+      <wsdl:input message="tns:GetTicketReportSoapIn" />
+      <wsdl:output message="tns:GetTicketReportSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketByCustomer">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar todos os chamados abertos e top 10 fechados de um cliente</wsdl:documentation>
+      <wsdl:input message="tns:GetTicketByCustomerSoapIn" />
+      <wsdl:output message="tns:GetTicketByCustomerSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketByNumber">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar chamados a partir do Id's informados</wsdl:documentation>
+      <wsdl:input message="tns:GetTicketByNumberSoapIn" />
+      <wsdl:output message="tns:GetTicketByNumberSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCustomerContact">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar os Contacts de um Cliente - Combustiveis</wsdl:documentation>
+      <wsdl:input message="tns:GetCustomerContactSoapIn" />
+      <wsdl:output message="tns:GetCustomerContactSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketStatus">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Retorna o Status do ticket no EasyQuery</wsdl:documentation>
+      <wsdl:input message="tns:GetTicketStatusSoapIn" />
+      <wsdl:output message="tns:GetTicketStatusSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CloseTicket">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Fechar um chamado</wsdl:documentation>
+      <wsdl:input message="tns:CloseTicketSoapIn" />
+      <wsdl:output message="tns:CloseTicketSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CloseTicketByUser">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Fechar um chamado por usuário.</wsdl:documentation>
+      <wsdl:input message="tns:CloseTicketByUserSoapIn" />
+      <wsdl:output message="tns:CloseTicketByUserSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetSmsInformation">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Obter Informações sobre envio de SMS</wsdl:documentation>
+      <wsdl:input message="tns:GetSmsInformationSoapIn" />
+      <wsdl:output message="tns:GetSmsInformationSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="SetSmsInformation">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Atualiza Informações sobre envio de SMS</wsdl:documentation>
+      <wsdl:input message="tns:SetSmsInformationSoapIn" />
+      <wsdl:output message="tns:SetSmsInformationSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketsSummary">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar chamados a partir dos filtros informados</wsdl:documentation>
+      <wsdl:input message="tns:GetTicketsSummarySoapIn" />
+      <wsdl:output message="tns:GetTicketsSummarySoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ListOpenAppTickets">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar os chamados de App abertos de um cliente</wsdl:documentation>
+      <wsdl:input message="tns:ListOpenAppTicketsSoapIn" />
+      <wsdl:output message="tns:ListOpenAppTicketsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateChatRequest">
+      <wsdl:input message="tns:CreateChatRequestSoapIn" />
+      <wsdl:output message="tns:CreateChatRequestSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ListChat">
+      <wsdl:input message="tns:ListChatSoapIn" />
+      <wsdl:output message="tns:ListChatSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ListarTopTenRecentes">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar TOP 10 chamados mais recentes do cliente </wsdl:documentation>
+      <wsdl:input message="tns:ListarTopTenRecentesSoapIn" />
+      <wsdl:output message="tns:ListarTopTenRecentesSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ListarConsultaApp">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar consulta de chamados do cliente para listagem no app</wsdl:documentation>
+      <wsdl:input message="tns:ListarConsultaAppSoapIn" />
+      <wsdl:output message="tns:ListarConsultaAppSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ListarConsultaAppCondicional">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar consulta de chamados do cliente para listagem no app</wsdl:documentation>
+      <wsdl:input message="tns:ListarConsultaAppCondicionalSoapIn" />
+      <wsdl:output message="tns:ListarConsultaAppCondicionalSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CsfacilSendChatMessage">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cria uma protocolo/chamado/chat no EasyQuery utilizando um cpf como identificação do usuário solicitante</wsdl:documentation>
+      <wsdl:input message="tns:CsfacilSendChatMessageSoapIn" />
+      <wsdl:output message="tns:CsfacilSendChatMessageSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CsfacilListChatMessage">
+      <wsdl:input message="tns:CsfacilListChatMessageSoapIn" />
+      <wsdl:output message="tns:CsfacilListChatMessageSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CsfacilCountChatMessage">
+      <wsdl:input message="tns:CsfacilCountChatMessageSoapIn" />
+      <wsdl:output message="tns:CsfacilCountChatMessageSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="wsEasyQueryACSHttpGet">
+    <wsdl:operation name="CancelTicket">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cancela um ticket no EasyQuery</wsdl:documentation>
+      <wsdl:input message="tns:CancelTicketHttpGetIn" />
+      <wsdl:output message="tns:CancelTicketHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="DownloadTickets">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Retorna lista dos chamados de um determinado cliente</wsdl:documentation>
+      <wsdl:input message="tns:DownloadTicketsHttpGetIn" />
+      <wsdl:output message="tns:DownloadTicketsHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicket">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cria um ticket do ACS no EasyQuery</wsdl:documentation>
+      <wsdl:input message="tns:CreateTicketHttpGetIn" />
+      <wsdl:output message="tns:CreateTicketHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketComplete">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cria um ticket no EasyQuery</wsdl:documentation>
+      <wsdl:input message="tns:CreateTicketCompleteHttpGetIn" />
+      <wsdl:output message="tns:CreateTicketCompleteHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketByUnicad">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cria um ticket no EasyQuery utilizando um endereço de e-mail como identificação do usuário solicitante</wsdl:documentation>
+      <wsdl:input message="tns:CreateTicketByUnicadHttpGetIn" />
+      <wsdl:output message="tns:CreateTicketByUnicadHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketWithNotes">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cria um ticket do ACS no EasyQuery</wsdl:documentation>
+      <wsdl:input message="tns:CreateTicketWithNotesHttpGetIn" />
+      <wsdl:output message="tns:CreateTicketWithNotesHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateClientContactInformation">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Atualiza o Contact de um Cliente</wsdl:documentation>
+      <wsdl:input message="tns:UpdateClientContactInformationHttpGetIn" />
+      <wsdl:output message="tns:UpdateClientContactInformationHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateClientNote">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Atualiza o campo Note (Observacao) de um Cliente</wsdl:documentation>
+      <wsdl:input message="tns:UpdateClientNoteHttpGetIn" />
+      <wsdl:output message="tns:UpdateClientNoteHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketReport">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar os chamados abertos / fechados / alterados do dia anterior de um cliente</wsdl:documentation>
+      <wsdl:input message="tns:GetTicketReportHttpGetIn" />
+      <wsdl:output message="tns:GetTicketReportHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketByCustomer">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar todos os chamados abertos e top 10 fechados de um cliente</wsdl:documentation>
+      <wsdl:input message="tns:GetTicketByCustomerHttpGetIn" />
+      <wsdl:output message="tns:GetTicketByCustomerHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCustomerContact">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar os Contacts de um Cliente - Combustiveis</wsdl:documentation>
+      <wsdl:input message="tns:GetCustomerContactHttpGetIn" />
+      <wsdl:output message="tns:GetCustomerContactHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketStatus">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Retorna o Status do ticket no EasyQuery</wsdl:documentation>
+      <wsdl:input message="tns:GetTicketStatusHttpGetIn" />
+      <wsdl:output message="tns:GetTicketStatusHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CloseTicket">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Fechar um chamado</wsdl:documentation>
+      <wsdl:input message="tns:CloseTicketHttpGetIn" />
+      <wsdl:output message="tns:CloseTicketHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CloseTicketByUser">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Fechar um chamado por usuário.</wsdl:documentation>
+      <wsdl:input message="tns:CloseTicketByUserHttpGetIn" />
+      <wsdl:output message="tns:CloseTicketByUserHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketsSummary">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar chamados a partir dos filtros informados</wsdl:documentation>
+      <wsdl:input message="tns:GetTicketsSummaryHttpGetIn" />
+      <wsdl:output message="tns:GetTicketsSummaryHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ListOpenAppTickets">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar os chamados de App abertos de um cliente</wsdl:documentation>
+      <wsdl:input message="tns:ListOpenAppTicketsHttpGetIn" />
+      <wsdl:output message="tns:ListOpenAppTicketsHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateChatRequest">
+      <wsdl:input message="tns:CreateChatRequestHttpGetIn" />
+      <wsdl:output message="tns:CreateChatRequestHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ListChat">
+      <wsdl:input message="tns:ListChatHttpGetIn" />
+      <wsdl:output message="tns:ListChatHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ListarTopTenRecentes">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar TOP 10 chamados mais recentes do cliente </wsdl:documentation>
+      <wsdl:input message="tns:ListarTopTenRecentesHttpGetIn" />
+      <wsdl:output message="tns:ListarTopTenRecentesHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ListarConsultaApp">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar consulta de chamados do cliente para listagem no app</wsdl:documentation>
+      <wsdl:input message="tns:ListarConsultaAppHttpGetIn" />
+      <wsdl:output message="tns:ListarConsultaAppHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ListarConsultaAppCondicional">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar consulta de chamados do cliente para listagem no app</wsdl:documentation>
+      <wsdl:input message="tns:ListarConsultaAppCondicionalHttpGetIn" />
+      <wsdl:output message="tns:ListarConsultaAppCondicionalHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CsfacilSendChatMessage">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cria uma protocolo/chamado/chat no EasyQuery utilizando um cpf como identificação do usuário solicitante</wsdl:documentation>
+      <wsdl:input message="tns:CsfacilSendChatMessageHttpGetIn" />
+      <wsdl:output message="tns:CsfacilSendChatMessageHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CsfacilListChatMessage">
+      <wsdl:input message="tns:CsfacilListChatMessageHttpGetIn" />
+      <wsdl:output message="tns:CsfacilListChatMessageHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CsfacilCountChatMessage">
+      <wsdl:input message="tns:CsfacilCountChatMessageHttpGetIn" />
+      <wsdl:output message="tns:CsfacilCountChatMessageHttpGetOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="wsEasyQueryACSHttpPost">
+    <wsdl:operation name="CancelTicket">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cancela um ticket no EasyQuery</wsdl:documentation>
+      <wsdl:input message="tns:CancelTicketHttpPostIn" />
+      <wsdl:output message="tns:CancelTicketHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="DownloadTickets">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Retorna lista dos chamados de um determinado cliente</wsdl:documentation>
+      <wsdl:input message="tns:DownloadTicketsHttpPostIn" />
+      <wsdl:output message="tns:DownloadTicketsHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicket">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cria um ticket do ACS no EasyQuery</wsdl:documentation>
+      <wsdl:input message="tns:CreateTicketHttpPostIn" />
+      <wsdl:output message="tns:CreateTicketHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketComplete">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cria um ticket no EasyQuery</wsdl:documentation>
+      <wsdl:input message="tns:CreateTicketCompleteHttpPostIn" />
+      <wsdl:output message="tns:CreateTicketCompleteHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketByUnicad">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cria um ticket no EasyQuery utilizando um endereço de e-mail como identificação do usuário solicitante</wsdl:documentation>
+      <wsdl:input message="tns:CreateTicketByUnicadHttpPostIn" />
+      <wsdl:output message="tns:CreateTicketByUnicadHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketWithNotes">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cria um ticket do ACS no EasyQuery</wsdl:documentation>
+      <wsdl:input message="tns:CreateTicketWithNotesHttpPostIn" />
+      <wsdl:output message="tns:CreateTicketWithNotesHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateClientContactInformation">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Atualiza o Contact de um Cliente</wsdl:documentation>
+      <wsdl:input message="tns:UpdateClientContactInformationHttpPostIn" />
+      <wsdl:output message="tns:UpdateClientContactInformationHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateClientNote">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Atualiza o campo Note (Observacao) de um Cliente</wsdl:documentation>
+      <wsdl:input message="tns:UpdateClientNoteHttpPostIn" />
+      <wsdl:output message="tns:UpdateClientNoteHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketReport">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar os chamados abertos / fechados / alterados do dia anterior de um cliente</wsdl:documentation>
+      <wsdl:input message="tns:GetTicketReportHttpPostIn" />
+      <wsdl:output message="tns:GetTicketReportHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketByCustomer">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar todos os chamados abertos e top 10 fechados de um cliente</wsdl:documentation>
+      <wsdl:input message="tns:GetTicketByCustomerHttpPostIn" />
+      <wsdl:output message="tns:GetTicketByCustomerHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCustomerContact">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar os Contacts de um Cliente - Combustiveis</wsdl:documentation>
+      <wsdl:input message="tns:GetCustomerContactHttpPostIn" />
+      <wsdl:output message="tns:GetCustomerContactHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketStatus">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Retorna o Status do ticket no EasyQuery</wsdl:documentation>
+      <wsdl:input message="tns:GetTicketStatusHttpPostIn" />
+      <wsdl:output message="tns:GetTicketStatusHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CloseTicket">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Fechar um chamado</wsdl:documentation>
+      <wsdl:input message="tns:CloseTicketHttpPostIn" />
+      <wsdl:output message="tns:CloseTicketHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CloseTicketByUser">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Fechar um chamado por usuário.</wsdl:documentation>
+      <wsdl:input message="tns:CloseTicketByUserHttpPostIn" />
+      <wsdl:output message="tns:CloseTicketByUserHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketsSummary">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar chamados a partir dos filtros informados</wsdl:documentation>
+      <wsdl:input message="tns:GetTicketsSummaryHttpPostIn" />
+      <wsdl:output message="tns:GetTicketsSummaryHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ListOpenAppTickets">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar os chamados de App abertos de um cliente</wsdl:documentation>
+      <wsdl:input message="tns:ListOpenAppTicketsHttpPostIn" />
+      <wsdl:output message="tns:ListOpenAppTicketsHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateChatRequest">
+      <wsdl:input message="tns:CreateChatRequestHttpPostIn" />
+      <wsdl:output message="tns:CreateChatRequestHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ListChat">
+      <wsdl:input message="tns:ListChatHttpPostIn" />
+      <wsdl:output message="tns:ListChatHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ListarTopTenRecentes">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar TOP 10 chamados mais recentes do cliente </wsdl:documentation>
+      <wsdl:input message="tns:ListarTopTenRecentesHttpPostIn" />
+      <wsdl:output message="tns:ListarTopTenRecentesHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ListarConsultaApp">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar consulta de chamados do cliente para listagem no app</wsdl:documentation>
+      <wsdl:input message="tns:ListarConsultaAppHttpPostIn" />
+      <wsdl:output message="tns:ListarConsultaAppHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ListarConsultaAppCondicional">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Listar consulta de chamados do cliente para listagem no app</wsdl:documentation>
+      <wsdl:input message="tns:ListarConsultaAppCondicionalHttpPostIn" />
+      <wsdl:output message="tns:ListarConsultaAppCondicionalHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CsfacilSendChatMessage">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Cria uma protocolo/chamado/chat no EasyQuery utilizando um cpf como identificação do usuário solicitante</wsdl:documentation>
+      <wsdl:input message="tns:CsfacilSendChatMessageHttpPostIn" />
+      <wsdl:output message="tns:CsfacilSendChatMessageHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CsfacilListChatMessage">
+      <wsdl:input message="tns:CsfacilListChatMessageHttpPostIn" />
+      <wsdl:output message="tns:CsfacilListChatMessageHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CsfacilCountChatMessage">
+      <wsdl:input message="tns:CsfacilCountChatMessageHttpPostIn" />
+      <wsdl:output message="tns:CsfacilCountChatMessageHttpPostOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="wsEasyQueryACSSoap" type="tns:wsEasyQueryACSSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="CancelTicket">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/CancelTicket" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:CancelTicketAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DownloadTickets">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/DownloadTickets" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:DownloadTicketsAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicket">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/CreateTicket" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:CreateTicketAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketComplete">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/CreateTicketComplete" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:CreateTicketCompleteAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketByUnicad">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/CreateTicketByUnicad" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:CreateTicketByUnicadAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketAttachWithNotes">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/CreateTicketAttachWithNotes" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:CreateTicketAttachWithNotesAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketWithNotes">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/CreateTicketWithNotes" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:CreateTicketWithNotesAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketAttach">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/CreateTicketAttach" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:CreateTicketAttachAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketAttachWithMessage">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/CreateTicketAttachWithMessage" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:CreateTicketAttachWithMessageAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketPricingZone">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/CreateTicketPricingZone" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:CreateTicketPricingZoneAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketPricingZoneWithNotes">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/CreateTicketPricingZoneWithNotes" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:CreateTicketPricingZoneWithNotesAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateClientContactInformation">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/UpdateClientContactInformation" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:UpdateClientContactInformationAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateClientNote">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/UpdateClientNote" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:UpdateClientNoteAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketReport">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/GetTicketReport" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetTicketReportAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketByCustomer">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/GetTicketByCustomer" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetTicketByCustomerAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketByNumber">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/GetTicketByNumber" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetTicketByNumberAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCustomerContact">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/GetCustomerContact" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetCustomerContactAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketStatus">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/GetTicketStatus" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetTicketStatusAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CloseTicket">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/CloseTicket" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:CloseTicketAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CloseTicketByUser">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/CloseTicketByUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:CloseTicketByUserAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSmsInformation">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/GetSmsInformation" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetSmsInformationAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetSmsInformation">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/SetSmsInformation" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:SetSmsInformationAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketsSummary">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/GetTicketsSummary" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetTicketsSummaryAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListOpenAppTickets">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/ListOpenAppTickets" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:ListOpenAppTicketsAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateChatRequest">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/CreateChatRequest" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:CreateChatRequestAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListChat">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/ListChat" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:ListChatAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListarTopTenRecentes">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/ListarTopTenRecentes" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:ListarTopTenRecentesAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListarConsultaApp">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/ListarConsultaApp" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:ListarConsultaAppAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListarConsultaAppCondicional">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/ListarConsultaAppCondicional" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:ListarConsultaAppCondicionalAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CsfacilSendChatMessage">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/CsfacilSendChatMessage" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:CsfacilSendChatMessageAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CsfacilListChatMessage">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/CsfacilListChatMessage" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:CsfacilListChatMessageAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CsfacilCountChatMessage">
+      <soap:operation soapAction="http://easyquerywebservice.cosan.com.br/CsfacilCountChatMessage" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:CsfacilCountChatMessageAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="wsEasyQueryACSSoap12" type="tns:wsEasyQueryACSSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="CancelTicket">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/CancelTicket" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:CancelTicketAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DownloadTickets">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/DownloadTickets" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:DownloadTicketsAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicket">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/CreateTicket" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:CreateTicketAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketComplete">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/CreateTicketComplete" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:CreateTicketCompleteAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketByUnicad">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/CreateTicketByUnicad" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:CreateTicketByUnicadAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketAttachWithNotes">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/CreateTicketAttachWithNotes" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:CreateTicketAttachWithNotesAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketWithNotes">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/CreateTicketWithNotes" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:CreateTicketWithNotesAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketAttach">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/CreateTicketAttach" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:CreateTicketAttachAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketAttachWithMessage">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/CreateTicketAttachWithMessage" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:CreateTicketAttachWithMessageAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketPricingZone">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/CreateTicketPricingZone" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:CreateTicketPricingZoneAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketPricingZoneWithNotes">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/CreateTicketPricingZoneWithNotes" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:CreateTicketPricingZoneWithNotesAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateClientContactInformation">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/UpdateClientContactInformation" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:UpdateClientContactInformationAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateClientNote">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/UpdateClientNote" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:UpdateClientNoteAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketReport">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/GetTicketReport" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:GetTicketReportAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketByCustomer">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/GetTicketByCustomer" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:GetTicketByCustomerAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketByNumber">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/GetTicketByNumber" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:GetTicketByNumberAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCustomerContact">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/GetCustomerContact" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:GetCustomerContactAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketStatus">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/GetTicketStatus" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:GetTicketStatusAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CloseTicket">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/CloseTicket" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:CloseTicketAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CloseTicketByUser">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/CloseTicketByUser" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:CloseTicketByUserAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetSmsInformation">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/GetSmsInformation" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:GetSmsInformationAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetSmsInformation">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/SetSmsInformation" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:SetSmsInformationAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketsSummary">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/GetTicketsSummary" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:GetTicketsSummaryAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListOpenAppTickets">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/ListOpenAppTickets" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:ListOpenAppTicketsAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateChatRequest">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/CreateChatRequest" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:CreateChatRequestAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListChat">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/ListChat" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:ListChatAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListarTopTenRecentes">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/ListarTopTenRecentes" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:ListarTopTenRecentesAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListarConsultaApp">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/ListarConsultaApp" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:ListarConsultaAppAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListarConsultaAppCondicional">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/ListarConsultaAppCondicional" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:ListarConsultaAppCondicionalAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CsfacilSendChatMessage">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/CsfacilSendChatMessage" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:CsfacilSendChatMessageAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CsfacilListChatMessage">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/CsfacilListChatMessage" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:CsfacilListChatMessageAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CsfacilCountChatMessage">
+      <soap12:operation soapAction="http://easyquerywebservice.cosan.com.br/CsfacilCountChatMessage" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:CsfacilCountChatMessageAuthenticator" part="Authenticator" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="wsEasyQueryACSHttpGet" type="tns:wsEasyQueryACSHttpGet">
+    <http:binding verb="GET" />
+    <wsdl:operation name="CancelTicket">
+      <http:operation location="/CancelTicket" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DownloadTickets">
+      <http:operation location="/DownloadTickets" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicket">
+      <http:operation location="/CreateTicket" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketComplete">
+      <http:operation location="/CreateTicketComplete" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketByUnicad">
+      <http:operation location="/CreateTicketByUnicad" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketWithNotes">
+      <http:operation location="/CreateTicketWithNotes" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateClientContactInformation">
+      <http:operation location="/UpdateClientContactInformation" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateClientNote">
+      <http:operation location="/UpdateClientNote" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketReport">
+      <http:operation location="/GetTicketReport" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketByCustomer">
+      <http:operation location="/GetTicketByCustomer" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCustomerContact">
+      <http:operation location="/GetCustomerContact" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketStatus">
+      <http:operation location="/GetTicketStatus" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CloseTicket">
+      <http:operation location="/CloseTicket" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CloseTicketByUser">
+      <http:operation location="/CloseTicketByUser" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketsSummary">
+      <http:operation location="/GetTicketsSummary" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListOpenAppTickets">
+      <http:operation location="/ListOpenAppTickets" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateChatRequest">
+      <http:operation location="/CreateChatRequest" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListChat">
+      <http:operation location="/ListChat" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListarTopTenRecentes">
+      <http:operation location="/ListarTopTenRecentes" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListarConsultaApp">
+      <http:operation location="/ListarConsultaApp" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListarConsultaAppCondicional">
+      <http:operation location="/ListarConsultaAppCondicional" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CsfacilSendChatMessage">
+      <http:operation location="/CsfacilSendChatMessage" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CsfacilListChatMessage">
+      <http:operation location="/CsfacilListChatMessage" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CsfacilCountChatMessage">
+      <http:operation location="/CsfacilCountChatMessage" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="wsEasyQueryACSHttpPost" type="tns:wsEasyQueryACSHttpPost">
+    <http:binding verb="POST" />
+    <wsdl:operation name="CancelTicket">
+      <http:operation location="/CancelTicket" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DownloadTickets">
+      <http:operation location="/DownloadTickets" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicket">
+      <http:operation location="/CreateTicket" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketComplete">
+      <http:operation location="/CreateTicketComplete" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketByUnicad">
+      <http:operation location="/CreateTicketByUnicad" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateTicketWithNotes">
+      <http:operation location="/CreateTicketWithNotes" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateClientContactInformation">
+      <http:operation location="/UpdateClientContactInformation" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateClientNote">
+      <http:operation location="/UpdateClientNote" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketReport">
+      <http:operation location="/GetTicketReport" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketByCustomer">
+      <http:operation location="/GetTicketByCustomer" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCustomerContact">
+      <http:operation location="/GetCustomerContact" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketStatus">
+      <http:operation location="/GetTicketStatus" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CloseTicket">
+      <http:operation location="/CloseTicket" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CloseTicketByUser">
+      <http:operation location="/CloseTicketByUser" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTicketsSummary">
+      <http:operation location="/GetTicketsSummary" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListOpenAppTickets">
+      <http:operation location="/ListOpenAppTickets" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateChatRequest">
+      <http:operation location="/CreateChatRequest" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListChat">
+      <http:operation location="/ListChat" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListarTopTenRecentes">
+      <http:operation location="/ListarTopTenRecentes" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListarConsultaApp">
+      <http:operation location="/ListarConsultaApp" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ListarConsultaAppCondicional">
+      <http:operation location="/ListarConsultaAppCondicional" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CsfacilSendChatMessage">
+      <http:operation location="/CsfacilSendChatMessage" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CsfacilListChatMessage">
+      <http:operation location="/CsfacilListChatMessage" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CsfacilCountChatMessage">
+      <http:operation location="/CsfacilCountChatMessage" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="wsEasyQueryACS">
+    <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">EasyQuery Integration Services</wsdl:documentation>
+    <wsdl:port name="wsEasyQueryACSSoap" binding="tns:wsEasyQueryACSSoap">
+      <soap:address location="http://easyquerywebservice-dev.raizen.com/wsEasyQueryACS.asmx" />
+    </wsdl:port>
+    <wsdl:port name="wsEasyQueryACSSoap12" binding="tns:wsEasyQueryACSSoap12">
+      <soap12:address location="http://easyquerywebservice-dev.raizen.com/wsEasyQueryACS.asmx" />
+    </wsdl:port>
+    <wsdl:port name="wsEasyQueryACSHttpGet" binding="tns:wsEasyQueryACSHttpGet">
+      <http:address location="http://easyquerywebservice-dev.raizen.com/wsEasyQueryACS.asmx" />
+    </wsdl:port>
+    <wsdl:port name="wsEasyQueryACSHttpPost" binding="tns:wsEasyQueryACSHttpPost">
+      <http:address location="http://easyquerywebservice-dev.raizen.com/wsEasyQueryACS.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

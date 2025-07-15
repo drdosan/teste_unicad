@@ -1,0 +1,126 @@
+﻿@model Raizen.Framework.Web.MVC.Models.ModalConfirm
+<script src="~/Content/js/third-party/fileinput.min.js"></script>
+<link href="~/Content/js/third-party/bootstrap-fileinput/css/fileinput.min.css" rel="stylesheet" />
+<div class="modal fade" id="ModalConfirmAnexo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h4 id="MessageConfirm">@Model.MessageConfirm</h4>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label" id="lbl_Licenca_ResponsavelOperacao">Justificativa</label>
+                            @Html.TextArea("txtJustificativaAnexo", null, new { @class = "form-control" })
+                        </div>
+                    </div>
+                  
+                </div>
+                <div class="row">
+                    <div class="col-md-8">
+                        <label class="control-label" id="lbl_Licenca_ResponsavelOperacao">Anexo</label>
+                        <input id="input-701-2" style="padding:0"  type="file" name="txtAnexo" class="" data-buttonText="Selecione" data-iconName="glyphicon glyphicon-file">
+                        <input type="hidden" id="AnexoLicencaAnexo-2" />
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.BootstrapDateBox("txtData", "Data")
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-custom" type="button" onclick="raizenCoreJs.raizenHelpers.ExecutarFuncaoConfirmAnexo();">@Model.MessageYes</button>
+                <button class="btn btn-custom" type="button" onclick="raizenCoreJs.raizenHelpers.FecharConfirmAnexo();">@Model.MessageNot</button>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="confirmFunctionAnexo" />
+
+<script>
+    $('#input-701-2').on('fileclear', function () {
+        $('#AnexoLicencaAnexo-2').val('');
+    });
+
+    $("#input-701-2").fileinput({
+        uploadUrl: '@Url.Action("AnexarArquivo", "Arquivo")',
+        dropZoneEnabled: false,
+        showUpload: false,
+        showPreview: false,
+        browseLabel: '',
+        uploadLabel: '',
+        removeLabel: '',
+        initialCaption: "Tamanho máximo: 20MB",
+        layoutTemplates: {
+            progress: ''
+        },
+    });
+
+    $('#input-701-2').on('fileloaded', function (event, file, previewId, index, reader) {
+
+        var formData = new FormData();
+
+        formData.append('file', file);
+        raizenCoreJs.raizenHelpers.AbrirLoading();
+        $.ajax({
+            url: '@Url.Action("AnexarArquivo", "Arquivo")',
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            type: 'POST',
+            success: function (response) {
+                raizenCoreJs.raizenHelpers.FecharLoading();
+
+                if (response == 'O Arquivo selecionado está vazio!') {
+                    $('.glyphicon.glyphicon-trash').trigger('click');
+                    ShowErrorMenssage(response);
+                }
+                else if (response == 'Tamanho Arquivo') {
+                    ShowErrorMenssage('O arquivo deve ser menor que 20 MB, por favor, tente novamente', 20);
+                    $('.glyphicon.glyphicon-trash').trigger('click');
+                }
+                else if (response.indexOf('Formato de Arquivo Inválido') >= 0) {
+                    ShowErrorMenssage(response, 20);
+                    $('.glyphicon.glyphicon-trash').trigger('click');
+                }
+                else {
+                    $('#AnexoLicencaAnexo-2').val(response);
+                }
+            },
+            error: function (response) {
+                alert(response);
+            }
+        });
+    });
+
+    $("input[data-type='date']").each(function () {
+        //Verifica se o controle em questão está em modo leitura
+        if ($(this).attr('readOnly') && $(this).attr('readOnly') == 'readonly') {
+            return;
+        }
+
+        $(this).datepicker({
+            dateFormat: 'dd/mm/yy',
+            dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+            dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
+            dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+            monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+            monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+            nextText: 'Próximo',
+            prevText: 'Anterior'
+        });
+
+        if ($(this).attr('Validar') == 'True') {
+            $(this).datepicker()
+            .on('hide', function (e) {
+                raizenCoreJs.raizenHelpers.ValidarModel(this);
+            });
+        }
+
+    });
+
+</script>

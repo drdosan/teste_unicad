@@ -1,0 +1,46 @@
+﻿@using Raizen.Framework.Utils.Extensions
+@using Raizen.Framework.Web.MVC.Extensions;
+
+@model Raizen.UniCad.Web.Models.ModelMotoristaArgentina
+@{
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+    var urlValidacao = @Url.Action("ValidarObjetos", "MotoristaArgentina");
+
+    ViewBag.Title = "Conductor";
+    ViewBag.TituloModulo = "Conductor";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var tabIndexToolBoxCrudPesquisa = new int[2];
+    tabIndexToolBoxCrudPesquisa[0] = 3;
+    tabIndexToolBoxCrudPesquisa[1] = 4;
+}
+
+<style>
+    .kv-fileinput-caption {
+        padding: 0;
+        padding-top: 5px;
+        padding-bottom: -5px;
+        padding-left: 5px;
+    }
+</style>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        RaizenCoreJs.prototype.Motorista._idPais = 2;
+        RaizenCoreJs.prototype.Motorista.urlSalvar = '@Url.Action("Salvar", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlAprovar = '@Url.Action("Salvar", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlVoltar = '@Url.Action("Index", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlMotorista = '@Url.Action("Index", "MotoristaArgentina")';
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        //raizenCoreJs.raizenMensagens.ExibirMensagemOperacao();
+        raizenCoreJs.raizenHelpers.urlValidacao = "@urlValidacao";
+    });
+</script>
+
+<div class="box border raizen" style="margin-top:10px" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event);" id="containerEdicao">
+    @{Html.RenderPartial("_Edicao", Model);}
+</div>

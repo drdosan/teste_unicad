@@ -1,0 +1,130 @@
+﻿﻿﻿@using Raizen.Framework.Models
+@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Models
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.Framework.Web.MVC.Extensions;
+@using Raizen.UniCad.Model;
+<style>
+
+
+    .tab-pane {
+        border-left: 1px solid silver;
+        border-bottom: 1px solid silver;
+        border-right: 1px solid silver;
+        border-radius: 0px 0px 5px 5px;
+        padding: 30px;
+        margin-bottom: 20px;
+    }
+
+    .invisivel {
+        display: none;
+    }
+
+    .roxoRaizen {
+        background-color: #6f376c !important;
+    }
+
+    .modal-dialog {
+        max-width: 90% !important;
+    }
+</style>
+@model Raizen.UniCad.Web.Models.ModelImpressaoCracha
+@{
+
+    var urlValidacao = @Url.Action("ValidarObjetos", "Motorista");
+
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+
+}
+
+<div class="row">
+    <div class="col-md-6" id="anexoMotorista">
+        <input type="hidden" id="nomeArquivo" />
+        @Html.HiddenFor(model => model.Motorista.Anexo, new { @id = "Anexo-" + Model.Motorista.ID })
+        <label id="lbl_Motorista_Anexo">Utilize esta opção para anexar os documentos em um arquivo único</label>
+        @if (1 == 1)
+        {
+            <input id="input-701-@Model.Motorista.ID" type="file" name="@Html.NameFor(p => p.Motorista.Anexo)" class="anexoCount" data-buttonText="Selecione" data-iconName="glyphicon glyphicon-file">
+        }
+        else
+        {
+            <a href="@Url.Action("Download", "Arquivo")?file=@(Model.Motorista.Anexo)" class="anexoCount" target="_blank" id="linkAnexo-@Model.Motorista.ID">@Model.Motorista.Anexo</a>
+            <button type="button" tabindex="500" id="limparAnexo-@Model.Motorista.ID" title="Limpar" class="btn btn-default fileinput-remove fileinput-remove-button" onclick="RemoverAnexo(@Model.Motorista.ID);"><i class="glyphicon glyphicon-trash"></i> </button>
+            <div id="inputDiv-@Model.Motorista.ID" style="display:none">
+                <input id="input-701-@Model.Motorista.ID" type="file" name="@Html.NameFor(p => p.Motorista.Anexo)" class="anexoCount" data-buttonText="Selecione" data-iconName="glyphicon glyphicon-file">
+            </div>
+        }
+        <script>
+                                            function RemoverAnexo(id) {
+                                                //Procura todos os inputs que começam com "Anexo-" e seta vazio para o seu conteudo, a fim de limpar a model "Motorista.Anexo"
+                                                $('input[name="Motorista.Anexo"][id^="Anexo-' + id + '"]').each(function(){ this.value = '' });
+                                                $('#limparAnexo-'+id).hide();
+                                                $('#linkAnexo-'+id).hide();
+                                                $("#inputDiv-"+id).show(800);
+                                            }
+
+                                            $("#input-701-@Model.Motorista.ID").fileinput({
+                                                uploadUrl: '@Url.Action("UploadFotoCracha", "Arquivo")',
+                                                dropZoneEnabled: false,
+                                                showUpload: false,
+                                                showPreview: false,
+                                                browseLabel: '',
+                                                uploadLabel: '',
+                                                removeLabel: '',
+                                                layoutTemplates: {
+                                                    progress: ''
+                                                },
+                                            });
+
+                                            $('#input-701-@Model.Motorista.ID').on('fileloaded', function (event, file, previewId, index, reader) {
+
+                                                //Adiciona uma ação de limpeza no onclick do botao de Limpar anexo
+                                                $("#Anexo-@Model.Motorista.ID").closest('div#anexoMotorista').find(".fileinput-remove").on('click', function () {
+                                                    $('input[name="Motorista.Anexo"][id^="Anexo-@Model.Motorista.ID"]').each(function(){ this.value = '' });
+                                                });
+
+                                                var formData = new FormData();
+
+                                                formData.append('file', file);
+                                                raizenCoreJs.raizenHelpers.AbrirLoading();
+                                                $.ajax({
+                                                    url: '@Url.Action("UploadFotoCracha", "Arquivo")',
+                                                    data: formData,
+                                                    cache: false,
+                                                    contentType: false,
+                                                    processData: false,
+                                                    type: 'POST',
+                                                    success: function (response) {
+                                                        raizenCoreJs.raizenHelpers.FecharLoading();
+
+                                                        if (response == 'O Arquivo selecionado está vazio!') {
+                                                            $('#anexoMotorista .glyphicon.glyphicon-trash').trigger('click');
+                                                            ShowErrorMenssage(response);
+                                                        }
+                                                        else if (response == 'Tamanho Arquivo') {
+                                                            ShowErrorMenssage('O arquivo deve ser menor que 2 MB, por favor, tente novamente', 20);
+                                                            $('#anexoMotorista .glyphicon.glyphicon-trash').trigger('click');
+                                                        }
+                                                        else if (response.indexOf('Formato de Arquivo Inválido') >= 0) {
+                                                            ShowErrorMenssage(response, 20);
+                                                            $('#anexoMotorista .glyphicon.glyphicon-trash').trigger('click');
+                                                        }
+                                                        else {
+                                                            console.log(response);
+
+                                                            $('#Anexo-@Model.Motorista.ID').val(response);
+                                                            $('#nomeArquivo').val(response);
+                                                        }
+                                                    },
+                                                    error: function (response) {
+                                                        ShowErrorMenssage('O arquivo deve ser menor que 2 MB, por favor, tente novamente', 20);
+                                                        raizenCoreJs.raizenHelpers.FecharLoading();
+                                                    }
+                                                });
+                                            });
+
+        </script>
+    </div>
+</div>

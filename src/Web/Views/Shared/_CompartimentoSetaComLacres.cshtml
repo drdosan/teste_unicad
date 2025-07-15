@@ -1,0 +1,164 @@
+﻿@model Raizen.UniCad.Model.Placa
+
+<input type="hidden" id="IdPlacaAlterar" value="@Model.ID" />
+<input type="hidden" id="IdComposicaoAlterar" value="" />
+
+@using (Html.BootstrapCollapsiblePanel("Compartimentos/Setas (Litros)", "compartimentoPanel", false, "fa fa-arrows-h", null, new { style = "max-height:600px; overflow-x:hidden; overflow-y:auto; margin-top:10px; ", title = "Preencha compartimentos na horizontal e setas na vertical. Em caso de dúvidas, consulte o Certificado de Verificação do Veículo Tanque Inmetro (CVV)" }))
+{
+
+    <table id="setaTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+        <thead>
+            <tr class="table-raizen">
+                @{
+                    string visivelSeta = "visivel";
+                }
+                @if (Model == null || Model == null || !Model.MultiSeta)
+                {
+                    visivelSeta = "invisivel";
+                }
+
+                <th style="word-wrap: break-word; text-align:left; width:10%" class="">
+                    Seta<br />
+                    <div class="setaRow botoes @visivelSeta">
+                        @if (!Model.IsInativar)
+                        {
+                            @Html.BootstrapButtonAdd("add", "", ButtonType.BUTTON, "raizenCoreJs.Placa.adicionarSeta()", "title='Selecione para inserir mais setas'")
+                            @Html.BootstrapButtonDelete("Remover", "", ButtonType.BUTTON, "raizenCoreJs.Placa.removerSeta()", "title='Selecione para excluir setas'")
+                        }
+                    </div>
+                </th>
+
+                @{
+                    string visivel = "visivel";
+                    string inativar = "";
+                    if (Model != null && Model.Setas != null && Model.Setas.Any(p => p.Compartimento1IsInativo.HasValue && p.Compartimento1IsInativo.Value))
+                    {
+                        inativar = " (Inativo)";
+                    }
+                }
+                @*<th class="setaRow @visivelSeta">Principal</th>*@
+
+                <th class="coluna visivel compartimento1">Comp. 1 @inativar</th>
+                @if (Model != null && Model != null && Model.Setas != null && !Model.Setas.Any(p => p.Colunas >= 2))
+                {
+                    visivel = "invisivel";
+                }
+
+
+                @if (Model != null && Model.Setas != null && Model.Setas.Any(p => p.Compartimento2IsInativo.HasValue && p.Compartimento2IsInativo.Value))
+                {
+                    inativar = " (Inativo)";
+                }
+                <th class="coluna @visivel compartimento2">Comp. 2 @inativar</th>
+                @if (Model != null && Model != null && Model.Setas != null && !Model.Setas.Any(p => p.Colunas >= 3))
+                {
+                    visivel = "invisivel";
+                }
+
+                @if (Model != null && Model.Setas != null && Model.Setas.Any(p => p.Compartimento3IsInativo.HasValue && p.Compartimento3IsInativo.Value))
+                {
+                    inativar = " (Inativo)";
+                }
+                <th class="coluna @visivel compartimento3">Comp. 3 @inativar</th>
+                @if (Model != null && Model != null && Model.Setas != null && !Model.Setas.Any(p => p.Colunas >= 4))
+                {
+                    visivel = "invisivel";
+                }
+
+                @if (Model != null && Model.Setas != null && Model.Setas.Any(p => p.Compartimento4IsInativo.HasValue && p.Compartimento4IsInativo.Value))
+                {
+                    inativar = " (Inativo)";
+                }
+
+                <th class="coluna @visivel compartimento4">Comp. 4 @inativar</th>
+                @if (Model != null && Model != null && Model.Setas != null && !Model.Setas.Any(p => p.Colunas >= 5))
+                {
+                    visivel = "invisivel";
+                }
+
+                @if (Model != null && Model.Setas != null && Model.Setas.Any(p => p.Compartimento5IsInativo.HasValue && p.Compartimento5IsInativo.Value))
+                {
+                    inativar = " (Inativo)";
+                }
+                <th class="coluna @visivel compartimento5">Comp. 5 @inativar</th>
+                @if (Model != null && Model != null && Model.Setas != null && !Model.Setas.Any(p => p.Colunas >= 6))
+                {
+                    visivel = "invisivel";
+                }
+
+                @if (Model != null && Model.Setas != null && Model.Setas.Any(p => p.Compartimento6IsInativo.HasValue && p.Compartimento6IsInativo.Value))
+                {
+                    inativar = " (Inativo)";
+                }
+                <th class="coluna @visivel compartimento6">Comp. 6</th>
+                @if (Model != null && Model != null && Model.Setas != null && !Model.Setas.Any(p => p.Colunas >= 7))
+                {
+                    visivel = "invisivel";
+                }
+
+                @if (Model != null && Model.Setas != null && Model.Setas.Any(p => p.Compartimento7IsInativo.HasValue && p.Compartimento7IsInativo.Value))
+                {
+                    inativar = " (Inativo)";
+                }
+                <th class="coluna @visivel compartimento7">Comp. 7 @inativar</th>
+                @if (Model != null && Model != null && Model.Setas != null && !Model.Setas.Any(p => p.Colunas >= 8))
+                {
+                    visivel = "invisivel";
+                }
+
+                @if (Model != null && Model.Setas != null && Model.Setas.Any(p => p.Compartimento8IsInativo.HasValue && p.Compartimento8IsInativo.Value))
+                {
+                    inativar = " (Inativo)";
+                }
+                <th class="coluna @visivel compartimento8">Comp. 8 @inativar</th>
+                @if (Model != null && Model != null && Model.Setas != null && !Model.Setas.Any(p => p.Colunas >= 9))
+                {
+                    visivel = "invisivel";
+                }
+
+                @if (Model != null && Model.Setas != null && Model.Setas.Any(p => p.Compartimento10IsInativo.HasValue && p.Compartimento10IsInativo.Value))
+                {
+                    inativar = " (Inativo)";
+                }
+                <th class="coluna @visivel compartimento9">Comp. 9 @inativar</th>
+                @if (Model != null && Model != null && Model.Setas != null && !Model.Setas.Any(p => p.Colunas >= 10))
+                {
+                    visivel = "invisivel";
+                }
+
+                @if (Model != null && Model.Setas != null && Model.Setas.Any(p => p.Compartimento10IsInativo.HasValue && p.Compartimento10IsInativo.Value))
+                {
+                    inativar = " (Inativo)";
+                }
+
+                <th class="coluna @visivel compartimento10">Comp. 10</th>
+                @if (!Model.somenteVisualizacao)
+                {
+                    <th style="word-wrap: break-word; text-align:right; width:10%" class="botoes">
+                        Compartimento<br />
+                        @if (Model.IsInativar && Model.Setas.Any(w => w.Colunas > 1))
+                        {
+                            <input type="button" class="fa-refresh btn btn-custom" name="Inativar" value="Inativar/Ativar" id="Inativar" onclick="raizenCoreJs.Placa.inativarCompartimento(this)" title="Selecione para inativar o último compartimento" />
+                            @Html.HiddenFor(p => p.IsInativo)
+                        }
+                        @if (!Model.IsInativar)
+                        {
+                            @Html.BootstrapButtonAdd("add", "", ButtonType.BUTTON, "raizenCoreJs.Placa.adicionarCompartimento()", "title='Selecione para inserir mais compartimentos'")
+                            @Html.BootstrapButtonDelete("Remover", "", ButtonType.BUTTON, "raizenCoreJs.Placa.removerCompartimento()", "title='Selecione para excluir compartimentos'")
+                        }
+                    </th>
+                }
+            </tr>
+
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Setas != null)
+            {
+                foreach (var item in Model.Setas)
+                {
+                    Html.RenderPartial("_ItemSetaComLacre", item);
+                }
+            }
+        </tbody>
+    </table>
+                    }

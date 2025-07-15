@@ -1,0 +1,174 @@
+﻿@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Models
+@using Raizen.Framework.Models
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.UniCad.Model;
+@using Newtonsoft.Json;
+
+
+@model Raizen.UniCad.Web.Models.ModelProduto
+@{
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+
+    
+
+    var tabIndiceCrudEdicao = new int[2];
+    tabIndiceCrudEdicao[0] = 4;
+    tabIndiceCrudEdicao[1] = 5;
+
+}
+
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Produto.js")"></script>
+
+<script type="text/javascript">
+    var tipos = @Html.Raw(JsonConvert.SerializeObject(GenericDelegate.Listar<TipoProduto>().OrderBy(p => p.ID)));
+
+    $(document).ready(function () {
+        raizenCoreJs.raizenCRUD.urlPesquisa = '@Url.Action("Pesquisar", "Produto")';
+        raizenCoreJs.raizenCRUD.urlNovo = '@Url.Action("Novo", "Produto")';
+        raizenCoreJs.raizenCRUD.urlExcluir = '@Url.Action("ExcluirRegistro", "Produto")';
+
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        raizenCoreJs.raizenMensagens.ExibirMensagemOperacao();
+    });
+
+    function FiltrarTipoPorPais(pais) {
+
+        var dpTipos = $('#dpTipos');
+        var selectedIndex = pais.options[pais.selectedIndex].value;
+        
+        dpTipos.empty();
+
+        dpTipos.append('<option value=0>(Selecione)</option>');
+
+        var tiposFilter = null;
+
+        if (selectedIndex == 0)
+            tiposFilter = tipos;
+        else
+            tiposFilter = tipos.filter(t => t.Pais == selectedIndex);
+
+        tiposFilter.forEach(tipo => dpTipos.append('<option value=' + tipo.ID + '>' + tipo.Nome + '</option>'));
+
+        dpTipos.selectedIndex = 0;
+    };
+
+
+
+</script>
+@*Parte de Filtros*@
+<form id="frmPesquisa" class="form-horizontal">
+
+    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUDEdit" })
+    @Html.HiddenFor(model => model.ChavePrimaria)
+    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUD" })
+    @Html.HiddenFor(model => model.OperacaoSecundaria, new { @Id = "IdOperacaoSecundariaCRUD" })
+
+    @Html.HiddenFor(model => model.PaginadorDados.PaginaAtual)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdePaginas)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdeItensPagina)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdeTotalRegistros)
+    @Html.HiddenFor(model => model.PaginadorDados.Status)
+
+
+    <div class="row">
+        @Html.BootstrapDropDownListFor(model => model.Filtro.Pais, new SelectList(GenericDelegate.ListarPais(), "Value", "Key"), "País", new { id = "dpPaises", @onchange = "FiltrarTipoPorPais(this);" }, new HtmlHelperOption() { colunas = "col-md-3" })
+        @Html.BootstrapTextBoxFor(model => model.Filtro.Nome, null, "Nome", null, new HtmlHelperOption() { colunas = "col-md-3" })
+        @Html.BootstrapDropDownListFor(model => model.Filtro.IDTipoProduto, new SelectList(GenericDelegate.ListarTipoProduto((bool)(ViewData["ListarDados"] ?? false), (List<int>) (ViewData["IDTipos"] ?? null), (bool) (ViewData["ListarTodos"] ?? true)), "Value", "Key"), "Tipo de Produto", new { id = "dpTipos", @onchange = "raizenCoreJs.Usuario.OcultarCamposPerfilOperacao();" }, new HtmlHelperOption() { colunas = "col-md-3" })
+        @Html.BootstrapDropDownListFor(model => model.Filtro.Status, new SelectList(GenericDelegate.AtivoInativo(), "Flag", "Nome"), "Status", new { @onchange = "raizenCoreJs.Usuario.OcultarCamposPerfilOperacao();" }, new HtmlHelperOption() { colunas = "col-md-3" })
+    </div>
+
+    <div class="row" id="containerBotoes">
+        <div class="col-md-5">
+            <div class="form-group">
+                <label class="col-sm-5 control-label"></label>
+                <div class="col-sm-12">
+                    <div class="btn-group center" style="float: none;">
+                        <button class="btn btn-custom" type="button" tabindex="4" onclick="raizenCoreJs.raizenCRUD.RealizarPesquisa();">
+                            <i class="fa fa-search"></i> Pesquisar
+                        </button>
+                        <button class="btn btn-custom" type="button" acaopermissao="add" tabindex="5" onclick="raizenCoreJs.raizenCRUD.Novo();">
+                            <i class="fa fa-plus-square-o"></i> Novo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<div class="divide-1"></div>
+
+@*Resultado da Pesquisa*@
+
+<div id="datatable2_wrapper" class="dataTables_wrapper form-inline" role="grid">
+    <div class="row">
+        @if (!Model.ListaProduto.IsNullOrEmpty())
+        {
+            <div class="col-md-12">
+                <table id="datatable2" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th colspan="6" align="center">
+                                Foram encontrados: @Model.PaginadorDados.QtdeTotalRegistros.ToString() registros
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Tipo</th>
+                            <th>Densidade</th>
+                            <th>Status</th>
+                            <th>País</th>
+                            <th style="text-align:center">Operações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var app in Model.ListaProduto)
+                        {
+                            string funcaoEdit = "raizenCoreJs.raizenCRUD.EditarRegistro('" + @app.ID.ToString() + "','" + Url.Action("Editar", "Produto") + "');";
+
+                        <tr class="gradeX">
+                            <td style="width: 35%; word-wrap: break-word">
+                                @app.Nome
+                            </td>
+                            <td style="width: 15%; word-wrap: break-word">
+                                @app.TipoProduto
+                            </td>
+                            <td style="width: 10%; word-wrap: break-word">
+                                @app.Densidade
+                            </td>
+                            <td style="width: 10%; word-wrap: break-word">
+                                @(app.Status ? "Ativo" : "Inativo")
+                            </td>
+                            <td style="width: 10%; word-wrap: break-word">
+                                @app.Pais
+                            </td>
+                            <td align="center" style="width: 15%;">
+                                <div class="btn-group center" style="float: none;">
+                                    <button class="btn btn-custom" type="button" title="Editar Produto" onclick="@Html.Raw(funcaoEdit)">
+                                        <i class="fa fa-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-custom" type="button" title="Remover" onclick="raizenCoreJs.raizenCRUD.ExcluirRegistro(@app.ID);">
+                                        <i class="fa fa-trash-o"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+    <div class="row">
+        @Html.Partial("_Paginador", Model)
+    </div>
+</div>
+
+<div id="divProdutos"></div>

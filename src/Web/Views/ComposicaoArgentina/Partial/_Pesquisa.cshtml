@@ -1,0 +1,373 @@
+﻿@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.UniCad.Model;
+@using Raizen.UniCad.Web.Util;
+
+@model Raizen.UniCad.Web.Models.ModelComposicao
+@{
+    IHtmlString mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    IHtmlString dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    IHtmlString contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+    bool isStatusEmAprovacao = @Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "ComposicaoArgentina" && p.NomeAcao == "Aprovar") != null;
+    int[] tabIndiceCrudEdicao = new int[2];
+    tabIndiceCrudEdicao[0] = 4;
+    tabIndiceCrudEdicao[1] = 5;
+}
+
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Composicao.js")"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        raizenCoreJs.raizenCRUD.urlPesquisa = '@Url.Action("Pesquisar", "ComposicaoArgentina")';
+        raizenCoreJs.raizenCRUD.urlNovo = '@Url.Action("Novo", "ComposicaoArgentina")';
+        raizenCoreJs.raizenCRUD.urlExcluir = '@Url.Action("ExcluirRegistro", "ComposicaoArgentina")';
+
+        RaizenCoreJs.prototype.Composicao.urlVisualizarDocumentos = '@Url.Action("VisualizarDocumentos", "ComposicaoArgentina")';
+        RaizenCoreJs.prototype.Composicao.urlSolicitarAprovacao = '@Url.Action("SolicitarArovacao", "ComposicaoArgentina")';
+        RaizenCoreJs.prototype.Composicao.urlReprovar = '@Url.Action("Reprovar", "ComposicaoArgentina")';
+        RaizenCoreJs.prototype.Composicao.urlBloquear = '@Url.Action("Bloquear", "ComposicaoArgentina")';
+        RaizenCoreJs.prototype.Composicao.urlExcluir = '@Url.Action("Excluir", "ComposicaoArgentina")';
+        RaizenCoreJs.prototype.Composicao.urlSalvarBloquear = '@Url.Action("SalvarBloquear", "ComposicaoArgentina")';
+
+        RaizenCoreJs.prototype.Composicao.urlAlterarSeta = '@Url.Action("AlterarSeta", "ComposicaoArgentina")';
+        RaizenCoreJs.prototype.Composicao.urlInativarCompartimento = '@Url.Action("InativarCompartimento", "ComposicaoArgentina")';
+        RaizenCoreJs.prototype.Composicao.urlAlterarSetaSalvar = '@Url.Action("AlterarSetaSalvar", "ComposicaoArgentina")';
+        RaizenCoreJs.prototype.Composicao.urlInativarCompartimentoSalvar = '@Url.Action("InativarCompartimentoSalvar", "ComposicaoArgentina")';
+        RaizenCoreJs.prototype.Composicao.urlVisualizarCapacidade = '@Url.Action("VisualizarCapacidade", "ComposicaoArgentina")';
+        RaizenCoreJs.prototype.Composicao.urlExportar = '@Url.Action("Exportar", "ComposicaoArgentina")';
+        RaizenCoreJs.prototype.Composicao.urlExcluirComposicao = '@Url.Action("ExcluirComposicao", "ComposicaoArgentina")';
+
+        RaizenCoreJs.prototype.Composicao.urlVerificarClientePermissao = '@Url.Action("VerificarClientePermissao", "ComposicaoArgentina")'
+        RaizenCoreJs.prototype.Composicao.urlExcluirPlaca= '@Url.Action("ExcluirPlaca", "ComposicaoArgentina")';
+
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        raizenCoreJs.raizenMensagens.ExibirMensagemOperacao();
+
+        RaizenCoreJs.prototype.Composicao._idPais = 2;
+
+        function ClienteAutoComplete(nomeCampo, url) {
+            $("#ClienteAuto").autocomplete({
+                minLength: 3,
+                source: function (request, response) {
+                    $.ajax({
+                        url: url,
+                        type: "POST", dataType: "json",
+                        data: { nome: request.term, empresa: $('#Filtro_IDEmpresa').val(), idPais: 2 },
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return { label: item.Name, value: item.Name, codigo: item.ID };
+                            }));
+                        }
+                    });
+                },
+                select: function (event, ui) {
+                    $("#" + nomeCampo).val(ui.item.codigo);
+                    $("#" + nomeCampo + "Nome").val(ui.item.label);
+                }
+            });
+        }
+        var url = '@Url.Action("ListarClientes", "ComposicaoArgentina")';
+        ClienteAutoComplete("Cliente", url);
+
+        function TranspAutoComplete(nomeCampo, url) {
+            $("#TransportadoraAuto").autocomplete({
+                minLength: 3,
+                source: function (request, response) {
+                    $.ajax({
+                        url: url,
+                        type: "POST", dataType: "json",
+                        data: { nome: request.term, empresa: $('#Filtro_IDEmpresa').val(), idPais: 2 },
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return { label: item.Name, value: item.Name, codigo: item.ID };
+                            }));
+                        }
+                    });
+                },
+                select: function (event, ui) {
+                    $("#" + nomeCampo).val(ui.item.codigo);
+                    $("#" + nomeCampo + "Nome").val(ui.item.label);
+                }
+            });
+        }
+        var url = '@Url.Action("ListarTransportadoras", "ComposicaoArgentina")';
+        TranspAutoComplete("Transportadora", url);
+
+    });
+</script>
+
+@*Parte de Filtros*@
+<form id="frmPesquisa" class="form-horizontal">
+    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUDEdit" })
+    @Html.HiddenFor(model => model.ChavePrimaria)
+    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUD" })
+    @Html.HiddenFor(model => model.OperacaoSecundaria, new { @Id = "IdOperacaoSecundariaCRUD" })
+
+    @Html.HiddenFor(model => model.PaginadorDados.PaginaAtual)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdePaginas)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdeItensPagina)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdeTotalRegistros)
+    @Html.HiddenFor(model => model.PaginadorDados.Status)
+    <input type="hidden" id="statusOriginalEmAprovacao" value="@isStatusEmAprovacao" />
+    <div class="row">
+        @Html.BootstrapTextBoxFor(model => model.Filtro.Placa, null, "Patente", null, new HtmlHelperOption() { colunas = "col-md-2" })
+
+        @if (Model != null && Model.Filtro != null && (Model.Filtro.IDEmpresaUsuario == null || Model.Filtro.IDEmpresaUsuario == 0 || Model.Filtro.IDEmpresaUsuario == 3))
+        {
+            @Html.BootstrapDropDownListFor(model => model.Filtro.IDEmpresa, new SelectList(GenericDelegate.ListarComplex<Empresa>(x => x.ID == (int)EnumEmpresa.Combustiveis), "ID", "NomeEs"), "Línea de Negocio", null, new HtmlHelperOption() { colunas = "col-md-2", argentina = true })
+        }
+        else
+        {
+            @Html.BootstrapDropDownListFor(model => model.Filtro.IDEmpresa, new SelectList(GenericDelegate.Listar<Empresa>(), "ID", "NomeEs"), "Línea de Negocio", null, new HtmlHelperOption() { colunas = "col-md-2", argentina = true }, true)
+            @Html.HiddenFor(model => model.Filtro.IDEmpresa)
+        }
+
+        @if (Model != null && Model.Filtro != null && (String.IsNullOrEmpty(Model.Filtro.OperacaoUsuario) || Model.Filtro.OperacaoUsuario == "Ambos"))
+        {
+            @Html.BootstrapDropDownListFor(model => model.Filtro.Operacao, new SelectList(GenericDelegate.CifFobOuAmbos(), "ID", "Nome"), "Operación", null, new HtmlHelperOption() { colunas = "col-md-2", argentina = true })
+        }
+        else
+        {
+            @Html.BootstrapDropDownListFor(model => model.Filtro.Operacao, new SelectList(GenericDelegate.CifFobOuAmbos(), "ID", "Nome"), "Operación", null, new HtmlHelperOption() { colunas = "col-md-2", argentina = true }, true)
+            @Html.HiddenFor(model => model.Filtro.Operacao)
+        }
+
+        @Html.BootstrapTextBoxFor(model => model.Filtro.Chamado, null, "Número de llamado", null, new HtmlHelperOption() { colunas = "col-md-3" })
+        @Html.BootstrapDropDownListFor(model => model.Filtro.IDTipoComposicao, new SelectList(GenericDelegate.ListarComplex<TipoComposicao>(x => x.IdPais == (int)EnumPais.Argentina), "ID", "Nome"), "Tipo de Composición", null, new HtmlHelperOption() { colunas = "col-md-3", argentina = true })
+    </div>
+    <div class="row">
+        @Html.BootstrapDropDownListFor(model => model.Filtro.IDStatus, new SelectList(GenericDelegate.ListarEnum<EnumStatusComposicaoArg>(), "Value", "Key"), "Status", null, new HtmlHelperOption() { colunas = "col-md-2", argentina = true })
+
+        @Html.BootstrapTextBox("ClienteAuto", null, "Cliente", new { id = "ClienteAuto", maxlength = 200, @onchange = "VerificarSeDeveLimpar();" }, new HtmlHelperOption { colunas = "col-md-3" }, @Model.Filtro.ClienteNome)
+        <input type="hidden" id="Cliente" name="Filtro.IDCliente" value="@Model.Filtro.IDCliente" />
+        <input type="hidden" id="ClienteNome" name="Filtro.ClienteNome" value="@Model.Filtro.ClienteNome" />
+
+        @Html.BootstrapTextBox("TransportadoraAuto", null, "Transportista", new { id = "TransportadoraAuto", maxlength = 200, @onchange = "VerificarSeDeveLimparTransp();" }, new HtmlHelperOption { colunas = "col-md-3" }, @Model.Filtro.TransportadoraNome)
+        <input type="hidden" id="Transportadora" name="Filtro.IDTransportadora" value="@Model.Filtro.IDTransportadora" />
+        <input type="hidden" id="TransportadoraNome" name="Filtro.TransportadoraNome" value="@Model.Filtro.TransportadoraNome" />
+
+        @Html.BootstrapDateBoxFor(model => model.Filtro.DataInicio, "Fecha de Inicio", null, new HtmlHelperOption() { colunas = "col-md-2" })
+        @Html.BootstrapDateBoxFor(model => model.Filtro.DataFim, "Fecha fim", null, new HtmlHelperOption() { colunas = "col-md-2" })
+    </div>
+
+
+    <div class="row" id="containerBotoes">
+        <div class="col-md-5">
+            <div class="form-group">
+                <label class="col-sm-5 control-label"></label>
+                <div class="col-sm-12">
+                    <div class="btn-group center" style="float: none;">
+                        <button class="btn btn-custom" type="button" tabindex="4" onclick="raizenCoreJs.raizenCRUD.RealizarPesquisa();">
+                            <i class="fa fa-search"></i> Buscar
+                        </button>
+                        <button class="btn btn-custom" type="button" tabindex="4" onclick="raizenCoreJs.Composicao.LimparFiltros();">
+                            <i class="fa fa-eraser"></i> Limpiar
+                        </button>
+                        @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "ComposicaoArgentina" && p.NomeAcao == "Adicionar") != null)
+                        {
+                            <button class="btn btn-custom" type="button" acaopermissao="add" tabindex="5" onclick="window.location = '@Url.Action("Editar", "ComposicaoArgentina")'">
+                                <i class="fa fa-plus-square-o"></i> Nuevo
+                            </button>
+                        }
+                        <button class="btn btn-custom" type="button" tabindex="1" onclick="raizenCoreJs.Composicao.Exportar();">
+                            <i class="fa fa-bar-chart"></i> Exportar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<div class="divide-1"></div>
+
+@*Resultado da Pesquisa*@
+
+<div id="datatable2_wrapper" class="dataTables_wrapper form-inline" role="grid">
+    <div class="row">
+        @if (!Model.ListaComposicao.IsNullOrEmpty())
+        {
+            string usuarioVisible = Model.Filtro.UsuarioExterno ? "display:none" : "";
+            <div class="col-md-12">
+                <table id="datatable2" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th colspan="13" align="center">
+                                Fueron encontrados: @Model.PaginadorDados.QtdeTotalRegistros.ToString() registros
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>Línea de Negocio</th>
+                            <th>Operación</th>
+                            <th>Tipo de Composición</th>
+                            <th>Categoría de Vehículo</th>
+                            <th>Patente 1</th>
+                            <th>Patente 2</th>
+                            <th>Patente 3</th>
+                            <th>Patente 4</th>
+                            <th>Status</th>
+                            <th style="@usuarioVisible">Usuario</th>
+                            <th>Fecha Actualización</th>
+                            <th>Nº llamado</th>
+                            <th style="text-align:center"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var app in Model.ListaComposicao)
+                        {
+                            string funcaoEdit = "window.location = '" + Url.Action("Editar/" + @app.ID, "ComposicaoArgentina") + "'";
+                            string funcaoAprovar = "window.location = '" + Url.Action("Aprovar/" + @app.ID, "ComposicaoArgentina") + "'";
+                            <tr class="gradeX">
+                                <td style="width: 10%; word-wrap: break-word">
+                                    @EnumExtensions.GetDescription((EnumEmpresaArg)app.IDEmpresa)
+                                </td>
+                                <td style="width: 10%; word-wrap: break-word">
+                                    @app.Operacao
+                                </td>
+                                <td style="width: 13%; word-wrap: break-word">
+                                    @app.TipoComposicao
+                                </td>
+                                <td style="width: 13%; word-wrap: break-word">
+                                    @app.CategoriaVeiculoEs
+                                </td>
+                                <td style="width: 5%; word-wrap: break-word">
+                                    @app.Placa1
+                                </td>
+                                <td style="width: 5%; word-wrap: break-word">
+                                    @app.Placa2
+                                </td>
+                                <td style="width: 5%; word-wrap: break-word">
+                                    @app.Placa3
+                                </td>
+                                <td style="width: 5%; word-wrap: break-word">
+                                    @app.Placa4
+                                </td>
+                                <td style="width: 10%; word-wrap: break-word">
+                                    <span class="span-status-bolinha" style="background-color: @StatusHelper.CorPorStaus((EnumStatusMotorista)app.IDStatus)"></span>
+                                    @EnumExtensions.GetDescription((EnumStatusComposicaoArg)app.IDStatus)
+                                </td>
+                                <td style="@usuarioVisible; width: 10%; word-wrap: break-word">
+                                    @app.UsuarioAlterouStatus
+                                </td>
+                                <td style="width: 13%; word-wrap: break-word">
+                                    @app.DataAtualizacao
+                                </td>
+                                <td style="width:10%; word-wrap: break-word">
+                                    @app.CodigoEasyQuery
+                                </td>
+                                <td align="center" style="width: 15%;">
+                                    <div class="btn-group dropdown pull-right" style="margin-bottom:10px">
+                                        <button class="btn btn-custom dropdown-toggle" data-toggle="dropdown">Acciones<span class="caret" style="margin-top: -4px;margin-left: 8px;"></span></button>
+                                        <ul class="dropdown-menu">
+                                            @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "ComposicaoArgentina" && p.NomeAcao == "InativarCompartimento") != null
+                                                && app.IDStatus == (int)EnumStatusComposicao.Aprovado && app.MultiCompartimento)
+                                            {
+                                                <li>
+                                                    <a class="btn btn-custom" title="Inativar Compartimento" onclick="raizenCoreJs.Composicao.InativarCompartimento(@app.ID)">
+                                                        <i class="fa fa-times-circle fa-fw"></i>Inactivar Compartimento
+                                                    </a>
+                                                </li>
+                                            }
+
+                                            @if (app.IDStatus == (int)EnumStatusComposicao.Aprovado && app.MultiSeta)
+                                            {
+                                                <li>
+                                                    <a class="btn btn-custom" title="Cambiar Flecha" onclick="raizenCoreJs.Composicao.AlterarSeta(@app.ID)">
+                                                        <i class="fa fa-arrows-h fa-fw"></i>Cambiar Flecha
+                                                    </a>
+                                                </li>
+                                            }
+                                            @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "ComposicaoArgentina" && p.NomeAcao == "Aprovar") != null
+                                                && app.IDStatus == (int)EnumStatusComposicao.EmAprovacao || (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "ComposicaoArgentina" && p.NomeAcao == "IgnorarLeci") != null && app.IDStatus == (int)EnumStatusComposicao.AguardandoAtualizacaoSAP))
+                                            {
+                                                <li>
+                                                    <a class="btn btn-custom" title="Aprobar" onclick="@Html.Raw(funcaoAprovar)">
+                                                        <i class="fa fa-check fa-fw"></i>Aprobar/Desaprobar
+                                                    </a>
+                                                </li>
+                                            }
+                                            @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "ComposicaoArgentina" && p.NomeAcao == "Ver Capacidade Seta") != null)
+                                            {
+                                                <li>
+                                                    <a class="btn btn-custom" title="Flechas/Capacidad del Compartimento" onclick="raizenCoreJs.Composicao.VisualizarCapacidade(@app.ID)">
+                                                        <i class="fa fa-window-maximize fa-fw"></i>Flechas/Capacidad del Compartimento
+                                                    </a>
+                                                </li>
+                                            }
+                                            @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "ComposicaoArgentina" && p.NomeAcao == "Ver Documento") != null)
+                                            {
+                                                <li>
+                                                    <a class="btn btn-custom" title="Fecha de vencimiento del Documento" onclick="raizenCoreJs.Composicao.VisualizarDocumentos(@app.ID)">
+                                                        <i class="fa fa-search fa-fw"></i>Fecha de Vencimiento
+                                                    </a>
+                                                </li>
+                                            }
+                                            @if ((app.IDStatus == (int)EnumStatusComposicao.Reprovado || app.IDStatus == (int)EnumStatusComposicao.Aprovado) && Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "ComposicaoArgentina" && p.NomeAcao == "Editar") != null)
+                                            {
+                                                <li>
+                                                    <a class="btn btn-custom" title="Editar Composición" onclick="@Html.Raw(funcaoEdit)">
+                                                        <i class="fa fa-pencil fa-fw"></i>Editar
+                                                    </a>
+                                                </li>
+                                            }
+                                            @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "ComposicaoArgentina" && p.NomeAcao == "Bloquear" && (app.IDStatus == (int)EnumStatusComposicao.Aprovado || app.IDStatus == (int)EnumStatusComposicao.Bloqueado)) != null)
+                                            {
+                                                <li>
+                                                    <a class="btn btn-custom" title="Bloquear/Desbloquear" onclick="raizenCoreJs.Composicao.Bloquear(@app.ID)">
+                                                        <i class="fa fa-lock fa-fw"></i>Bloquear/Desbloquear
+                                                    </a>
+                                                </li>
+                                            }
+
+                                            @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "ComposicaoArgentina" && p.TagAcao == "delete") != null)
+                                            {
+                                                <li>
+                                                    <a class="btn btn-custom" title="Eliminar" onclick="raizenCoreJs.Composicao.ExcluirComposicaoConfirm(@app.ID, true, 2);">
+                                                        <i class="fa fa-trash-o fa-fw"></i>Eliminar Composición
+                                                    </a>
+                                                </li>
+                                            }
+                                            @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "ComposicaoArgentina" && p.TagAcao == "delete") != null)
+                                            {
+                                                <li>
+                                                    <a class="btn btn-custom" title="Eliminar" onclick="raizenCoreJs.Composicao.ExcluirComposicaoConfirm(@app.ID, false, 2);">
+                                                        <i class="fa fa-trash-o fa-fw"></i>Eliminar Composición y Placas
+                                                    </a>
+                                                </li>
+                                            }
+                                            @if (app.IDStatus != (int)EnumStatusComposicao.EmAprovacao && app.IDStatus != (int)EnumStatusComposicao.AguardandoAtualizacaoSAP && Model.UsuarioPerfil == EnumPerfil.CLIENTE_ACS_ARGENTINA && app.Operacao == "FOB")
+                                            {
+                                                <li>
+                                                    <a class="btn btn-custom" title="Remover" onclick="raizenCoreJs.Composicao.ExcluirPlacaConfirm(@app.ID);">
+                                                        <i class="fa fa-trash-o fa-fw"></i>Eliminar Patente
+                                                    </a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+    <div class="row">
+        @Html.Partial("_Paginador", Model)
+    </div>
+</div>
+
+<div id="divComposicaos"></div>
+<div id="divModal"></div>
+@{Html.RenderPartial("_Confirm", new Raizen.Framework.Web.MVC.Models.ModalConfirm() { MessageConfirm = "Deseja realmente reprovar essa solicitação de composição?", MessageYes = "Sim", MessageNot = "Não" });}
+@{Html.RenderPartial("~/Views/ComposicaoArgentina/Partial/_ConfirmExclusaoPlaca.cshtml", new Raizen.Framework.Web.MVC.Models.ModalConfirm() { MessageConfirm = "", MessageYes = "Si", MessageNot = "No" });}
+
+<script>
+    $(document).ready(function () {
+        $(".hidden-inline-mobile").replaceWith("<span> Gestión de Composición </span>");
+    });
+</script>

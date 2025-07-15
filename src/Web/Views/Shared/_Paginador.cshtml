@@ -1,0 +1,167 @@
+﻿@using Raizen.Framework.Models
+@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Models
+@model Raizen.Framework.Web.MVC.Bases.ModelMVC
+@{
+    var PaginaAtual = Model.PaginadorDados.PaginaAtual;
+    var QtdePaginas = Model.PaginadorDados.QtdePaginas;
+    var QtdeItensPagina = Model.PaginadorDados.QtdeItensPagina;
+    var QtdeTotalRegistros = Model.PaginadorDados.QtdeTotalRegistros;
+    var Status = Model.PaginadorDados.Status;
+}
+
+<script language="javascript" type="text/javascript">
+    $(document).ready(function () {
+        raizenCoreJs.raizenPaginador.PaginaAtual = "@PaginaAtual";
+        raizenCoreJs.raizenPaginador.QtdePaginas = "@QtdePaginas";
+        raizenCoreJs.raizenPaginador.QtdeItensPagina = "@QtdeItensPagina";
+        raizenCoreJs.raizenPaginador.QtdeTotalRegistros = "@QtdeTotalRegistros";
+        raizenCoreJs.raizenPaginador.Status = "@Status";
+    });
+</script>
+<div class="pull-right">
+    <div class="col-md-12">
+        <div class="dataTables_paginate paging_bs_full" id="paginador">
+            <ul class="pagination">
+                <li>
+                    <a tabindex="0" class="paginate_button first" id="datatable1_first" onclick="raizenCoreJs.raizenPaginador.PrimeiraPagina();"><<</a>
+                </li>
+                <li>
+                    <a tabindex="0" class="paginate_button previous" id="datatable1_previous" onclick="raizenCoreJs.raizenPaginador.PaginaAnterior();"><</a>
+                </li>
+                @if (Model.PaginadorDados.PaginaAtual > 2)
+                {
+                    <li>
+                        <a tabindex="0" onclick="raizenCoreJs.raizenPaginador.SelecaoMaunalPagina(@(Model.PaginadorDados.PaginaAtual - 2));">@(Model.PaginadorDados.PaginaAtual - 2)</a>
+                    </li>
+                }
+                @if (Model.PaginadorDados.PaginaAtual > 1)
+                {
+                    <li>
+                        <a tabindex="0" onclick="raizenCoreJs.raizenPaginador.SelecaoMaunalPagina(@(Model.PaginadorDados.PaginaAtual - 1));">@(Model.PaginadorDados.PaginaAtual - 1)</a>
+                    </li>
+                }
+                <li class="active">
+                    <a tabindex="0">@Model.PaginadorDados.PaginaAtual</a>
+                </li>
+                @if (Model.PaginadorDados.PaginaAtual < Model.PaginadorDados.QtdePaginas)
+                {
+                    <li>
+                        <a tabindex="0" onclick="raizenCoreJs.raizenPaginador.SelecaoMaunalPagina(@(Model.PaginadorDados.PaginaAtual + 1));">@(Model.PaginadorDados.PaginaAtual + 1)</a>
+                    </li>
+                }
+                @if ((Model.PaginadorDados.PaginaAtual + 1) < Model.PaginadorDados.QtdePaginas)
+                {
+                    <li>
+                        <a tabindex="0" onclick="raizenCoreJs.raizenPaginador.SelecaoMaunalPagina(@(Model.PaginadorDados.PaginaAtual + 2));">@(Model.PaginadorDados.PaginaAtual + 2)</a>
+                    </li>
+                }
+                <li>
+                    <a tabindex="0" class="paginate_button next" id="datatable1_next" onclick="raizenCoreJs.raizenPaginador.ProximaPagina();">></a>
+                </li>
+                <li>
+                    <a tabindex="0" class="paginate_button last" id="datatable1_last" onclick="raizenCoreJs.raizenPaginador.UltimaPagina();">>></a>
+                </li>
+                <li>
+                    @Html.CustomDropDownListFor(model => model.PaginadorDados.QtdeItensPagina,
+                                                                new SelectList(Model.PaginadorDados.ConjuntoPaginas, "Valor", "Nome"),
+                                                                new { @class = "paginate_button botaoPaginador", @onchange = "raizenCoreJs.raizenPaginador.SelecaoConjuntoPaginas($(this).val());", @Style = "Width:70px;" },
+                                                                new EstruturaControle()
+                                                                {
+                                                                    TabIndex = 90,
+                                                                    Validar = false,
+                                                                    CarregarDefault = false,
+                                                                    ValorDefault = ""
+                                                                })
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+@*<div class="dataTables_header clearfix">
+        <div class="col-sm-4">
+        </div>
+        <div class="col-sm-8">
+            <div class="DTTT_container">
+                <table id="paginador">
+                    <tr>
+                        <td>
+                            <button type="button" class="btn btn-custom" onclick="raizenCoreJs.raizenPaginador.PrimeiraPagina();">
+                                &laquo;
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-custom" onclick="raizenCoreJs.raizenPaginador.PaginaAnterior();">
+                                &lt;
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-default" type="button">
+                                Pág
+                            </button>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control" id="input_PaginaManual" style="max-width:100px;min-width:35px" value="@Model.PaginadorDados.PaginaAtual" onchange="raizenCoreJs.raizenPaginador.SelecaoMaunalPagina($(this).val());" />
+                        </td>
+                        <td>
+                            <button class="btn btn-default" type="button">
+                                de
+                            </button>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control" disabled style="max-width:100px; min-width:35px" value="@Model.PaginadorDados.QtdePaginas" />
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-custom" onclick="raizenCoreJs.raizenPaginador.ProximaPagina();">
+                                &gt;
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-custom" onclick="raizenCoreJs.raizenPaginador.UltimaPagina();">
+                                &raquo;
+                            </button>
+                        </td>
+                        <td>
+                            <div class="input-group">
+                                <div class="input-group-btn">
+                                    @Html.CustomDropDownListFor(model => model.PaginadorDados.QtdeItensPagina,
+                                                                    new SelectList(Model.PaginadorDados.ConjuntoPaginas, "Valor", "Nome"),
+                                                                    new { @onchange = "raizenCoreJs.raizenPaginador.SelecaoConjuntoPaginas($(this).val());", @Style = "min-Width:60px" },
+                                                                    new EstruturaControle()
+                                                                    {
+                                                                        TabIndex = 90,
+                                                                        Validar = false,
+                                                                        CarregarDefault = false,
+                                                                        ValorDefault = ""
+                                                                    })
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>*@
+
+<style>
+    .botaoPaginador {
+        height: 32px;
+        padding: 6px 12px;
+        font-size: 14px;
+        line-height: 1.428571429;
+        color: #555555;
+        vertical-align: middle;
+        background-color: #ffffff;
+        background-image: none;
+        border: 1px solid #cccccc;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+        -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+        transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+        Width: 70px;
+    }
+
+    .pagination > li > a, .pagination > li > span {
+        cursor: pointer;
+    }
+</style>

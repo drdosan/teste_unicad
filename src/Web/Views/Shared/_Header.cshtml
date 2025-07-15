@@ -1,0 +1,54 @@
+﻿@model Raizen.Framework.Web.MVC.Bases.ModelMVC
+
+<!-- HEADER -->
+<header class="navbar clearfix" id="header">
+
+    <div class="container">
+        <div class="navbar-brand" id="toogleBarraEsquerdaMenu">
+            <!-- COMPANY LOGO -->
+            <a href="@Url.Action("Index", "Home")">
+                <img src="@Url.Content("~/Content/img/logo/logo_" + ViewBag.Thema + ".png")" alt="Raízen" class="img-responsive" />
+            </a>
+            <!-- /COMPANY LOGO -->
+
+            <!-- TEAM STATUS FOR MOBILE -->
+            @if (Model != null && Model.ConfiguracaoLayout.UtilizaStatusTime)
+            {
+                <div class="visible-xs">
+                    <a href="#" class="team-status-toggle switcher btn dropdown-toggle">
+                        <i class="fa fa-users"></i>
+                    </a>
+                </div>
+            }
+            <!-- /TEAM STATUS FOR MOBILE -->
+
+            <!-- SIDEBAR COLLAPSE BUTTON -->
+            @if (Model != null && Model.ConfiguracaoLayout.UtilizaMenuEsquerdo)
+            {
+                <div id="sidebar-collapse" class="sidebar-collapse btn">
+                    <i class="fa fa-bars"
+                       data-icon1="fa fa-bars"
+                       data-icon2="fa fa-bars">
+                    </i>
+                </div>
+            }
+            <!-- /SIDEBAR COLLAPSE BUTTON -->
+        </div>
+
+        @if (Model != null && Model.ConfiguracaoLayout.UtilizaStatusTime)
+        {
+            @Html.Partial("_TopMenu")
+        }
+
+        <!-- BEGIN TOP NAVIGATION MENU -->
+        <ul class="nav navbar-nav pull-right">
+
+            @if (Model != null && Model.ConfiguracaoLayout.UtilizaPerfilUsuario)
+            {
+                @Html.Partial("_Usuario")
+            }
+        </ul>
+        <!-- END TOP NAVIGATION MENU -->
+    </div>
+</header>
+<!--/HEADER -->

@@ -1,0 +1,17 @@
+﻿@model Raizen.UniCad.Web.Models.ModelImpressaoCracha
+@{
+    ViewBag.Title = "Impresión de Placa";
+    ViewBag.TituloModulo = "Impresión de Placa";
+    Layout = "~/Views/Shared/_Panel.cshtml";
+
+    var tabIndexToolBoxCrudPesquisa = new int[2];
+    tabIndexToolBoxCrudPesquisa[0] = 3;
+    tabIndexToolBoxCrudPesquisa[1] = 4;
+
+}
+
+@section pesquisa
+    {
+    @Html.Partial("_Pesquisa", Model)
+}
+

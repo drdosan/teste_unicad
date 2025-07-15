@@ -1,0 +1,92 @@
+﻿@using Raizen.Framework.Models
+@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Models
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.Framework.Web.MVC.Extensions;
+@using Raizen.UniCad.Model;
+@using Newtonsoft.Json;
+
+@model Raizen.UniCad.Web.Models.ModelProduto
+@{
+    var urlValidacao = @Url.Action("ValidarObjetos", "Produto");
+
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+
+}
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Produto.js")"></script>
+
+<script type="text/javascript">
+    var tiposEdicao = @Html.Raw(JsonConvert.SerializeObject(GenericDelegate.Listar<TipoProduto>().OrderBy(p => p.ID)));
+    $(document).ready(function () {
+
+        raizenCoreJs.raizenCRUD.urlSalvar = '@Url.Action("Salvar", "Produto")';
+
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        raizenCoreJs.raizenMensagens.ExibirMensagemOperacao();
+        raizenCoreJs.raizenHelpers.urlValidacao = "@urlValidacao";
+    });
+
+   function FiltrarTipoPorPaisEdicao(pais) {
+
+        var dpTipos = $('#dpTiposEdicao');
+        var selectedIndex = pais.options[pais.selectedIndex].value;
+
+        dpTipos.empty();
+        dpTipos.append('<option value=0>(Selecione)</option>');
+        var tiposFilter = null;
+
+        if (selectedIndex == 0)
+            tiposFilter = tipos;
+        else
+            tiposFilter = tipos.filter(t => t.Pais == selectedIndex);
+
+        tiposFilter.forEach(tipo => dpTipos.append('<option value=' + tipo.ID + '>' + tipo.Nome + '</option>'));
+
+        dpTipos.selectedIndex = 0;
+    };
+
+</script>
+
+<div class="box border raizen" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event);" id="containerEdicao">
+    <div class="box-title">
+        <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Edição de Produto</span></h4>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-12">
+                <form id="frmEdicao" class="form-horizontal">
+                    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUDEdit" })
+                    @Html.HiddenFor(model => model.ChavePrimaria)
+                    <div class="row">
+                        @Html.BootstrapDropDownListFor(model => model.Filtro.Pais, new SelectList(GenericDelegate.ListarPais(), "Value", "Key"), "País", new { @onchange = "FiltrarTipoPorPaisEdicao(this);" }, new HtmlHelperOption() { colunas = "col-md-3" })
+                        @Html.BootstrapTextBoxFor(model => model.Produto.Nome, null, "Nome", new { maxlength = 1000 }, new HtmlHelperOption() { colunas = "col-md-9" })
+                    </div>
+
+                    <div class="row" id="divCampos">
+                        @*@Html.BootstrapTextBoxFor(model => model.Produto.Codigo, null, "Código", new { maxlength = 200 }, new HtmlHelperOption() { colunas = "col-md-3" }*@
+                        @Html.BootstrapCurrencyBoxFor(model => model.Produto.Densidade, "Densidade", new { maxlength = 9 }, new HtmlHelperOption() { colunas = "col-md-3" }, "{0:#,0.0000}", 4)
+                        @Html.BootstrapDropDownListFor(model => model.Filtro.IDTipoProduto, new SelectList(GenericDelegate.ListarTipoProduto((bool)(ViewData["ListarDados"] ?? false), (List<int>) (ViewData["IDTipos"] ?? null), (bool) (ViewData["ListarTodos"] ?? false)), "Value", "Key") , "Tipo de Produto", new { id = "dpTiposEdicao" }, new HtmlHelperOption() { colunas = "col-md-3" })
+                        @Html.BootstrapDropDownListFor(model => model.Produto.Status, new SelectList(GenericDelegate.AtivoInativo(), "Flag", "Nome"), "Status", new { @onchange = "raizenCoreJs.Usuario.OcultarCamposPerfilOperacao();" }, new HtmlHelperOption() { colunas = "col-md-3" })
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        $("#Produto_Densidade").unbind(".maskMoney");
+        $("#Produto_Densidade").maskMoney({
+            showSymbol: false,
+            symbol: "",
+            decimal: ",",
+            thousands: ".",
+            allowNegative: true,
+            allowZero: true,
+            precision: $("input[data-currency-field]").data('currency-precision') || 4
+        });
+    </script>
+</div>

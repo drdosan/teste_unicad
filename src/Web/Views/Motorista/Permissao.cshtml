@@ -1,0 +1,95 @@
+﻿@using Raizen.Framework.Models
+@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Models
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.Framework.Web.MVC.Extensions;
+@using Raizen.UniCad.Model;
+
+@model Raizen.UniCad.Web.Models.ModelMotorista
+<style>
+    .tab-pane {
+        border-left: 1px solid silver;
+        border-bottom: 1px solid silver;
+        border-right: 1px solid silver;
+        border-radius: 0px 0px 5px 5px;
+        padding: 30px;
+        margin-bottom: 20px;
+    }
+
+    .invisivel {
+        display: none;
+    }
+
+    .roxoRaizen {
+        background-color: #6f376c !important;
+    }
+
+    .modal-dialog {
+        max-width: 90% !important;
+    }
+</style>
+@{
+
+    var urlValidacao = @Url.Action("ValidarObjetos", "Motorista");
+
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+
+}
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        raizenCoreJs.raizenHelpers.urlValidacao = "@urlValidacao";
+        RaizenCoreJs.prototype.Motorista.urlSalvarPermissoes = '@Url.Action("SalvarPermissoes", "Motorista")';
+        RaizenCoreJs.prototype.Motorista.urlAdicionarCliente = '@Url.Action("AdicionarCliente", "Motorista")';
+        RaizenCoreJs.prototype.Motorista.urlSolicitar = '@Url.Action("Editar", "Motorista")';
+    });
+
+</script>
+<div class="box border raizen" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event);" id="containerEdicaoMotorista">
+    <div class="box-title">
+        <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Permissões</span></h4>
+    </div>
+    <div class="box-body" style="max-height:300px; overflow-x:hidden; overflow-y:auto; margin-top:10px;">
+        <div class="row">
+            <div class="col-md-12">
+                <form id="frmEdicao" class="form-horizontal frmEdicaoPlaca">
+                    @Html.HiddenFor(model => model.ChavePrimaria)
+                    @Html.HiddenFor(model => model.Motorista.IDMotorista)
+                    @Html.HiddenFor(model => model.Motorista.Operacao)
+                    @if (Model.Motorista.Operacao == "FOB")
+                    {
+                        <div class="col-md-6">
+                            @{Html.RenderPartial("_Cliente", Model);}
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            @Html.BootstrapDropDownListFor(model => model.Motorista.IDTransportadora, new SelectList(TransportadoraDelegate.Listar("CIF", Model.LinhaNegocio, (int)EnumPais.Brasil), "ID", "RazaoSocial"), "Transportadora", new { @class = "manydata", title = "Digite a transportadora responsável pelo cadastro" }, new HtmlHelperOption() { colunas = "col-md-4" })
+                        </div>
+                    }
+
+                    <div class="row">
+                        @Html.BootstrapTextAreaFor(model => Model.Motorista.Observacao, "Observação", new { maxlength = 1000, style = "height:120px;" }, new HtmlHelperOption() { colunas = "col-md-6" })
+                    </div>
+                    <div class="row" style="text-align:center">
+                        <div class="col-md-12">
+                            <button class="btn btn-custom" id="btnCrudSalvar" type="button" tabindex="1" onclick="raizenCoreJs.Motorista.SalvarPermissao()">
+                                <i class="fa fa-save"></i> Salvar
+                            </button>
+                            <button class="btn btn-custom voltar" type="button" tabindex="2" onclick="$('#modalcontainerEdicao').modal('hide');">
+                                <i class="fa fa-long-arrow-left"></i> Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

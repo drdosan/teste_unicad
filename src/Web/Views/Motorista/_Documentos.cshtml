@@ -1,0 +1,42 @@
+﻿@model List<Raizen.UniCad.Model.View.MotoristaDocumentoView>
+@if (Model == null)
+{
+    <div id="linhaDocumentos" class="col-md-12"><h2>Selecione uma operação para exibir os documentos necessário.</h2></div>
+}
+@if (Model != null)
+{
+    using (Html.BootstrapCollapsiblePanel("Documentos", "documentosPanel", false, "fa fa-arrows-h", null, new { style = "max-height:600px; overflow-x:hidden; overflow-y:auto; margin-top:10px; " }))
+    {
+        string operation = (this.TempData.ContainsKey("Operacao") ? this.TempData["Operacao"].ToString() : string.Empty) ;
+        string hide = operation == "Insert" ? "display: none;" : "";
+
+        <table id="docTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+            <thead>
+                <tr class="table-raizen">
+                    <th style="word-wrap: break-word; width:6%">
+                        Documento
+                    </th>
+                    <th style="word-wrap: break-word; width:40%">
+                        Descrição
+                    </th>
+                    <th style="word-wrap: break-word; width:6%">
+                        Obrigatório
+                    </th>
+                    <th style="@hide word-wrap: break-word; width:20%">
+                        Data Vencimento
+                    </th>
+                    <th style="word-wrap: break-word; width:28%">
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model.OrderByDescending(d => (d.Anexo ?? string.Empty).Split('_').First()))
+                {
+                    Html.RenderPartial("_ItemAnexo", item, new ViewDataDictionary { { "Operacao", operation } });
+                }
+
+            </tbody>
+        </table>
+    }
+}

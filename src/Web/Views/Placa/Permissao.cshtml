@@ -1,0 +1,99 @@
+﻿@using Raizen.Framework.Models
+@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Models
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.Framework.Web.MVC.Extensions;
+@using Raizen.UniCad.Model;
+
+@model Raizen.UniCad.Web.Models.ModelPlaca
+<style>
+    .tab-pane {
+        border-left: 1px solid silver;
+        border-bottom: 1px solid silver;
+        border-right: 1px solid silver;
+        border-radius: 0px 0px 5px 5px;
+        padding: 30px;
+        margin-bottom: 20px;
+    }
+
+    .invisivel {
+        display: none;
+    }
+
+    .roxoRaizen {
+        background-color: #6f376c !important;
+    }
+
+    .modal-dialog {
+        max-width: 90% !important;
+    }
+</style>
+
+@if (Model.Placa.ID > 0)
+{
+    <script>
+        $(document).ready(function () {
+            var placaNova = '@Model.Placa.PlacaVeiculo';
+            var placaNovaId = '@Model.Placa.ID';
+
+            if($('#placaAdicionar').val() != undefined && $('#placaAdicionar').val() != '')
+            {
+                $('#Composicao_Placa'+$('#placaAdicionar').val()).val(placaNova);
+                $('#Composicao_IDPlaca'+$('#placaAdicionar').val()).val(placaNovaId);
+                raizenCoreJs.Composicao.placaChange('#Composicao_Placa'+$('#placaAdicionar').val(), $('#placaAdicionar').val());
+            }
+
+        });
+    </script>
+}
+
+@{
+
+    var urlValidacao = @Url.Action("ValidarObjetos", "Placa");
+
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+
+}
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Placa.js")"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        raizenCoreJs.raizenCRUD.urlSalvar = '@Url.Action("Salvar", "Placa")';
+
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        //raizenCoreJs.raizenMensagens.ExibirMensagemOperacao();
+        raizenCoreJs.raizenHelpers.urlValidacao = "@urlValidacao";
+
+        RaizenCoreJs.prototype.Placa.urlAdicionarCliente = '@Url.Action("AdicionarCliente", "Placa")';
+        RaizenCoreJs.prototype.Placa.urlAdicionarSeta = '@Url.Action("AdicionarSeta", "Placa")';
+        RaizenCoreJs.prototype.Placa.urlSalvar = '@Url.Action("Salvar", "Placa")';
+        RaizenCoreJs.prototype.Placa.urlListarDocumentos = '@Url.Action("ListarDocumentos", "Placa")';
+    });
+
+</script>
+<div class="box border raizen" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event);" id="containerEdicaoPlaca">
+    <div class="box-title">
+        <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Permissões</span></h4>
+    </div>
+    <div class="box-body" style="max-height:300px; overflow-x:hidden; overflow-y:auto; margin-top:10px;">
+        <div class="row">
+            <div class="col-md-12">
+                <form id="frmEdicao" class="form-horizontal frmEdicaoPlaca">
+                    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUDEdit" })
+                    @Html.HiddenFor(model => model.Placa.SomenteLiberacaoAcesso)
+                    @Html.HiddenFor(model => model.ChavePrimaria)
+                    @Html.HiddenFor(model => model.IdPais, new { @Value = 1 })
+
+                    @{ Html.RenderPartial("_Permissao", Model);}
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

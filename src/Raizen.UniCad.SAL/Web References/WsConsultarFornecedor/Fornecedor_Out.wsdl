@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:p2="urn:minhati.com.br/portalunicad/fornecedor" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:p1="urn:minhati.com.br/v2/portalunicad/fornecedor" name="Fornecedor_Out" targetNamespace="urn:minhati.com.br/v2/portalunicad/fornecedor" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:documentation />
+  <wsp:UsingPolicy wsdl:required="true" />
+  <wsp:Policy wsu:Id="OP_Consultar_Sync" />
+  <wsdl:types>
+    <xsd:schema xmlns="urn:minhati.com.br/portalunicad/fornecedor" targetNamespace="urn:minhati.com.br/portalunicad/fornecedor" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:element name="ConsultarRequest" type="p2:ConsultarRequest" />
+      <xsd:element name="ConsultarResponse" type="p2:ConsultarResponse" />
+      <xsd:element name="ConsultarFault">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="standard" type="p2:ExchangeFaultData" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="ConsultarRequest">
+        <xsd:annotation>
+          <xsd:appinfo source="http://sap.com/xi/VersionID">41af9de1ef7f11e988150000006722ee</xsd:appinfo>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element name="Ambiente" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo source="http://sap.com/xi/TextID">41457e9def7f11e9994ab88584fcc7fe</xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element minOccurs="0" name="Idioma" type="xsd:string" />
+          <xsd:element name="Data" type="xsd:string">
+            <xsd:annotation>
+              <xsd:appinfo source="http://sap.com/xi/TextID">0081750975ef11e7a28a1c39470d49f8</xsd:appinfo>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element minOccurs="0" name="GpContas">
+            <xsd:annotation>
+              <xsd:appinfo source="http://sap.com/xi/TextID">0081750a75ef11e7882d1c39470d49f8</xsd:appinfo>
+            </xsd:annotation>
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element minOccurs="0" maxOccurs="unbounded" name="item">
+                  <xsd:annotation>
+                    <xsd:appinfo source="http://sap.com/xi/TextID">b4b8bbf3aeb311e7b26edc5360116e1d</xsd:appinfo>
+                  </xsd:annotation>
+                  <xsd:complexType>
+                    <xsd:sequence>
+                      <xsd:element name="GpConta" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">b4b8bbf2aeb311e7aaf7dc5360116e1d</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                    </xsd:sequence>
+                  </xsd:complexType>
+                </xsd:element>
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element minOccurs="0" name="Cnpjs">
+            <xsd:annotation>
+              <xsd:appinfo source="http://sap.com/xi/TextID">0081750b75ef11e7c2ad1c39470d49f8</xsd:appinfo>
+            </xsd:annotation>
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element minOccurs="0" maxOccurs="unbounded" name="item">
+                  <xsd:annotation>
+                    <xsd:appinfo source="http://sap.com/xi/TextID">b4b8bbf5aeb311e7cee8dc5360116e1d</xsd:appinfo>
+                  </xsd:annotation>
+                  <xsd:complexType>
+                    <xsd:sequence>
+                      <xsd:element name="Cnpj" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">b4b8bbf4aeb311e783b5dc5360116e1d</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                    </xsd:sequence>
+                  </xsd:complexType>
+                </xsd:element>
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element minOccurs="0" name="Cpfs">
+            <xsd:annotation>
+              <xsd:appinfo source="http://sap.com/xi/TextID">0081908975ef11e7b83f1c39470d49f8</xsd:appinfo>
+            </xsd:annotation>
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element minOccurs="0" maxOccurs="unbounded" name="item">
+                  <xsd:annotation>
+                    <xsd:appinfo source="http://sap.com/xi/TextID">b4b8bbf7aeb311e79619dc5360116e1d</xsd:appinfo>
+                  </xsd:annotation>
+                  <xsd:complexType>
+                    <xsd:sequence>
+                      <xsd:element name="Cpf" type="xsd:string">
+                        <xsd:annotation>
+                          <xsd:appinfo source="http://sap.com/xi/TextID">b4b8bbf6aeb311e7be04dc5360116e1d</xsd:appinfo>
+                        </xsd:annotation>
+                      </xsd:element>
+                    </xsd:sequence>
+                  </xsd:complexType>
+                </xsd:element>
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ExchangeLogData">
+        <xsd:annotation>
+          <xsd:appinfo source="http://sap.com/xi/VersionID">cf07761c75ed11e7cbc8000000322166</xsd:appinfo>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="severity" type="xsd:string" />
+          <xsd:element name="text" type="xsd:string" />
+          <xsd:element minOccurs="0" name="url" type="xsd:string" />
+          <xsd:element minOccurs="0" name="id" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ConsultarResponse">
+        <xsd:annotation>
+          <xsd:appinfo source="http://sap.com/xi/VersionID">ee5e7f3a75ed11e797c3000000322166</xsd:appinfo>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="Fornecedor">
+            <xsd:annotation>
+              <xsd:appinfo source="http://sap.com/xi/TextID">0501854d75ef11e7bb6f1c39470d49f8</xsd:appinfo>
+            </xsd:annotation>
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element minOccurs="0" name="NoFornecedor">
+                  <xsd:annotation>
+                    <xsd:appinfo source="http://sap.com/xi/TextID">0501500075ef11e7980f1c39470d49f8</xsd:appinfo>
+                    <xsd:documentation>Account Number of Vendor or Creditor</xsd:documentation>
+                  </xsd:annotation>
+                  <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                      <xsd:maxLength value="10" />
+                    </xsd:restriction>
+                  </xsd:simpleType>
+                </xsd:element>
+                <xsd:element minOccurs="0" name="Nome">
+                  <xsd:annotation>
+                    <xsd:appinfo source="http://sap.com/xi/TextID">0501854875ef11e7a34f1c39470d49f8</xsd:appinfo>
+                    <xsd:documentation>Name 1</xsd:documentation>
+                  </xsd:annotation>
+                  <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                      <xsd:maxLength value="35" />
+                    </xsd:restriction>
+                  </xsd:simpleType>
+                </xsd:element>
+                <xsd:element minOccurs="0" name="Cnpj">
+                  <xsd:annotation>
+                    <xsd:appinfo source="http://sap.com/xi/TextID">0501854975ef11e79a3f1c39470d49f8</xsd:appinfo>
+                    <xsd:documentation>Tax Number 1</xsd:documentation>
+                  </xsd:annotation>
+                  <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                      <xsd:maxLength value="16" />
+                    </xsd:restriction>
+                  </xsd:simpleType>
+                </xsd:element>
+                <xsd:element minOccurs="0" name="Cpf">
+                  <xsd:annotation>
+                    <xsd:appinfo source="http://sap.com/xi/TextID">0501854a75ef11e7be511c39470d49f8</xsd:appinfo>
+                    <xsd:documentation>Tax Number 2</xsd:documentation>
+                  </xsd:annotation>
+                  <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                      <xsd:maxLength value="11" />
+                    </xsd:restriction>
+                  </xsd:simpleType>
+                </xsd:element>
+                <xsd:element minOccurs="0" name="GpConta">
+                  <xsd:annotation>
+                    <xsd:appinfo source="http://sap.com/xi/TextID">0501854b75ef11e7b4c51c39470d49f8</xsd:appinfo>
+                    <xsd:documentation>Vendor account group</xsd:documentation>
+                  </xsd:annotation>
+                  <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                      <xsd:maxLength value="4" />
+                    </xsd:restriction>
+                  </xsd:simpleType>
+                </xsd:element>
+                <xsd:element minOccurs="0" name="Deletado">
+                  <xsd:annotation>
+                    <xsd:appinfo source="http://sap.com/xi/TextID">0501854c75ef11e7b0f51c39470d49f8</xsd:appinfo>
+                    <xsd:documentation>Deletion Indicator</xsd:documentation>
+                  </xsd:annotation>
+                  <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                      <xsd:maxLength value="1" />
+                    </xsd:restriction>
+                  </xsd:simpleType>
+                </xsd:element>
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ExchangeFaultData">
+        <xsd:annotation>
+          <xsd:appinfo source="http://sap.com/xi/VersionID">ceda052175ed11e7b5b1000000322166</xsd:appinfo>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element name="faultText" type="xsd:string" />
+          <xsd:element minOccurs="0" name="faultUrl" type="xsd:string" />
+          <xsd:element minOccurs="0" maxOccurs="unbounded" name="faultDetail" type="p2:ExchangeLogData" />
+        </xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="p2.ConsultarRequest">
+    <wsdl:documentation />
+    <wsdl:part name="ConsultarRequest" element="p2:ConsultarRequest" />
+  </wsdl:message>
+  <wsdl:message name="p2.ConsultarResponse">
+    <wsdl:documentation />
+    <wsdl:part name="ConsultarResponse" element="p2:ConsultarResponse" />
+  </wsdl:message>
+  <wsdl:message name="p2.ConsultarFault">
+    <wsdl:documentation />
+    <wsdl:part name="ConsultarFault" element="p2:ConsultarFault" />
+  </wsdl:message>
+  <wsdl:portType name="Fornecedor_Out">
+    <wsdl:documentation />
+    <wsdl:operation name="Consultar_Sync">
+      <wsdl:documentation />
+      <wsp:Policy>
+        <wsp:PolicyReference URI="#OP_Consultar_Sync" />
+      </wsp:Policy>
+      <wsdl:input message="p1:p2.ConsultarRequest" />
+      <wsdl:output message="p1:p2.ConsultarResponse" />
+      <wsdl:fault name="p2.ConsultarFault" message="p1:p2.ConsultarFault" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="Fornecedor_OutBinding" type="p1:Fornecedor_Out">
+    <binding transport="http://schemas.xmlsoap.org/soap/http" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+    <wsdl:operation name="Consultar_Sync">
+      <operation soapAction="http://sap.com/xi/WebService/soap1.1" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      <wsdl:input>
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </wsdl:input>
+      <wsdl:output>
+        <body use="literal" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </wsdl:output>
+      <wsdl:fault name="p2.ConsultarFault">
+        <fault use="literal" name="p2.ConsultarFault" namespace="" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Fornecedor_OutService">
+    <wsdl:port name="HTTP_Port" binding="p1:Fornecedor_OutBinding">
+      <address location="http://cpsvsappiq01.cosan.rede:50000/XISOAPAdapter/MessageServlet?senderParty=&amp;senderService=PORTAL_UNICAD&amp;receiverParty=&amp;receiverService=&amp;interface=Fornecedor_Out&amp;interfaceNamespace=urn%3Aminhati.com.br%2Fv2%2Fportalunicad%2Ffornecedor" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+    </wsdl:port>
+    <wsdl:port name="HTTPS_Port" binding="p1:Fornecedor_OutBinding">
+      <address location="https://cpsvsappiq01.cosan.rede:50001/XISOAPAdapter/MessageServlet?senderParty=&amp;senderService=PORTAL_UNICAD&amp;receiverParty=&amp;receiverService=&amp;interface=Fornecedor_Out&amp;interfaceNamespace=urn%3Aminhati.com.br%2Fv2%2Fportalunicad%2Ffornecedor" xmlns="http://schemas.xmlsoap.org/wsdl/soap/" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

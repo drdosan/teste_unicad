@@ -1,0 +1,48 @@
+﻿@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.Framework.Web.MVC.Extensions;
+
+@model  int
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#dateRange').multiDatesPicker({ dateFormat: "dd/mm/yy", minDate: "today" });
+        //$(document).keyup(function (e) {            
+        //    if (e.keyCode === 27) raizenCoreJs.AgendamentoTerminal.fecharModalClone();   // esc
+        //});
+    });
+</script>
+<style>
+    .modal-dialog {
+        max-width: 20% !important;
+        width: 50% !important;
+    }
+</style>
+<div class="box border raizen" id="containerClonar">
+    <div class="box-title">
+        <h4><i class="fa fa-clone"></i><span class="hidden-inline-mobile">Clonar</span></h4>
+    </div>
+    <div class="box-body">
+        <div class="row" style="text-align:center">
+            <form id="frmEdicao" class="form-horizontal">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="dateRange" style="margin: 0 auto;display: table;"></div>
+                            <div class="divide-40"></div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="row" style="text-align:center">
+                <div class="col-md-12">
+                    <button class="btn btn-custom" id="btnCrudSalvar" type="button" tabindex="1" onclick="raizenCoreJs.AgendamentoTerminal.Clonar(@Model)">
+                        <i class="fa fa-save"></i> Salvar
+                    </button>
+                    <button class="btn btn-custom voltar" type="button" tabindex="2" onclick="raizenCoreJs.AgendamentoTerminal.fecharModalClone();" aria-hidden="true">
+                        <i class="fa fa-long-arrow-left"></i> Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

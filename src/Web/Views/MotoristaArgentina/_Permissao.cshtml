@@ -1,0 +1,13 @@
+﻿@model Raizen.UniCad.Web.Models.ModelMotoristaArgentina
+
+<div class="col-md-12" id="linhaSelecione">
+    <h2>Seleccione una operación para ver los permisos</h2>
+</div>
+<div class="row" id="linhaTransportadoraCif" style="display:none">    
+</div>
+<div id="linhaTransportadoraFob" style="display:none" class="col-md-6">
+</div>
+<div class="row" id="observacao" style="display:none;">
+    @Html.BootstrapTextAreaFor(model => Model.Motorista.Observacao, "Comentario", new { maxlength = 1000, style = "height:120px" }, new HtmlHelperOption() { colunas = "col-md-6" })
+</div>
+

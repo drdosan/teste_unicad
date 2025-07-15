@@ -1,0 +1,15 @@
+﻿@model Raizen.UniCad.Web.Models.ModelComposicao
+@{
+    ViewBag.Title = "Composição";
+    ViewBag.TituloModulo = "Composição";
+    Layout = "~/Views/Shared/_Panel.cshtml";
+    
+    var tabIndexToolBoxCrudPesquisa = new int[2];
+    tabIndexToolBoxCrudPesquisa[0] = 3;
+    tabIndexToolBoxCrudPesquisa[1] = 4;
+}
+
+@section pesquisa
+    {
+    @Html.Partial("_Pesquisa", Model)
+}

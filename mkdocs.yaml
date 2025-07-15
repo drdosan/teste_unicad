@@ -1,0 +1,11 @@
+﻿site_name: "svn-DotNet-UniCad"
+site_description: "svn-DotNet-UniCad"
+repo_url: https://github.com/raizen-it/plataform-development-pattern
+edit_uri: edit/main/docs
+
+plugins:
+  - techdocs-core
+
+nav:
+  - Home: README.md
+  - Sobre: sobre.md

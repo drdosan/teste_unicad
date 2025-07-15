@@ -1,0 +1,44 @@
+﻿@model Raizen.UniCad.Model.View.PopupQuestionModelView
+<style>
+    .CheckDrop {
+    }
+
+    .CodigoDrop {
+    }
+
+    .imagemDrop {
+        width: 400px;
+    }
+
+    .bordaDrop {
+        padding: 5px;
+        border: 1px solid silver;
+    }
+
+    .negrito {
+        font-weight: bold;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        @{
+            @*
+                Essa estrutura foi criada para atender um problema de exibição de imagens em link externo.
+                Para não haver preocupação aqui em apontar corretamente p/ link interno ou externo, foi disponibilizado uma maneira de exibir a imagem baseado diretamente
+                nos bytes do arquivo.
+                Existe um método no BaseUniCadController chamado "ImageInByteArray", onde você passa o nome do arquivo e ele te devolve uma string com os bytes
+                do arquivo, ja concatenado em uma estrutura aceita pelo componente "img" do HTML. (formato: data:image/gif;base64,{0}).
+            *@
+            if (Model.ExibirEmHex64)
+            {
+                <img class="imagemDrop" src="@Model.ImagemEmHex64" />
+            }
+            else
+            {
+                <img class="imagemDrop" src="@Model.urlSite@Url.Action("Download", "Arquivo")?file=@(Model.imagem)" />
+            }
+        }
+
+    </div>
+</div>
+<div class="divider"></div>

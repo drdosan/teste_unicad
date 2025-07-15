@@ -1,0 +1,301 @@
+﻿@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Models
+@using Raizen.Framework.Models
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.UniCad.Model;
+
+
+@model Raizen.UniCad.Web.Models.ModelAgendamentoTerminal
+@{
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+
+    var tabIndiceCrudEdicao = new int[2];
+    tabIndiceCrudEdicao[0] = 4;
+    tabIndiceCrudEdicao[1] = 5;
+
+}
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.AgendamentoTerminal.js")"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        raizenCoreJs.raizenCRUD.urlPesquisa = '@Url.Action("Pesquisar", "AgendamentoTerminal")';
+
+        raizenCoreJs.raizenCRUD.urlExcluir = '@Url.Action("ExcluirRegistro", "AgendamentoTerminal")';
+        RaizenCoreJs.prototype.AgendamentoTerminal.urlAdicionarHorario = '@Url.Action("AdicionarHorario", "AgendamentoTerminal")';
+        RaizenCoreJs.prototype.AgendamentoTerminal.urlSalvar = '@Url.Action("Salvar", "AgendamentoTerminal")';
+        RaizenCoreJs.prototype.AgendamentoTerminal.urlPesquisarHorarios = '@Url.Action("PesquisarHorarios", "AgendamentoTerminal")';
+        RaizenCoreJs.prototype.AgendamentoTerminal.urlClonar = '@Url.Action("Clonar", "AgendamentoTerminal")';
+        RaizenCoreJs.prototype.AgendamentoTerminal.urlValidarExistemItensRelacionados = '@Url.Action("ValidarExistemItensRelacionadosHorario", "AgendamentoTerminal")';
+        RaizenCoreJs.prototype.AgendamentoTerminal.urlVerificarSeEhPool = '@Url.Action("VerificarSeEhPool", "AgendamentoTerminal")';
+        
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        raizenCoreJs.raizenMensagens.ExibirMensagemOperacao();
+    });
+
+    function Excluir(id) {
+        raizenCoreJs.raizenHelpers.AbrirLoading();
+        $.ajax({
+            url: '@Url.Action("ValidarExclusao", "AgendamentoTerminal")',
+            data: { id: id },
+            type: 'GET',
+            success: function (response) {
+                console.log(response);
+                if (response == true) {
+                    $('#MessageConfirm1').html('Existem itens associadas a esta agenda. Deseja excluir?');
+                    RaizenHelpers.prototype.AbrirConfirm('return funcaoExcluir(' + id + ')');
+                }
+                else{
+                    $('#MessageConfirm1').html('Você deseja realmente excluir esse registro?');
+                    RaizenHelpers.prototype.AbrirConfirm('return funcaoExcluir(' + id + ')');
+                }
+            }
+        });
+        raizenCoreJs.raizenHelpers.FecharLoading();
+    }
+
+    function excluirHorario(id) {
+        raizenCoreJs.raizenHelpers.AbrirLoading();
+        $.ajax({
+            url: '@Url.Action("ValidarExclusaoHorario", "AgendamentoTerminal")',
+            data: { id: id },
+            type: 'GET',
+            success: function (response) {
+                console.log(response);
+                if (response == true) {
+                    
+                    $('#MessageConfirm1').html('Existem itens associadas a esta agenda. Deseja excluir?');
+                    RaizenHelpers.prototype.AbrirConfirm('return funcaoExcluirHorario(' + id + ')');
+                }
+                else{
+                    $('#MessageConfirm1').html('Você deseja realmente excluir esse registro?');
+                    RaizenHelpers.prototype.AbrirConfirm('return funcaoExcluirHorario(' + id + ')');
+                }
+            }
+        });
+        raizenCoreJs.raizenHelpers.FecharLoading();
+    }
+
+    function funcaoExcluir(id) {
+        $.ajax({
+            url: '@Url.Action("Excluir", "AgendamentoTerminal")',
+            data: {id: id},
+            type: 'POST',
+            success: function (response) {
+                $('#linha-' + id).remove();
+            }
+        });
+    }
+
+
+    function funcaoExcluirHorario(id) {
+        raizenCoreJs.raizenHelpers.AbrirLoading();
+        $.ajax({
+            url: '@Url.Action("ExcluirHorario", "AgendamentoTerminal")',
+            data: {id:id},
+            type: 'POST',
+            success: function (response) {
+                $('#linhaHorario-' + id).remove();
+            }
+        });
+        raizenCoreJs.raizenHelpers.FecharLoading();
+    }
+
+    function Clonar(id) {
+        raizenCoreJs.raizenHelpers.AbrirLoading();
+        $.ajax({
+            url: '@Url.Action("Clonar", "AgendamentoTerminal")',
+            data: {Id: id},
+            type: 'GET',
+            success: function (response) {
+                $("#ModalAgendamentoClonar").html(null);
+                $("#ModalAgendamentoClonar").html(response);
+                $("#modalcontainerClonar").modal('show');
+                raizenCoreJs.raizenHelpers.FecharLoading();
+            }
+        });
+    }
+
+    function Novo() {
+        raizenCoreJs.raizenHelpers.AbrirLoading();
+        $.ajax({
+            url: '@Url.Action("Novo", "AgendamentoTerminal")',
+            type: 'GET',
+            success: function (response) {
+                $("#ModalAgendamento").html(null);
+                $("#ModalAgendamento").html(response);
+                $("#modalcontainerEdicao").modal('show');
+                raizenCoreJs.raizenHelpers.FecharLoading();
+            }
+        });
+    }
+
+    function Editar(id) {
+        raizenCoreJs.raizenHelpers.AbrirLoading();
+
+        $.ajax({
+            url: '@Url.Action("Editar", "AgendamentoTerminal")',
+            data: { id: id },
+            type: 'GET',
+            success: function (response) {
+                $("#ModalAgendamento").html(null);
+                $("#ModalAgendamento").html(response);
+                $("#modalcontainerEdicao").modal('show');
+                $("#containerEdicaoAgendamento").show();
+                raizenCoreJs.raizenHelpers.FecharLoading();
+            }
+        });
+    }
+</script>
+@*Parte de Filtros*@
+<form id="frmPesquisa" class="form-horizontal">
+
+    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUDEdit" })
+    @Html.HiddenFor(model => model.ChavePrimaria)
+    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUD" })
+    @Html.HiddenFor(model => model.OperacaoSecundaria, new { @Id = "IdOperacaoSecundariaCRUD" })
+
+    @Html.HiddenFor(model => model.PaginadorDados.PaginaAtual)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdePaginas)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdeItensPagina)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdeTotalRegistros)
+    @Html.HiddenFor(model => model.PaginadorDados.Status)
+
+
+    <div class="row">
+
+        @Html.BootstrapDropDownListFor(model => model.Filtro.IdTerminal, new SelectList(GenericDelegate.ListarTerminal().OrderBy(p => p.Nome), "ID", "Nome"), "Terminal", null, new HtmlHelperOption() { colunas = "col-md-2" })
+        @Html.BootstrapDropDownListFor(model => model.Filtro.IdTipoAgenda, new SelectList(GenericDelegate.Listar<TipoAgenda>().OrderBy(p => p.Nome), "ID", "Nome"), "Tipo da Agenda", null, new HtmlHelperOption() { colunas = "col-md-2" })
+        @Html.BootstrapDateBoxFor(model => model.Filtro.DtInicio, "Data Início", new { @class = "dataValidade form-control", @onkeyup = "mascaraData(this,event);" }, new HtmlHelperOption { colunas = "col-md-2" })
+        @Html.BootstrapDateBoxFor(model => model.Filtro.DtFim, "Data Fim", new { @class = "dataValidade form-control", @onkeyup = "mascaraData(this,event);" }, new HtmlHelperOption { colunas = "col-md-2" })
+        @Html.BootstrapDropDownListFor(model => model.Filtro.IdStatus, new SelectList(GenericDelegate.AtivoInativo(), "Flag", "Nome"), "Status", null, new HtmlHelperOption() { colunas = "col-md-2" })
+    </div>
+
+    <div class="row" id="containerBotoes">
+        <div class="col-md-5">
+            <div class="form-group">
+                <label class="col-sm-5 control-label"></label>
+                <div class="col-sm-12">
+                    <div class="btn-group center" style="float: none;">
+                        <button class="btn btn-custom" type="button" tabindex="4" onclick="raizenCoreJs.raizenCRUD.RealizarPesquisa();">
+                            <i class="fa fa-search"></i> Pesquisar
+                        </button>
+                        <button class="btn btn-custom" type="button" acaopermissao="add" tabindex="5" onclick="Novo();">
+                            <i class="fa fa-plus-square-o"></i> Novo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<div class="divide-1"></div>
+
+@*Resultado da Pesquisa*@
+
+<div id="datatable2_wrapper" class="dataTables_wrapper form-inline" role="grid">
+    <div class="row">
+        <div class="col-md-12">
+            <table id="datatable2" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th colspan="6" align="center">
+                            Foram encontrados: @Model.PaginadorDados.QtdeTotalRegistros.ToString() registros
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>Data</th>
+                        <th>Terminal</th>
+                        <th>Tipo da Agenda</th>
+                        <th>Status</th>
+                        <th style="text-align:center">Operações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{if (Model.ListaAgendamentoTerminal != null)
+                        {
+                            foreach (var app in Model.ListaAgendamentoTerminal)
+                            {
+                                string funcaoEdit = "Editar('" + @app.ID.ToString() + "');";
+                                string funcaoExcluir = "Excluir(" + @app.ID + ")";
+                                string funcaoClonar = "Clonar(" + @app.ID + ")";
+                                <tr class="gradeX" id="linha-@app.ID">
+                                    <td style="width: 35%; word-wrap: break-word">
+                                        @app.Data.ToString("dd/MM/yyyy")
+                                    </td>
+                                    <td style="width: 20%; word-wrap: break-word">
+                                        @app.Terminal
+                                    </td>
+                                    <td style="width: 20%; word-wrap: break-word">
+                                        @app.TipoAgenda
+                                    </td>
+                                    <td style="width: 10%; word-wrap: break-word">
+                                        @(app.Status ? "Ativo" : "Inativo")
+                                    </td>
+                                    <td align="center" style="width: 15%;">
+                                        <div class="btn-group center" style="float: none;">
+                                            <button class="btn btn-custom" type="button" title="Editar" onclick="@Html.Raw(funcaoEdit)">
+                                                <i class="fa fa-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-custom" type="button" title="Clonar" onclick="@Html.Raw(funcaoClonar)">
+                                                <i class="fa fa-clone fa-fw"></i>
+                                            </button>
+                                            <button class="btn btn-custom" type="button" title="Remover" onclick="@Html.Raw(funcaoExcluir)">
+                                                <i class="fa fa-trash-o"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        @Html.Partial("_Paginador", Model)
+    </div>
+</div>
+
+<div class="modal fade" id="modalcontainerEdicao" data-keyboard="false" tabindex="-1" data-backdrop="static" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="raizenCoreJs.AgendamentoTerminal.fecharModal();" aria-hidden="true">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="ModalAgendamento">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalcontainerClonar" data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="raizenCoreJs.AgendamentoTerminal.fecharModalClone();" aria-hidden="true">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="ModalAgendamentoClonar">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@{Html.RenderPartial("_Confirm", new Raizen.Framework.Web.MVC.Models.ModalConfirm() { MessageYes = "Sim", MessageNot = "Não" });}

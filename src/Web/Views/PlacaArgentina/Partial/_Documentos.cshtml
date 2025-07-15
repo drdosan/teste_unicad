@@ -1,0 +1,38 @@
+﻿@model List<Raizen.UniCad.Model.View.PlacaDocumentoView>
+@using (Html.BootstrapCollapsiblePanel("Documentos", "documentosPanel", false, "fa fa-arrows-h", null, new { style = "max-height:600px; overflow-x:hidden; overflow-y:auto; margin-top:10px; " }))
+{
+    var data = ""; 
+    if(Model != null && Model.Any(p => !p.Aprovar))
+    {
+        data = "display:none";
+    }
+    <table id="docTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+        <thead>
+            <tr class="table-raizen">
+                <th style="word-wrap: break-word; width:6%">
+                    Documento
+                </th>
+                <th style="word-wrap: break-word; width:40%">
+                    Descripción
+                </th>
+                <th style="word-wrap: break-word; width:6%">
+                    Requerido
+                </th>
+                <th style="word-wrap: break-word; width:18%;">
+                    Fecha Vencimiento
+                </th>
+                <th style="word-wrap: break-word; width:30%">
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                foreach (var item in Model.OrderByDescending(d => (d.Anexo ?? string.Empty).Split('_').First()))
+                {
+                    Html.RenderPartial("~/Views/PlacaArgentina/Partial/_ItemAnexo.cshtml", item);
+                }
+            }
+        </tbody>
+    </table>
+}

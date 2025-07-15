@@ -1,0 +1,203 @@
+﻿@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.UniCad.Model;
+
+
+@model Raizen.UniCad.Web.Models.ModelControleAgendamentos
+@{
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+
+    var tabIndiceCrudEdicao = new int[2];
+    tabIndiceCrudEdicao[0] = 4;
+    tabIndiceCrudEdicao[1] = 5;
+
+}
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.ControleAgendamentos.js")"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        raizenCoreJs.raizenCRUD.urlPesquisa = '@Url.Action("Pesquisar", "ControleAgendamentos")';
+
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        raizenCoreJs.raizenMensagens.ExibirMensagemOperacao();
+
+        RaizenCoreJs.prototype.ControleAgendamentos.urlImprimir = '@Url.Action("Download", "ControleAgendamentos")';
+        RaizenCoreJs.prototype.ControleAgendamentos.urlGerarPdf = '@Url.Action("GerarPdf", "ControleAgendamentos")';
+        RaizenCoreJs.prototype.ControleAgendamentos.urlSalvarPresenca = '@Url.Action("SalvarPresenca", "ControleAgendamentos")';
+        RaizenCoreJs.prototype.ControleAgendamentos.urlEditarControle = '@Url.Action("EditarControle", "ControleAgendamentos")';
+        RaizenCoreJs.prototype.ControleAgendamentos.urlLista = '@Url.Action("Index", "ControleAgendamentos")';
+    });
+</script>
+@*Parte de Filtros*@
+<form id="frmPesquisa" class="form-horizontal">
+    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUDEdit" })
+    @Html.HiddenFor(model => model.ChavePrimaria)
+    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUD" })
+    @Html.HiddenFor(model => model.OperacaoSecundaria, new { @Id = "IdOperacaoSecundariaCRUD" })
+
+    @Html.HiddenFor(model => model.PaginadorDados.PaginaAtual)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdePaginas)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdeItensPagina)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdeTotalRegistros)
+    @Html.HiddenFor(model => model.PaginadorDados.Status)
+
+    <div class="row">
+        @Html.BootstrapDropDownListFor(model => model.Filtro.IdTerminal, new SelectList(GenericDelegate.ListarTerminal().OrderBy(p => p.Nome), "ID", "Nome"), "Terminal", null, new HtmlHelperOption() { colunas = "col-md-3" })
+        @Html.BootstrapDropDownListFor(model => model.Filtro.IdEmpresa, new SelectList(GenericDelegate.LinhaDeNegocio(), "ID", "Nome"), "Linha de Negócios", null, new HtmlHelperOption() { colunas = "col-md-2" })
+        @Html.BootstrapDropDownListFor(model => model.Filtro.Operacao, new SelectList(GenericDelegate.CifFobCongeneres(), "ID", "Nome"), "Operação", null, new HtmlHelperOption() { colunas = "col-md-2" })
+        @Html.BootstrapDropDownListFor(model => model.Filtro.IdTipoTipoAgenda, new SelectList(GenericDelegate.ListarEnum<EnumTipoAgenda>(), "Value", "Key"), "Tipo da Agenda", null, new HtmlHelperOption() { colunas = "col-md-2" })
+        @Html.BootstrapDropDownListFor(model => model.Filtro.IdTipoAgenda, new SelectList(GenericDelegate.Listar<TipoAgenda>().OrderBy(p => p.Nome), "ID", "Nome"), "Agenda", null, new HtmlHelperOption() { colunas = "col-md-3" })
+    </div>
+    <div class="row">
+        @Html.BootstrapDateBoxFor(model => model.Filtro.DtInicio, "Data Início", new { @class = "dataValidade form-control", @onkeyup = "mascaraData(this,event);" }, new HtmlHelperOption { colunas = "col-md-2" })
+        @Html.BootstrapDateBoxFor(model => model.Filtro.DtFim, "Data Fim", new { @class = "dataValidade form-control", @onkeyup = "mascaraData(this,event);" }, new HtmlHelperOption { colunas = "col-md-2" })
+    </div>
+    <div class="row" id="containerBotoes">
+        <div class="col-md-5">
+            <div class="form-group">
+                <label class="col-sm-5 control-label"></label>
+                <div class="col-sm-12">
+                    <div class="btn-group center" style="float: none;">
+                        <button class="btn btn-custom" type="button" tabindex="4" onclick="raizenCoreJs.raizenCRUD.RealizarPesquisa();">
+                            <i class="fa fa-search"></i> Pesquisar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<div class="divide-1"></div>
+
+@*Resultado da Pesquisa*@
+
+<div id="datatable2_wrapper" class="dataTables_wrapper form-inline" role="grid">
+    <div class="row">
+        <div class="col-md-12">
+            <table id="datatable2" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th colspan="10" align="center">
+                            Foram encontrados: @Model.PaginadorDados.QtdeTotalRegistros.ToString() registros
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>Data</th>
+                        <th>Terminal</th>
+                        <th>Tipo da Agenda</th>
+                        <th>Agenda</th>
+                        <th>Nº Vagas</th>
+                        <th>Disponíveis</th>
+                        <th style="text-align:center">Operações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{if (Model.ListaAgendamentoTerminal != null)
+                        {
+                            foreach (var app in Model.ListaAgendamentoTerminal)
+                            {
+                                string funcaoPrint = "RaizenCoreJs.prototype.ControleAgendamentos.Imprimir('" + @app.Data.ToString("yyyy-MM-dd") + "'," + app.IdTerminal + "," + app.IdTipoAgenda + "," + app.Vagas + "," + app.VagasDisponiveis + ");";
+                                string funcaoControlePresenca = "RaizenCoreJs.prototype.ControleAgendamentos.ControlePresenca('" + @app.Data.ToString("yyyy-MM-dd") + "'," + app.IdTerminal + "," + app.IdTipoAgenda + "," + app.Vagas + "," + app.VagasDisponiveis + ");";
+                                <tr class="gradeX" id="linha-@app.ID">
+                                    <td style="width: 5%; word-wrap: break-word">
+                                        @app.Data.ToString("dd/MM/yyyy")
+                                    </td>
+                                    <td style="width: 15%; word-wrap: break-word">
+                                        @app.Terminal
+                                    </td>
+                                    <td style="width: 15%; word-wrap: break-word">
+                                        @EnumExtensions.GetDescription((EnumTipoAgenda)app.IdTipoTipoAgenda)
+                                    </td>
+                                    <td style="width: 15%; word-wrap: break-word">
+                                        @app.TipoAgenda
+                                    </td>
+                                    <td style="width: 10%; word-wrap: break-word">
+                                        @app.Vagas
+                                    </td>
+                                    <td style="width: 10%; word-wrap: break-word">
+                                        @app.VagasDisponiveis
+                                    </td>
+                                    <td align="center" style="width: 10%;">
+                                        <div class="btn-group center" style="float: none;">
+                                            <button class="btn btn-custom" type="button" title="Imprimir" onclick="@Html.Raw(funcaoPrint)">
+                                                <i class="fa fa-print"></i>
+                                            </button>
+                                            @if (app.IdTipoTipoAgenda != (int)EnumTipoAgenda.Checklist)
+                                            {
+                                                <button class="btn btn-custom" type="button" title="Controle de Presença do Motorista" onclick="@Html.Raw(funcaoControlePresenca)">
+                                                    <i class="fa fa-check-square"></i>
+                                                </button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        @Html.Partial("_Paginador", Model)
+    </div>
+</div>
+
+<div class="modal fade" id="modalcontainerEdicao" tabindex="-1" data-backdrop="static" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="raizenCoreJs.AgendamentoTerminal.fecharModal();" aria-hidden="true">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="ModalAgendamento">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalcontainerClonar" tabindex="-1" data-backdrop="static" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="raizenCoreJs.AgendamentoTerminal.fecharModalClone();" aria-hidden="true">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="ModalAgendamentoClonar">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@{Html.RenderPartial("_Confirm", new Raizen.Framework.Web.MVC.Models.ModalConfirm() { MessageYes = "Sim", MessageNot = "Não" });}
+<div class="modal fade" id="modalContainerControlaAgendamento" tabindex="-1" data-backdrop="static" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="ModalControleAgendamento">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

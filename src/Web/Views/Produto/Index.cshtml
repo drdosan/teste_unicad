@@ -1,0 +1,23 @@
+﻿@model Raizen.UniCad.Web.Models.ModelProduto
+@{
+    ViewBag.Title = "Produto";
+    ViewBag.TituloModulo = "Produto";
+    Layout = "~/Views/Shared/_Panel.cshtml";
+    
+    var tabIndexToolBoxCrudPesquisa = new int[2];
+    tabIndexToolBoxCrudPesquisa[0] = 3;
+    tabIndexToolBoxCrudPesquisa[1] = 4;
+}
+
+@section pesquisa
+    {
+    @Html.Partial("_Pesquisa", Model)
+}
+@section cadastro
+    {
+    @Html.Partial("_Edicao", Model)
+}
+@section ToolBoxCrudPesquisa
+    {
+    @Html.Partial("_ToolBoxCrudPesquisa", tabIndexToolBoxCrudPesquisa)
+}

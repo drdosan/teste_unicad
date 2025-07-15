@@ -1,0 +1,82 @@
+﻿@model Raizen.UniCad.Model.View.PlacaDocumentoView
+<tr class="gradeX">
+    @using (Html.BeginCollectionItem("Compartimento.Documentos"))
+    {
+        @*@Html.HiddenFor(p => p.ID)
+        @Html.HiddenFor(p => p.IDTipoDocumento)
+        @Html.HiddenFor(p => p.IDPlaca)
+        @Html.HiddenFor(p => p.Sigla)
+        @Html.HiddenFor(p => p.Descricao)
+        @Html.HiddenFor(model => model.Anexo, new { @id = "Anexo-" + Model.IDTipoDocumento })*@
+        <td style="word-wrap: break-word;">@Model.Sigla</td>
+        <td style="word-wrap: break-word;">@Model.Descricao</td>
+        <td style="word-wrap: break-word; @((Model.DataVencimento.HasValue && Model.DataVencimento.Value < DateTime.Now.Date) ? "color:red; font-weight:bold" : "")">@Model.DataVencimento</td>
+        <td style="word-wrap: break-word;">@Model.Placa</td>
+        <td style="word-wrap: break-word;">
+            @if (string.IsNullOrEmpty(Model.Anexo))
+            {
+            @*<input id="input-701-@Model.IDTipoDocumento" type="file" name="@Html.NameFor(p => p.Anexo)" class="anexoCount" data-buttonText="Selecione" data-iconName="glyphicon glyphicon-file">*@
+            }
+            else
+            {
+            <a href="@Url.Action("Download","Arquivo")?file=@(Model.Anexo)" class="anexoCount" target="_blank">@Html.PopoverText(Model.Anexo, Model.Anexo, 30)</a>
+            }
+        </td>
+    }
+</tr>
+
+
+@*<script>
+    $("#input-701-@Model.IDTipoDocumento").fileinput({
+        uploadUrl: '@Url.Action("AnexarArquivo", "Arquivo")',
+        dropZoneEnabled: false,
+        showUpload: false,
+        showPreview: false,
+        browseLabel: '',
+        uploadLabel: '',
+        removeLabel: '',
+        layoutTemplates: {
+            progress: ''
+        },
+    });
+
+    $('#input-701-@Model.IDTipoDocumento').on('fileloaded', function (event, file, previewId, index, reader) {
+
+        var formData = new FormData();
+
+        formData.append('file', file);
+        raizenCoreJs.raizenHelpers.AbrirLoading();
+        $.ajax({
+            url: '@Url.Action("AnexarArquivo", "Arquivo")',
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            type: 'POST',
+            success: function (response) {
+                raizenCoreJs.raizenHelpers.FecharLoading();
+
+                if (response == 'O Arquivo selecionado está vazio!') {
+                    $('.glyphicon.glyphicon-trash').trigger('click');
+                    ShowErrorMenssage(response);
+                }
+                else if (response == 'Tamanho Arquivo')
+                {
+                    ShowErrorMenssage('O arquivo deve ser menor que 20 MB, por favor, tente novamente', 20);
+                    $('.glyphicon.glyphicon-trash').trigger('click');
+                }
+                else if (response.indexOf('Formato de Arquivo Inválido') >= 0) {
+                    ShowErrorMenssage(response, 20);
+                    $('.glyphicon.glyphicon-trash').trigger('click');
+                }
+                else {
+                    $('#Anexo-@Model.IDTipoDocumento').val(response);
+                }
+            },
+            error: function (response) {
+                ShowErrorMenssage('O arquivo deve ser menor que 20 MB, por favor, tente novamente', 20);
+            }
+        });
+    });
+
+</script>*@

@@ -1,0 +1,41 @@
+﻿@model Raizen.Framework.Web.MVC.Models.ModalConfirm
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        raizenCoreJs.raizenHelpers.urlAnexoArquivo = '@Url.Action("AnexarArquivo", "Arquivo")';
+    });
+</script>
+
+<script src="~/Content/js/third-party/fileinput.min.js"></script>
+<link href="~/Content/js/third-party/bootstrap-fileinput/css/fileinput.min.css" rel="stylesheet" />
+<div class="modal fade" id="ModalConfirmAnexo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h4 id="MessageConfirm">@Model.MessageConfirm</h4>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label" id="lbl_Licenca_ResponsavelOperacao">Justificativa</label>
+                            @Html.TextBox("txtJustificativaAnexo", null, new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row" id="divAnexoModalConfirm">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-custom" type="button" onclick="raizenCoreJs.raizenHelpers.ExecutarFuncaoConfirmAnexo();">@Model.MessageYes</button>
+                <button class="btn btn-custom" type="button" onclick="raizenCoreJs.raizenHelpers.FecharConfirmAnexo();">@Model.MessageNot</button>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="confirmFunctionAnexo" />
+<script>
+    
+</script>

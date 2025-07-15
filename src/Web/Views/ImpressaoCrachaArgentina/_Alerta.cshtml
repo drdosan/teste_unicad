@@ -1,0 +1,57 @@
+﻿@model Raizen.UniCad.Web.Models.ModelImpressaoCracha
+
+<div class="modal-body">
+    @Html.DisplayFor(model => model.ImpressaoCrachaRetornoView.MensagemSituacao)
+</div>
+
+
+@if (!Model.ImpressaoCrachaRetornoView.AptoParaImpressaoDeCracha)
+{
+
+    if (Model.ImpressaoCrachaRetornoView.IDStatus == 4)
+    {
+        <div>
+            @Html.LabelFor(model => model.ImpressaoCrachaRetornoView.Justificativa):
+            @Html.DisplayFor(model => model.ImpressaoCrachaRetornoView.Justificativa)
+        </div>
+
+    }
+    if (Model.ImpressaoCrachaRetornoView.Documentos != null && Model.ImpressaoCrachaRetornoView.Documentos.Count > 0)
+    {
+        <div class="box-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <table id="docTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr class="table-raizen">
+                                <th style="word-wrap: break-word; width:10%">
+                                    Tipo Documento
+                                </th>
+                                @*<th style="word-wrap: break-word; width:30%">
+                                        Descrição
+                                    </th>*@
+                                <th style="word-wrap: break-word; width:10%">
+                                    Data Vencimento
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.ImpressaoCrachaRetornoView.Documentos != null)
+                            {
+                                foreach (var doc in Model.ImpressaoCrachaRetornoView.Documentos)
+                                {
+                                    <tr>
+                                        <td style="word-wrap: break-word;">@doc.Sigla</td>
+                                        @*<td style="word-wrap: break-word;">doc.Descricao</td>*@
+                                        <td style="word-wrap: break-word; @((doc.DataVencimento.HasValue && doc.DataVencimento.Value < DateTime.Now.Date) ? "color:red; font-weight:bold" : "")">@(doc.DataVencimento.HasValue ? doc.DataVencimento.Value.ToString("dd/MM/yyyy") : "")</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+}

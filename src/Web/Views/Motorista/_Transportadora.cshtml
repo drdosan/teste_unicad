@@ -1,0 +1,21 @@
+﻿@using Raizen.UniCad.Model;
+
+@model Raizen.UniCad.Web.Models.ModelMotorista
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //CONFIGURA OS MENUS SUSPENSOS PARA O PADRÃO
+        $('.manydata').selectize();
+    });
+</script>
+<div class="">
+    @if (Model.Motorista.IDTransportadora.HasValue && Model.Novo)
+    {
+        @Html.BootstrapDropDownListFor(model => model.Motorista.IDTransportadora, new SelectList(TransportadoraDelegate.Listar("CIF", Model.LinhaNegocio, (int)EnumPais.Brasil), "ID", "RazaoSocial"), "Transportadora", new { @class = "manydata", title = "Digite a transportadora responsável pelo cadastro" }, new HtmlHelperOption() { colunas = "col-md-6" }, true, Model.Alteracoes != null && Model.Alteracoes.IsTransportadoraAlterado ? Model.Alteracoes.TransportadoraAlterado : null)
+        @Html.HiddenFor(model => model.Motorista.IDTransportadora)
+    }
+    else
+    {
+        @Html.BootstrapDropDownListFor(model => model.Motorista.IDTransportadora, new SelectList(TransportadoraDelegate.Listar("CIF", Model.LinhaNegocio, (int)EnumPais.Brasil), "ID", "RazaoSocial"), "Transportadora", new { @class = "manydata", title = "Digite a transportadora responsável pelo cadastro" }, new HtmlHelperOption() { colunas = "col-md-6" }, false, Model.Alteracoes != null && Model.Alteracoes.IsTransportadoraAlterado ? Model.Alteracoes.TransportadoraAlterado : null)
+    }
+</div>

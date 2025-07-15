@@ -1,0 +1,185 @@
+﻿@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Models
+@using Raizen.Framework.Utils.Extensions
+@model Raizen.UniCad.Web.Models.ModelConfiguracao
+@{
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+
+    var tabIndiceCrudEdicao = new int[2];
+    tabIndiceCrudEdicao[0] = 4;
+    tabIndiceCrudEdicao[1] = 5;
+
+}
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Configuracao.js")"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        raizenCoreJs.raizenCRUD.urlPesquisa = '@Url.Action("Pesquisar", "Configuracao")';
+        raizenCoreJs.raizenCRUD.urlNovo = '@Url.Action("Novo", "Configuracao")';
+        raizenCoreJs.raizenCRUD.urlExcluir = '@Url.Action("ExcluirRegistro", "Configuracao")';
+
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        raizenCoreJs.raizenMensagens.ExibirMensagemOperacao();
+
+        RaizenCoreJs.prototype.Configuracao.urlCarregarJobs = '@Url.Action("CarregarJobs","Configuracao")';
+        RaizenCoreJs.prototype.Configuracao.urlExecutarJob = '@Url.Action("ExecutarJob","Configuracao")';
+        RaizenCoreJs.prototype.Configuracao.urlSalvarJob = '@Url.Action("SalvarJob","Configuracao")';
+        RaizenCoreJs.prototype.Configuracao.urlPesquisarLog = '@Url.Action("Index", "LogSincronizacao")';
+        raizenCoreJs.Configuracao.handleJqgrid();
+    });
+</script>
+@*Parte de Filtros*@
+<form id="frmPesquisa" class="form-horizontal">
+
+    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUDEdit" })
+    @Html.HiddenFor(model => model.ChavePrimaria)
+    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUD" })
+    @Html.HiddenFor(model => model.OperacaoSecundaria, new { @Id = "IdOperacaoSecundariaCRUD" })
+
+    @Html.HiddenFor(model => model.PaginadorDados.PaginaAtual)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdePaginas)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdeItensPagina)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdeTotalRegistros)
+    @Html.HiddenFor(model => model.PaginadorDados.Status)
+
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <div class="col-md-12">
+                    <label class="control-label" for="DsConfiguracao" id="lbl_Filtro_Descricao">Descrição</label>
+                    @Html.CustomTextBoxFor(model => model.Filtro.NmVariavel, new { @onkeypress = "keypress(this, event)" },
+                                             new EstruturaControle()
+                                             {
+                                                 PlaceHolder = "Nome da Configuracao",
+                                                 TabIndex = 2,
+                                                 Validar = false,
+                                                 Maxlength = 50
+                                             })
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <div class="col-md-12">
+                    <label class="control-label" for="DsConfiguracao" id="lbl_Filtro_Pais">País</label>
+                    @Html.DropDownListFor(model => model.Filtro.IdPais, new SelectList(@ViewBag.ddlPaises, "Value", "Text"), "Selecione", new { @class = "form-control", @style = "width:200px;" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="containerBotoes">
+        <div class="col-md-5">
+            <div class="form-group">
+                <label class="col-sm-5 control-label"></label>
+                <div class="col-sm-12">
+                    <div class="btn-group center" style="float: none;">
+                        <button class="btn btn-custom" type="button" tabindex="4" onclick="raizenCoreJs.raizenCRUD.RealizarPesquisa();">
+                            <i class="fa fa-search"></i> Pesquisar
+                        </button>
+                        @if (Model.UsuarioLogado == null || (Model.UsuarioLogado.Perfil != "Administrador" && Model.UsuarioLogado.Perfil != "Administrador Argentina") || Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPerfis.FirstOrDefault(p => p.Nome == "Administrador TI") != null)
+                        {
+                            <button class="btn btn-custom" type="button" acaopermissao="add" tabindex="5" onclick="raizenCoreJs.raizenCRUD.Novo();">
+                                <i class="fa fa-plus-square-o"></i> Novo
+                            </button>
+                        }
+                        <button class="btn btn-custom" type="button" title="Ver log de sincronização de motoritas" onclick="RaizenCoreJs.prototype.Configuracao.VerLogSincronizacao();"
+                            <i class="fa fa-eye"></i> Log Sincronização
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<div class="divide-1"></div>
+
+@*Resultado da Pesquisa*@
+
+<div id="datatable2_wrapper" class="dataTables_wrapper form-inline" role="grid">
+    <div class="row">
+        @if (!Model.ListaConfiguracao.IsNullOrEmpty())
+        {
+            <div class="col-md-12">
+                <table id="datatable2" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th colspan="5" align="center">
+                                Foram encontrados: @Model.PaginadorDados.QtdeTotalRegistros.ToString() registros
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>País</th>
+                            <th>Nome</th>
+                            <th>Descrição</th>
+                            <th>Valor</th>
+                            <th style="text-align:center">Operações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var app in Model.ListaConfiguracao)
+                        {
+                            string funcaoEdit = "raizenCoreJs.raizenCRUD.EditarRegistro('" + @app.ID.ToString() + "','" + Url.Action("Editar", "Configuracao") + "');";
+
+                            <tr class="gradeX">
+                                <td style="width: 10%; word-wrap: break-word">
+                                    @if (app.Pais != null)
+                                    {
+                                        @app.Pais.Nome;
+                                    }
+                                </td>
+                                <td style="width: 13%; word-wrap: break-word">
+                                    @app.NmVariavel
+                                </td>
+                                <td style="width: 17%; word-wrap: break-word">
+                                    @app.Descricao
+                                </td>
+                                <td style="width: 46%; word-wrap: break-word">
+                                    @app.Valor
+                                </td>
+                                <td align="center" style="width: 13%;">
+                                    <div class="btn-group center" style="float: none;">
+                                        <button class="btn btn-custom" type="button" title="Editar Configuracao" onclick="@Html.Raw(funcaoEdit)">
+                                            <i class="fa fa-pencil"></i>
+                                        </button>
+                                        @if (Model.UsuarioLogado == null || Model.UsuarioLogado.Perfil != "Administrador"  || Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPerfis.FirstOrDefault(p => p.Nome == "Administrador TI") != null)
+                                        {
+                                            <button class="btn btn-custom" type="button" title="Remover" onclick="raizenCoreJs.raizenCRUD.ExcluirRegistro(@app.ID);">
+                                                <i class="fa fa-trash-o"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+    <div class="row">
+        @Html.Partial("_Paginador", Model)
+    </div>
+    <div class="border box inverse raizen">
+        <div class="box-title">
+            <h4><i class="fa fa-history"></i>Jobs</h4>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <table id="tableJobGrid" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+

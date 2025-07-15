@@ -1,0 +1,44 @@
+﻿@using Raizen.UniCad.Model;
+@model List<Raizen.UniCad.Model.Placa>
+<script src="~/Content/js/Raizen/UniCad/Raizen.UniCad.Placa.js"></script>
+<style>
+    .invisivel {
+        display: none;
+    }
+</style>
+<div class="modal fade" id="containerEixos" tabindex="-1" data-backdrop="static" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog"  style="max-width:83%">
+        <div class="modal-content" style="">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("InativarSeta", "Composicao", FormMethod.Post, new { id="frmInativarCompartimento"}))
+                {
+                    if (Model != null && Model.Any(p => p.IDTipoVeiculo == (int)EnumTipoVeiculo.Truck || p.IDTipoVeiculo == (int)EnumTipoVeiculo.Carreta))
+                    {
+                        foreach (var item in Model.Where(p => p.IDTipoVeiculo == (int)EnumTipoVeiculo.Truck || p.IDTipoVeiculo == (int)EnumTipoVeiculo.Carreta))
+                        {
+                            <div class="row"><div class="col-md-3"><h3>Placa: @item.PlacaVeiculo</h3></div></div>
+                            Html.RenderPartial("_CompartimentoSeta", item);
+                        }
+                    }
+                    <div class="row" style="text-align:center">
+                        <div class="col-md-12">
+                            <button class="btn btn-custom voltar" type="button" tabindex="2" onclick="raizenCoreJs.Composicao.SalvarInativarCompartimento()">
+                                <i class="fa fa-save"></i> Salvar
+                            </button>
+                            <button class="btn btn-custom voltar" type="button" tabindex="2" onclick="$('#containerEixos').modal('hide');">
+                                <i class="fa fa-long-arrow-left"></i> Fechar
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,15 @@
+﻿@model Raizen.UniCad.Web.Models.ModelMotoristaArgentina
+<tr id="linha-produto-@Model.ListaTipoProduto.Last().ID" class="gradeX">
+    @using (Html.BeginCollectionItem("ModelMotoristaArgentina.ListaTipoProduto"))
+    {
+
+        @Html.HiddenFor(item => item.ListaTipoProduto.Last().ID, new { @class = "IDTipoProduto" })
+        @Html.HiddenFor(item => item.ListaTipoProduto.Last().Nome, new { @class = "Nome" })
+        <td style="width: 95%; word-wrap: break-word">
+            @Html.PopoverTextFor(item => item.ListaTipoProduto.Last().Nome, 80, "right")
+        </td>
+        <td style="width: 5%; word-wrap: break-word">
+            @Html.BootstrapButtonDelete("", "", ButtonType.BUTTON, "raizenCoreJs.EdicaoMotoristaArgentina.removerTipoProduto(" + Model.ListaTipoProduto.Last().ID + "," + Model.Aprovar.ToString().ToLowerInvariant() +")")
+        </td>
+    }
+</tr>

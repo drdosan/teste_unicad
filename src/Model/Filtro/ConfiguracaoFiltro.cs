@@ -1,0 +1,51 @@
+#region Cabeçalho do Arquivo
+
+// <Summary>
+// File Name          : Acao.cs
+// Class Name         : Acao
+// Author             : Alexandre Spreafico Novaes
+// Creation Date      : 03/11/2016
+// Template Version   : 2.3
+// </Summary>
+
+// <RevisionHistory>
+// <SNo value=1>
+//	Modified By             : 
+//	Date of Modification    : 
+//	Reason for modification : 
+//	Modification Done       : 
+//	Defect Id (If any)      : 
+// <SNo>
+// </RevisionHistory>
+
+#endregion Cabeçalho do Arquivo
+
+#region Namespaces
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Data;
+
+#endregion Namespaces
+
+namespace Raizen.UniCad.Model.Filtro
+{
+	/// <summary>
+	/// Entitade Representada por Acao
+	/// </summary>	
+	public  class ConfiguracaoFiltro
+	{
+		#region Propriedades
+		
+		public Nullable<Int32> Id { get; set; }
+		public String NmVariavel { get; set; }
+        public String Descricao { get; set; }
+        public String Valor { get; set; }
+        public DateTime DtCriacao { get; set; }
+        public DateTime DtAtualizacao { get; set; }
+        public int? IdPais { get; set; }
+
+        #endregion Propriedades
+    }
+}

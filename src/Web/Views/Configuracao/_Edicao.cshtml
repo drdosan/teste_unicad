@@ -1,0 +1,147 @@
+﻿@using Raizen.Framework.Models
+@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Models
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.Framework.Web.MVC.Extensions;
+
+@model Raizen.UniCad.Web.Models.ModelConfiguracao
+@{
+    var urlValidacao = @Url.Action("ValidarObjetos", "Configuracao");
+
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+
+}
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Configuracao.js")"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        raizenCoreJs.raizenCRUD.urlSalvar = '@Url.Action("Salvar", "Configuracao")';
+
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        raizenCoreJs.raizenMensagens.ExibirMensagemOperacao();
+        raizenCoreJs.raizenHelpers.urlValidacao = "@urlValidacao";
+
+    });
+
+</script>
+
+<div class="box border raizen" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event);" id="containerEdicao">
+    <div class="box-title">
+        <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Edição de Configuracao</span></h4>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-12">
+                <form id="frmEdicao" class="form-horizontal">
+                    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUDEdit" })
+                    @Html.HiddenFor(model => model.ChavePrimaria)
+                    @Html.HiddenFor(model => model.Configuracao.DtCriacao)
+                    @Html.HiddenFor(model => model.Configuracao.Anexo, new { @id = "Anexo" })
+                    <div class="row">
+                        @Html.BootstrapTextBoxFor(model => model.Configuracao.NmVariavel, null, "Nome", new { maxlength = 50 }, new HtmlHelperOption() { colunas = "col-md-3" })
+                        @Html.BootstrapTextBoxFor(model => model.Configuracao.Descricao, null, "Descrição", new { maxlength = 100 }, new HtmlHelperOption() { colunas = "col-md-4" })
+                        <div class="col-md-5">
+                            <label class="control-label" for="Anexo" id="input-701-label">Anexo</label>
+                            @if (Model.Configuracao == null || string.IsNullOrEmpty(Model.Configuracao.Anexo))
+                            {
+                                <input id="input-701" type="file" name="@Html.NameFor(p => p.Configuracao.Anexo)" class="anexoCount" data-buttonText="Selecione" data-iconName="glyphicon glyphicon-file">
+                            }
+                            else
+                            {
+                                <button type="button" style="float: left; margin-right: 10px;" tabindex="500" id="limparAnexo" title="Limpar" class="btn btn-default fileinput-remove fileinput-remove-button" onclick="RemoverAnexo();"><i class="glyphicon glyphicon-trash"></i> </button>
+                                <a href="@Url.Action("Download", "Arquivo")?file=@(Model.Configuracao.Anexo)" style="margin-top:10px" class="anexoCount" target="_blank" title="@Model.Configuracao.Anexo" id="linkAnexo">@Html.PopoverTextFor(model => model.Configuracao.Anexo, 30)</a>
+                                <div id="inputDiv" style="display:none">
+                                    <input id="input-701" type="file" name="@Html.NameFor(p => p.Configuracao.Anexo)" class="anexoCount" data-buttonText="Selecione" data-iconName="glyphicon glyphicon-file">
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            @Html.BootstrapTextBoxFor(model => model.Configuracao.Valor, null, "Valor", new { maxlength = 1000 }, new HtmlHelperOption() { colunas = "col-md-12" })
+                        </div>
+                        @if (Model.Operacao == OperacoesCRUD.Editando)
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.Configuracao.IdPais, new SelectList(@ViewBag.ddlPaises, "Value", "Text"), "País", new { @class = "form-control", @style = "width:200px;", @disabled = "true" })
+                            @Html.HiddenFor(model => model.Configuracao.IdPais)
+                        }
+                        else
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.Configuracao.IdPais, new SelectList(@ViewBag.ddlPaises, "Value", "Text"), "País", new { @class = "form-control", @style = "width:200px;" })
+                        }
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+
+    function RemoverAnexo() {
+        $('#limparAnexo').hide();
+        $('#linkAnexo').hide();
+        $("#inputDiv").show(800);
+    };
+
+    $("#input-701").fileinput({
+        uploadUrl: '@Url.Action("AnexarArquivo", "Arquivo")',
+        dropZoneEnabled: false,
+        showUpload: false,
+        showPreview: false,
+        browseLabel: '',
+        uploadLabel: '',
+        removeLabel: '',
+        initialCaption: "Tamanho máximo: 20MB",
+        layoutTemplates: {
+            progress: ''
+        },
+    });
+
+
+    $('#input-701').on('fileloaded', function (event, file, previewId, index, reader) {
+
+        var formData = new FormData();
+
+        formData.append('file', file);
+        raizenCoreJs.raizenHelpers.AbrirLoading();
+        $.ajax({
+            url: '@Url.Action("AnexarArquivo", "Arquivo")',
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            type: 'POST',
+            success: function (response) {
+                raizenCoreJs.raizenHelpers.FecharLoading();
+
+                if (response == 'O Arquivo selecionado está vazio!') {
+                    $('.glyphicon.glyphicon-trash').trigger('click')
+                    ShowErrorMenssage(response);
+                }
+                else if (response == 'Tamanho Arquivo') {
+                    ShowErrorMenssage('O arquivo deve ser menor que 20 MB, por favor, tente novamente', 20);
+                    $('.glyphicon.glyphicon-trash').trigger('click')
+                }
+                else if (response.indexOf('Formato de Arquivo Inválido') >= 0) {
+                    ShowErrorMenssage(response, 20);
+                    $('.glyphicon.glyphicon-trash').trigger('click')
+                }
+                else {
+                    $('#Anexo').val(response);
+                }
+            },
+            error: function (response) {
+                ShowErrorMenssage('O arquivo deve ser menor que 20 MB, por favor, tente novamente', 20);
+            }
+        });
+    });
+</script>

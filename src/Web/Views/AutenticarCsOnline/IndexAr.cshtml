@@ -1,0 +1,72 @@
+﻿
+@using Raizen.Framework.Web.MVC.Extensions;
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    ViewBag.Thema = Context.Application["THEME"] == null ? "neutro" : Context.Application["THEME"].ToString();
+}
+
+@model Raizen.UniCad.Web.Models.AutenticarCsOnlineModel
+
+@Html.Partial("_Css")
+
+    <head>
+        @Html.Partial("_Header")
+    </head>
+    <body>
+        <script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+        <script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.AutenticarCsOnline.js")"></script>
+
+        @if (Model.Usuario == 0)
+        {
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    @using (Html.BootstrapCollapsiblePanel("Atencion!", "clientesPanel", false, "fa fa-user-circle", null, new { style = "margin-top:20px; text-align:left " }))
+                    {
+                        <div class="row">
+                            <div class="col-md-12" style="text-align:center">
+                                <h3>@Model.Mensagem</h3>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+        }
+        else
+        {
+            <script>
+        $(document).ready(function(){
+            var msg = '@Model.Mensagem';
+            if (msg != null && msg != '') {
+                ShowMessage(msg);
+            }
+        });
+            </script>
+            <form action="@Url.Action("AtualizarEmail","AutenticarCsOnline")" onsubmit="return raizenCoreJs.AutenticarCsOnline.ValidarEmail(2);" method="post">
+                <div class="row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-6">
+                        @Html.HiddenFor(model => model.Usuario)
+                        @Html.HiddenFor(model => model.Redirect)
+                        @Html.HiddenFor(model => model.IdPais, new { @Value = 2 })
+                        @using (Html.BootstrapCollapsiblePanel("Atencion!", "clientesPanel", false, "fa fa-user-circle", null, new { style = "margin-top:20px; text-align:left " }))
+                        {
+                            <div class="row">
+                                <div class="col-md-12">
+                                    @Html.BootstrapTextBoxFor(model => model.Email, null, "Ingrese su correo electrónico", null, new HtmlHelperOption() { colunas = "col-md-6" })
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    @Html.BootstrapButton("btnOk", "Guardar", ButtonType.SUBMIT)
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="col-md-3"></div>
+                </div>
+            </form>
+        }
+    </body>

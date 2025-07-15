@@ -1,0 +1,163 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CE73C489-2553-4C37-9F86-D690681D8B11}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Raizen.UniCad.DAL</RootNamespace>
+    <AssemblyName>Raizen.UniCad.DAL</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <LangVersion>6</LangVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>Raizen.UniCad.DAL.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>Raizen.UniCad.DAL.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Dapper, Version=1.50.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Dapper.1.50.2\lib\net45\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Raizen.Framework, Version=1.8.5.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\binarios\Raizen.Framework\Raizen.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Web" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CodeFirst\ConfiguracaoModelo\LogDocumentosConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\LogExecucaoJobConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\MotoristaArgentinaConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\MotoristaBrasilConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\MotoristaPesquisaConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\MotoristaTipoComposicaoConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\MotoristaTipoProdutoConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\PaisConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\PlacaArgentinaConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\PlacaBrasilConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\TerminalEmpresaConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\SincronizacaoMotoristasConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\AgendamentoTreinamentoConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\AgendamentoTerminalHorarioConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\AgendamentoTerminalConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\CategoriaVeiculoConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\MotoristaTreinamentoTerminalConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\HistoricoTreinamentoTeoricoMotoristaConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\ChecklistComposicaoConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\HistorioBloqueioMotoristaConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\HistorioAtivarMotoristaConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\MotoristaConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\ComposicaoConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\ComposicaoEixoConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\ConfiguracaoConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\EstadoConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\HistorioBloqueioComposicaoConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\JobConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\MotoristaClienteConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\PlacaClienteConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\PlacaConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\MotoristaDocumentoConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\PlacaDocumentoConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\PlacaSetaConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\AgendamentoChecklistConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\TipoAgendaConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\TerminalConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\TipoCarregamentoConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\TipoComposicaoConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\TipoDocumentoConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\TipoDocumentoTipoComposicaoConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\TipoDocumentoTipoProdutoConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\TipoDocumentoTipoVeiculoConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\TipoProdutoConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\TipoVeiculoConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\UsuarioClienteConfig.cs" />
+    <Compile Include="Interfaces\IComposicaoRepository.cs" />
+    <Compile Include="Interfaces\IMotoristaDocumentoRepository.cs" />
+    <Compile Include="Interfaces\IPlacaClienteRepository.cs" />
+    <Compile Include="Interfaces\IPlacaDocumentoRepository.cs" />
+    <Compile Include="Interfaces\IPlacaRepository.cs" />
+    <Compile Include="Interfaces\IRepository.cs" />
+    <Compile Include="IUniCadDalRepositorio.cs" />
+    <Compile Include="Repositories\ComposicaoRepository.cs" />
+    <Compile Include="Repositories\MotoristaDocumentoRepository.cs" />
+    <Compile Include="Repositories\PlacaClienteRepository.cs" />
+    <Compile Include="Repositories\PlacaDocumentoRepository.cs" />
+    <Compile Include="Repositories\PlacaRepository.cs" />
+    <Compile Include="Repositories\Repository.cs" />
+    <Compile Include="UniCadDalRepositorio.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\ProdutoConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\TransportadoraConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\ClienteConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\EmpresaConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\UsuarioConfig.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\UsuarioTransportadoraConfig.cs" />
+    <Compile Include="CodeFirst\Repositorio\IUniCadDalCodeFirst.cs" />
+    <Compile Include="CodeFirst\Repositorio\UniCadDalCodeFirst.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\ConfigModels.cs" />
+    <Compile Include="CodeFirst\ConfiguracaoModelo\ConfigBuilder.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CodeFirst\Contexto\UniCadContexto.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".editorconfig" />
+    <None Include="app.config" />
+    <None Include="packages.config" />
+    <None Include="Raizen.UniCad.DAL.ruleset" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Model\Raizen.UniCad.Model.csproj">
+      <Project>{5F4045EC-8A4C-44DE-BE53-08DA2F93D784}</Project>
+      <Name>Raizen.UniCad.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

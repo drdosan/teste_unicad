@@ -1,0 +1,1430 @@
+-----------------------------------------------------------------------------------------------------------------------
+Raízen Framework Release Notes
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Versão: 1.8.2.17674
+Data: 05/03/2017
+Descrição: Correção da geração de exceção pela classe CodeFirstRepository
+
+1) FIX: com a introdução do novo tipo de exceção RaizenEntityExceptioin (implementado na versão 1.8.0, vide item 1 da
+documentação desta versão), o tratamento de erros desta camada foi alterado, para geração deste novo tipo de exceção,
+caso ocorra um erro do tipo DbEntityValidationException. Porém, nos casos onde outros tipos de erros eram gerados,
+a lógica apenas lançava a exceção recebida, usando o comando throw. Com isso, perdia-se a rastreabilidade via StackTrace,
+e não tínhamos os detalhes do erro ocorrido. Para preservar o Stack Trace da exceção original, em situações onde o erro
+ocorrido não seja do tipo DbEntityValidationException, passamos a lançar uma nova exceção do tipo RaizenException, com
+o texto "Erro tratado pela classe CodeFirstRepository do Framework Raizen", e com a exceção original encapsulada como
+InnerException.
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Versão: 1.8.1.22801
+Data: 28/02/2017
+Descrição: Correção da lógica de criação do objeto ClientService (proxy para chamadas ao WCF do UserSystem)
+
+1) FIX: com a introdução dos modos de autenticação para a classe ClientService (implementado na versão 1.8.0, vide item
+4 da documentação desta versão), ocorreu uma quebra de compatibilidade com as versões anteriores. A nova lógica obrigava
+que houvesse uma sessão criada para o modo de autenticação UsuarioSessao. Porém, nas versões anteriores, a lógica
+verificava se existia uma sessão e, caso não existisse, buscava os dados de autenticação a partir do arquivo de
+configuração da aplicação (mecanismo do modo UsuarioServico). A lógica foi atualizada para garantir que nenhuma aplicação
+que atualmente utilize este objeto seja impactada pela lógica de obrigatoriedade da existência de uma sessão para o modo
+de autenticação UsuarioSessao.
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Versão: 1.8.0.35242
+Data: 23/02/2017
+Descrição: Novas funcionalidades no Framework Raízen e UserSystem
+
+1) NEW: Criação do novo tipo de exceção RaizenEntityException (Raizen.Framework.Entity.Exceptions)
+Para exceções do tipo DbEntityValidationException, foi implementada uma exceção que encapsula os erros ocorridos e 
+melhor a legibilidade dos dados. Este objeto contém uma lista de erros (propriedade "Erros"), do tipo RaizenEntityErros,
+e cada instância de erro contém um objeto do tipo RaizenEntityErroObjeto. Este objeto contém todos os detalhes
+relacionados ao erro, como Tipo da Entidade, Estado da Entidade e Json contendo os dados da entidade. Para cada item
+falho, temos um objeto RaizenEntityErroPropriedade, onde é explicitado o nome do campo, o valor do campo, e o erro
+ocorrido baseado no validador de DataAnnotation deste campo. Com isso, é possível determinar exatamente, qual erro ocorreu
+em cada um dos campos do Modelo cuja validação falhou.
+
+É possível também usar o comando ToString, para gerar um detalhamento completo do erro ocorrido. Segue abaixo um exemplo dos
+detalhes gerados por esta classe de Exceção:
+
+Detalhes do(s) erro(s) ocorrido(s) na execução do Entity:
+---------------------
+Tipo: "Raizen.UserSystem.Model.Usuario", Estado: "Modified"
+Propriedade: "Status", Valor: "<sem_valor>", Erro: "Preenchimento Obrigatório!"
+Json: {"StatusImportacao":null,"Email":"CS279367@domain.local","Nome":"Usuario AD","ApagarSenhaAux":false,"QtdeTotalRegistros":0,"IdAplicacao":0,"IdPerfil":0,"CriadoPorNome":null,"CriadoPorEmail":null,
+"DominioAD":{"IsUUSDomain":false,"Id":2,"Name":"Rumo/ALL","Ldap":"LDAP://DC-WPS05","IsDefault":false,"IsActive":true,
+"StoreUser":null,StorePass":"<omitido>"},"UsuarioServico":false,"Id":38476,"Login":"CS279367","Senha":"<omitido>",
+"DataExpiracao":null,"Status":null,"ApagarSenha":null,"SapId":null,"Tipo":1,"Situacao":0,"IdADDomain":2,"CriadoPor":null}
+---------------------
+Depth: 1
+Type: Raizen.Framework.Entity.Exceptions.RaizenEntityException
+Message: Erro gerado pela classe CodeFirstRepository do Framework Raizen
+
+Note que existe uma lista de campos do Modelo onde o erro ocorreu (tipo RaizenEntityErroPropriedade), informando
+exatamente qual a falha (baseado nas mensagens de DataAnnotations). Além disso, temos um Json completo contendo os dados
+da instância do Modelo onde o erro de validação ocorreu.
+
+2) BREAK: Remoção do método AtualizarDadosLogOperacionalBackEnd da classe BaseLog (Raizen.Framework.Log.Bases)
+
+O método AtualizarDadosLogOperacionalBackEnd simplesmente atualizava a propriedade InfoLogOperacional, que é pública.
+É uma operação desnecessária, já que setar a propriedade InfoLogOperacional terá o mesmo efeito. Sendo assim, para
+adaptação do código, remover as chamadas ao método antigo, e associar os valores diretamente na propriedade pública.
+
+3) NEW: Criação do método InstanciarLogOperacionalFrontEnd (Raizen.Framework.Log.Client.Logger)
+
+Foi adicionado o novo método InstanciarLogOperacionalFrontEnd, na classe estática Logger. O método obtém automaticamente
+os dados de backend, e popula as informações no objeto interno. Os parâmetros IdModulo e IdPagina são úteis para
+identificar unicamente uma funcionalidade da sua aplicação, quando o log for gerado. Caso não informados, será gerado
+um objeto de log genérico, ainda contendo os dados identificados automaticamente. Este método é útil na criação deD
+logs operacionais.
+
+4) NEW: Novos modos de autenticação para o proxy de chamada ao UserSystem (ClientService)
+
+Foram criados novos mecanismos para criação da instância do objeto de proxy de chamadas ao WCF do UserSystem
+(Raizen.Framework.UserSystem.Proxy.ClientService). São eles:
+
+- ModoAutenticacaoWCF.UsuarioServico = faz a leitura das credenciais de acesso ao WCF do UserSystem a partir do
+arquivo de configuração da aplicação. Para mais detalhes sobre este mecanismo, consultar o item 5 da versão 1.6.0.
+
+- ModoAutenticacaoWCF.UsuarioSessao = faz a leitura das credenciais de acesso a partir da sessão do usuário atualmente
+logado, caso o sistema utilize integração com o SSO, ou implemente sua própria página de login mas utilize os métodos
+do Framework para criação da sessão do usuário. Caso não haja sessão ativa, o mecanismo segue com a leitura das
+cedenciais a partir do arquivo de configuração da aplicação, da mesma maneira que é feito para o modo de UsuarioServico.
+
+- ModoAutenticacaoWCF.TokenSessao = faz a leitura do token do SSO armazenado em sessão, para o usuário atualmente logado.
+Este mecanismo deve ser usado EXCLUSIVAMENTE para aplicações que façam login via SSO. O token é capturado e passado
+na chamada do canal WCF, como identificação do usuário que está executando o método.
+
+- ModoAutenticacaoWCF.CredenciaisParametrizadas = permite especificar, explicitamente, o usuário e senha a serem utilizados
+na chamada WCF do canal do UserSystem. Este modo de autenticação foi criado apenas como um recurso extra, em situações onde
+nenhum outro modo se encaixe. Sugerimos não utilizá-lo ou, caso realmente haja necessidade, favor contatar o time de
+Arquitetura de Sistemas para discussão de alternativas. Os outros modos de autenticação atendem a maioria das necessidades.
+
+- ModoAutenticacaoWCF.TokenParametrizado = análogo ao modo de autenticação de credenciais parametrizadas, este modo
+permite informar, explicitamente, um token do SSO, a ser usado para realização da chamada no canal WCF do UserSystem.
+Assim como no modo anterior, este modo foi criado apenas como uma alternativa. Deve-se buscar utilizar os outros modos
+de autenticação sempre que possível.
+
+5) NEW: Novos métodos disponibilizados no WCF do UserSystem
+
+Os seguintes métodos foram adicionados no WCF do UserSystem, e estão disponibilizados via classe de proxy (ClientService):
+
+- AutorizarUsoAplicacao
+
+Finalidade: Verifica se um determinado usuário possui permissão de acesso a uma aplicação. É verificado apenas se o
+usuário está incluído em algum perfil ativo da aplicação.
+
+Retorno: Container Response com o resultado da operação. Não há dados adicionais retornados (objeto Data é nulo). A
+operação é sinalizada apenas pelas propriedades "Success" e "Message". Caso o usuário possua permissão de acesso na
+aplicação (esteja em algum dos perfisl ativos), a propriedade Success sinaliza true. Caso contrário, sinaliza false.
+
+Assinatura: Response AutorizarUsoAplicacao(string siglaApp, string username)
+
+- BuscarUsuariosUserSystem
+
+Finalidade: Permite a busca de usuários no UserSystem, baseado em um conjunto de filtros pré definidos. IMPORRANTE:
+esta busca NÃO é realizada no AD. Para buscar usuários diretamente no AD, usar o método exclusivo para esta finalidade
+já disponível no proxy (BuscarUsuariosAD)
+
+Filtros: o filtro InfoUsuarioFiltro (Raizen.UserSystem.SAL.Model.Filtro) permite definir as seguintes informações:
+
+5.1) Campo: tipo de campo a ser buscado (Usuario, Nome e Email). Tipo: CampoBuscaUserSystem
+
+5.2) Operação: tipo de operação a ser executada (Igual, Contém, IniciaCom e TerminaCom). Tipo: OperacaoBuscaUserSystem
+
+5.3) Valor: valor a ser buscado, correspondente ao campo definido na propriedade "Campo". É obrigatório que o valor
+tenha, no mínio, 3 caracteres. Tipo: string
+
+5.4) MaxResultados: valor máximo de registros retornados por consulta. O valor deve variar entre 1 e 20. Qualquer valor
+maior que 20 será considerado inválido e um erro será gerado. Qualquer valor menor que 1, será considerado o valor
+máximo padrão (20). Tipo: int
+
+Retorno: Container Response com o resultado da operação. No caso de operação bem sucedida (Success = true), o campo Data
+conterá uma lista com os usuários do UserSystem que atendem ao filtro especificado (tipo InfoUsuario).
+
+Assinatura: Response<List<InfoUsuario>> BuscarUsuariosUserSystem(InfoUsuarioFiltro filtro)
+
+- AlterarUsuario
+
+Finalidade: Realiza a alteração do cadastro de um novo usuário (Interno ou Externo) no banco de dados do UserSystem. As regras
+aplicadas para validação do cadastro são as mesmas aplicadas na tela de usuários do site Administrativo.
+
+Ponto de atenção: este método não permite alteração de todos os dados do usuário. Os campos permitidos para alteração são:
+- Para qualquer tipo de usuário: Nome, Email, Status e SapId
+- Especificamente para usuário Externo (tipo = 0): Login, DataExpiracao, ApagarSenha, Situacao
+- Especificamente para usuário Interno (tipo = 1): DominioAD
+
+Retorno: Container Response com o resultado da operação. No caso de operação bem sucedida (Success = true), o campo Data
+conterá um objeto com os dados atualizados do usuário (tipo InfoUsuario). Estes dados são retornados, pois algumas
+informações do parâmetro "usuario" recebido neste método podem ter sido alteradas antes da atualização no banco de dados,
+dependendo das regras executadas durante a validação dos dados.
+
+Assinatura: Response<InfoUsuario> AlterarUsuario(InfoUsuario usuario)
+
+6) BREAK: Renomeado método AbsoluteUrlWithApp (Raizen.Framework.Utils.Extensions)
+
+O método AbsoluteUrlWithApp (extensão para HttpRequest) foi renomeado para AbsoluteBaseUrl. A lógica do método não foi alterada,
+ele continua retornando a Url base da aplicação, com a subaplicação caso exista. A alteração foi apenas para deixar mais claro
+que é a BaseUrl que será retornada.
+
+Ao atualizar a biblioteca do Framework Raízen, sugerimos ativar a compilação de views Mvc (cshtml) e recompilar a aplicação,
+para garantir que todos os pontos onde este método é utilizado sejam devidamente adaptados. Caso as views não sejam compiladas,
+e o antigo método seja utilizado, isto vai gerar um erro de runtime na aplicação, que não será possível identificar em tempo
+de desenvolvimento. A ativação da compilação das views garantirá que este cenário não ocorra, e indicará todos os pontos do
+código onde este método é utilizado. Outra estratégia é realizar um "replace all" nos arquivos da aplicação, trocando o nome
+do método.
+
+7) NEW: Adicionados novos métodos de extensão para diversos tipos de dados (Raizen.Framework.Utils.Extensions). É possível
+verificar o funcionamento de cada método a partir do IntelliSense do próprio Visual Studio.
+
+Tipo: DateTime e DateTime<Nullable>
+Métodos: ToStringPtBr, ToBeginDayTime, ToEndDayTime, ToSpecificTime, ToSqlServerCompatible, TotalMinutesIfGreaterThan, 
+         EqualsIgnoreTime
+
+Tipo: Enumerable<string>
+Métodos: ContainsIgnoreCase, ContainsTrimIgnoreCase
+
+Tipo: Enum
+Métodos: ConvertIntToEnum, ConvertByteToEnum, IsDefined, IsDescriptionDefined, IsIndexDefined
+
+Tipo: Generics (T)
+Métodos: GetCustomAttribute, InjectCondition
+
+Tipo: Nullable
+Métodos: SafeValue
+
+Tipo: String
+Métodos: TrimEnd, TrimEndIgnoreCase, LastIndexOfInvariant, ToLowerInvariant, ToStringOrValue, ToValueIfNullOrEmpty, 
+         ToValueIfNullOrWhiteSpace, IsValidEmailAddress, AppendFormatLine (tipo StringBuilder)
+		 
+8) NEW: Adicionados novos métodos de helpers (Raizen.Framework.Utils.Helpers). É possível verificar o funcionamento de
+cada método a partir do IntelliSense do próprio Visual Studio.
+
+DateTimeHelper
+Métodos: ObterDataHoraAtual, CalcularTotalMinutos, AdicionarMinutos, VerificarFimDeSemanaOuFeriado, 
+         NormalizarHorarioInicioExpediente, PreencherHorarioFimExpediente
+		 
+DnsHelper
+Métodos: GetLocalHostName, GetHostName, GetLocalHostIp, GetHostIP, IPHostEntry, IsPrivateIP
+
+MailHelper
+Métodos: EnviarEmail, ValidarEnderecoEmail
+
+9) BREAK: Remoção definitiva do construtor parametrizado da BaseController(desabilitarValidacao)
+
+O construtor parametrizado da classe BaseController, que recebe um flag indicando se a validação deve ser desabilitada
+ou não, foi descontinuado na versão 1.2 do Framework. Nesta versão, ele foi removido definitivamente. Qualquer código
+que ainda faça referência à este construtor deve ser substituído pelo construtor parametrizado que recebe o tipo
+enumerado BaseControllerOptions, usando a opção "NaoValidarAcesso"
+
+Ex:
+Antes: public MinhaController : BaseController(true)
+Agora: public MinhaController : BaseController(BaseControllerOptions.NaoValidarAcesso)
+
+10) BREAK: Remoção do método CarregarDadosLogOperacionalFrontEnd da classe ModelMVC (Raizen.Framework.Web.MVC.Bases)
+
+O método de criação de log operacional, que originalmente foi adicionado à classe ModelMVC (base para as classes de
+ViewModel), não fazia sentido, já que esta classe é do tipo POCO (não deveria conter métodos). O método foi adicionado
+por pura conveniência, mas agora foi transferido para a classe correta (Logger). Com isso, qualquer referência
+à este método deve ser substituída pela chamada do método estático InstanciarLogOperacionalFrontEnd da classe Logger
+(Raizen.Framework.Log.Client).
+
+Ex:
+Antes: var logOperacional = modelXpto.CarregarDadosLogOperacionalFrontEnd()
+Agora: var logOperacional = Logger.InstanciarLogOperacionalFrontEnd()
+
+11) NEW: Montagem do menu com ícones em páginas e módulos
+
+Com a implementação da versão 1.8 do UserSystem, foi disponibilizado um mecanismo onde é possível cadastrar ícones
+para páginas e módulos da aplicação. Na tela Administrativa do UserSystem, é possível configurar o campo Icone no
+cadastro das páginas e módulos, utilizando uma classe de Font-Awesome (ex.: fa fa-window-maximize), ou mesmo uma
+Url, que aponte para uma determinada imagem (ex.: ../img/icone.png, o endereço deve ser relativo ao endereço base
+da aplicação). Com estas informações populadas, o mecanismo de montagem de menu implementado no Framework identifica
+automaticamente estas configurações, e renderiza os ícones na montagem do menu.
+Não é necessário qualquer mudança de código fonte na aplicação. Basta apenas utilizar a versão 1.8 do Framework Raízen,
+e configurar os ícones nas respectivas páginas e módulos a partir da tela Administrativa do UserSystem.
+
+12) BREAK: Remoção do parâmetro "request" do método GetRotaMVC (Raizen.Framework.Web.MVC.Utils)
+
+O referido parâmetro não era utilizado pelo método, e foi removido. Para aplicações que fazem uso deste método, basta
+alterar as chamadas, passando apenas o parâmetro de tipo de rota, e removendo o parâmetro de request.
+
+13) BREAK: Alterações na biblioteca do SSO (Raizen.SSO.dll)
+
+A biblioteca compartilhada do SSO sofreu diversas alterações, para implementação de melhorias no SSO versão 1.8. Dentre
+as mais importantes, foi implementada a separação de tokens gerados para páginas Web (integração com o SSO via interceptador)
+e tokens gerados pela API para mobiles. Desta maneira, evitamos que tokens de aplicações mobile (que geralmente tem uma
+validade maior) sejam invalidados quando o usuário realiza logoff em uma aplicação web.
+
+Aqui cabe uma explicação técnica a respeito desta biblioteca: ela contém a camada de backend utilizada pelo servidor do SSO
+(camada BLL), juntamente com algumas funcionalidades a serem usadas no lado cliente (aplicação que faz uso do SSO). Em
+futuras evoluções, esta biblioteca será quebrada em duas, garantindo que apenas métodos de uso cliente sejam disponibilizados,
+e os métodos de uso exclusivo do servidor do SSO sejam mantidos encapsulados no próprio servidor. Enquanto esta alteração
+não é implementada, marcamos os métodos de uso exclusivo do lado servidor com um comentário na descrição do método. Via
+IntelliSense, é possível verificar esta descrição. Não utilizem métodos cuja a descrição seja "Uso EXCLUSIVO para chamadas
+efetuadas a partir do servidor SSO", pois eles não funcionarão no escopo da aplicação cliente.
+
+Os métodos da classe SignOnBusiness (Raizen.SSO.BLL) foram reorganizados. Alguns novos métodos foram criados, são eles:
+
+ChamarApiRemocaoToken: proxy para chamada da remoção (invalidação) do token no servidor do SSO. Este método finaliza
+a sessão de SSO no servidor, o que torna o token armazenado no cliente inválido.
+
+ChamarApiValidacaoToken: proxy para chamada do método que realiza a validação de um determinado token. Até então, não
+havia um método para este fim disponibilizado na biblioteca cliente. As aplicações tinham que implementar manualmente as
+chamadas via HttpClient. Este método encapsula toda a lógica de chamada da API, bastando apenas informar o token, e o
+retorno será um flag indicando se o token é válido (true) ou não (false).
+
+Obs: para os dois métodos mencionados acima, é necessário que a Url do SSO esteja corretamente setada no arquivo de
+configuração da aplicação (chave URL_SSO). Caso contrário, as chamadas falharão. 
+
+Na reorganização, foram também removidos alguns métodos da classe SignOnBusiness (Raizen.SSO.BLL). São eles:
+
+ValidarToken
+ValidarTokenApi
+ValidarTokenAppSolicitada
+
+Se, por algum motivo, sua aplicação esteja utilizando um destes métodos, e houver quebra na compilação, solicitamos que
+entrem em contato com o time de Arquitetura de Sistemas. Estes métodos eram de uso do servidor do SSO, e se algum cliente
+esteja fazendo uso, está incorreto. Podemos auxiliar nesta verificação se necessário.
+
+14) NEW: Alterações realizadas no UserSystem para a versão 1.8
+
+Foram corrigidos diversos bugs e implementadas algumas melhorias na versão 1.8 do UserSystem. Dentre as principais
+alterações, destacamos:
+
+- Inclusão da possibilidade de uso de ícones para páginas e módulos, no menu exibido na aplicação
+
+- Criação dos métodos AutorizarUsoAplicacao, BuscarUsuariosUserSystem e AlterarUsuario. Estes métodos já foram descritos
+no item 5 desta versão.
+
+- Alteração da estrutura interna da tabela de usuários, criando uma nova chave primária. Nas versões anteriores,
+a chave primária era o username (varchar). Isso limitava bastante a implementação de melhorias, pois em nenhum momento
+era possível alterar o nome do usuário. Nesta nova versão, foi criada uma chave primária inteira (Id), e o campo username
+recebeu apenas uma constraint unique, garantindo que não teremos dois usuários com o mesmo login. Esta alteração foi
+extensa, e impactou quase toda a estrutura do banco de dados. Vários mecanismos precisaram ser adaptados/atualizados, para
+que esta alteração fosse possível. Porém, o ganho da alteração foi expressivo, e nos permitiu melhorar a performance de
+diversos mecanismos que dependiam de operações com campos varchar, além de nos permitir a criação de índices para aumentar
+ainda mais a performance das operações. Além disso, a alteração possibilitou a implementação de uma nova possibilidade
+no cadastro de usuários, que é o uso de emails no campo de username.
+A partir desta versão, qualquer usuário do tipo Externo pode ser cadastrado usando um endereço de email válido. A única
+regra imposta é que, nestas situações, o campo username e o campo email devem ser idênticos. Em outras palavras, ao
+se cadastrar um usuário com o username "xpto@acme.com", o UserSystem obriga que o campo de email seja informado exatamente
+como "xpto@acme". Isso nos garante que haverá coerência entre a identificação de usuário e seu email. O novo método de
+alteração de usuários permite que o campo de login seja alterado, já que agora a identificação do usuário é a partir do Id.
+A mesma regra descrita acima vale para alterações (se usado email no username, o campo email deve ser idêntico).
+Algumas aplicações implementavam um "de/para" entre o nome de usuário no UserSystem, e o nome do usuário na aplicação. Isso
+porque não era possível cadastrar um usuário com mais de 25 caracteres, o que dificultava bastante a identificação. Por
+exemplo, algumas aplicações usavam identificadores e prefixos para nomear seus usuários (por exemplo, 12354_NFE). Então,
+a aplicação fazia um mapeamento local, que permitia que o usuário informasse seu email (ou mesmo, um número de CPF) e,
+internamente, gerava o formato do nome de usuário salvo no UserSystem, antes de realizar qualquer operação (principalmente
+autenticação). Isso causava diversos problemas, e demandava um tempo considerável para se adaptar as lógicas, além de não
+permitir a reutilização de usuários para outras aplicações (cada aplicação cria seus próprios usuários). Assim, a partir de
+agora é possível as aplicações utilizarem os próprios emails dos usuários para efetuar o cadastro, eliminando a necessidade
+de implementação de transformações de "de/para" entre o UserSystem e a aplicação, além de aumentar a possibilidade de
+reuso de usuários, já que eles serão mais facilmente identificados (por exemplo, o usuário "xpto@acme.com" poderá ser
+associado a diversas aplicações, e haverá apenas um único cadastro deste usuário).
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Versão: 1.7.7.26768
+Data: 30/12/2016
+Descrição: Correção de atualização da sessão do usuário quando um novo token é enviado pelo SSO
+
+1) FIX: as lógicas do Interceptador SSO, BaseController e BasePage foram atualizadas, para tratar situações onde é
+detectado que o token do usuário é inválido (inexistente ou expirado), e um novo token é gerado. Nestes casos, o token
+era atualizado no SSO, mas a sessão com os dados do UserSystem não eram atualizados na aplicação. Poderia ocorrer a
+situação onde um novo usuário efetuou login na aplicação, mas os dados exibidos na aplicação correspondem ao antigo
+usuário logado na aplicação. A correção aplicada força o reset dos dados de sessão do usuário no Interceptador do SSO,
+quando um novo token é recebido. Com isso, as lógicas da BaseController e BasePage realizam novamente a carga dos dados
+do usuário a partir do UserSystem, utilizando as informações do novo token recebido.
+
+IMPORTANTE: esta atualização é extremamente importante, e todas as aplicações DEVEM APLICAR esta versão.
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Versão: 1.7.6.15133
+Data: 21/10/2016
+Descrição: Correção do tratamento dos atributos UUSAuthorizeAction e UUSAuthorizeId
+
+1) FIX: Os atributos UUSAuthorizeAction e UUSAuthorizeId, introduzidos na versão 1.7.0 (vide item 8 desta versão) não
+estavam funcionando para o propósito de controlar acesso à nível de Action e à nível de ID. Mesmo a Action estando
+decorada com um destes atributos, o controle não era executado efetivamente. A correção foi feita e novos testes de
+regressão foram executados em aplicações que fazem uso destes atributos, para garantir o correto funcionamento
+
+2) Incluída obrigatoriedade de se informar o parâmetro nomeado "Id" no uso do atributo UUSAuthorizeId. Como este
+atributo utiliza o mecanismo de parâmetros nomeados, não é possível forçar o uso deste parâmetro em tempo de design.
+Foi incluída, então, uma validação em tempo de execução, caso este atributo seja utilizado, e não seja informado um
+valor para o parâmetro Id, a seguinte exceção é lançada:
+
+Tipo: System.ArgumentException
+Mensagem: Para uso do atributo UUSAuthorizeId, é obrigatório informar o(s) ID(s) a ser(em) autorizado(s). Para
+autorizar qualquer ID, utilizar o valor "*"
+
+Como a mensagem sugere, foi implementada a possibilidade de uso do caracter "*", para denotar "validar acesso" para
+qualquer Id recebido. Ainda é possível informar uma lista de IDs separados por vírgula, ou mesmo uma expressão regular
+válida. Lembrando que não faz sentido o uso do atributo UUSAuthorizeId sem especificar quais IDs devem ser validados,
+uma vez que por padrão todos os IDs são liberados, a menos que a action esteja decorada com este atributo e os IDs a
+serem validados estejam especificados. Utilizar o atributo sem especificar qualquer Id não surte efeito, e é o mesmo
+que não utilizar o atributo.
+
+A expressão regular deve ser compatível com o padrão utilizado pela classe System.Text.RegularExpressions.Regex
+do Framework .NET. Para mais detalhes, consultar a documentação oficial da Microsoft em:
+https://msdn.microsoft.com/pt-br/library/system.text.regularexpressions.regex(v=vs.110).aspx
+
+Existe também um manual de melhores práticas para uso de expressões regulares em .NET, também da própria Microsoft,
+e pode ser consultado em:
+https://msdn.microsoft.com/pt-br/library/gg578045(v=vs.110).aspx
+
+IMPORTANTE: para os sistemas que fazem uso atualmente do atributo UUSAuthorizeId sem informar o parâmetro Id, é
+necessário alteração de código para explicitar o(s) Id(s) a ser(em) validado(s). Caso contrário, a execução vai gerar
+um erro de runtime.
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Versão: 1.7.5.22336
+Data: 05/10/2016
+Descrição: Inclusão do parâmetro "siglaAplicacao" nos construtores da classe de proxy do UserSystem
+
+1) Incluído novo parâmetro "siglaAplicacao" nos construtores da classe ClientService (Raizen.Framework.UserSystem.Proxy).
+Este parâmetro também foi disponibilizado via propriedade "SiglaAplicacao".
+
+Se informado, a classe de proxy ignora a sigla de aplicação especificada no arquivo de configuração da aplicação, e
+utiliza o valor fornecido. Caso contrário, a sigla do arquivo de configuração é utilizada (funcionamento padrão nas
+versões anteriores).
+
+Isto permite flexibilizar as chamadas ao UserSystem, nos casos em que é necessário alterar a configuração de alguma
+aplicação que não seja a própria aplicação que esteja fazendo a chamada. Ex.: uma mesma aplicação possui 2 sites, um
+interno outro externo, e 2 registros distintos no UserSystem. Usando este novo mecanismo, é possível fazer alterações
+no cadastro da aplicação Externa, utilizando telas de gerenciamento na aplicação Interna.
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Versão: 1.7.4.17062
+Data: 30/09/2016
+Descrição: Inclusão de novo construtor parametrizado para a classe de proxy do UserSystem
+
+1) Incluído novo construtor parametrizado para a classe ClientService (Raizen.Framework.UserSystem.Proxy). Este
+construtor recebe um parâmetro parâmetro "modo", do tipo enumerado "ModoAutenticacaoWCF", que permite configurar o
+proxy da seguinte maneira:
+
+- ModoAutenticacaoWCF.UsuarioServico = faz a leitura das credenciais de acesso ao WCF do UserSystem a partir do
+arquivo de configuração da aplicação. Para mais detalhes sobre este mecanismo, consultar o item 5 da versão 1.6.0.
+
+- ModoAutenticacaoWCF.UsuarioSessao = faz a leitura das credenciais de acesso a partir da sessão do usuário atualmente
+logado, caso o sistema utilize integração com o SSO, ou implemente sua própria página de login mas utilize os métodos
+do Framework para criação da sessão do usuário. Caso não haja sessão ativa, o mecanismo segue com a leitura das
+cedenciais a partir do arquivo de configuração da aplicação, da mesma maneira que é feito para o modo de UsuarioServico.
+
+O construtor padrão inicializa a classe com o tipo de autenticação "UsuarioSessao" como padrão. Este valor é utilizado
+como padrão, para garantirmos que lógicas já existentes que utilizem o ClientService não sejam afetadas pela mudança.
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Versão: 1.7.3.14563
+Data: 16/06/2016
+Descrição: Correção da lógica de verificação de autenticação para páginas MVC (BaseController)
+
+1) FIX: correção da lógica do OnActionExecuting da classe BaseController (Raizen.Framework.Web.MVC.Bases), nas situações
+onde não há integração com o SSO e o redirecionamento ocorre para a rota de login setada no arquivo de configuração da
+aplicação. O redirecionamento via ActionResult (filter) não estava ocorrendo quando era detectado que o usuário não
+estava autenticado. A lógica continuava a ser executada e era verificada a autorização de acesso, o que resultava em uma
+mensagem de acesso negado ao invés do redirecionamento para a rota de login configurada. Foi incluída uma verificação do
+retorno do método VerificarAutenticacao, que encerra a execução e realiza o redirecionamento caso o usuário não esteja
+autenticado.
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Versão: 1.7.2.16992
+Data: 09/06/2016
+Descrição: Remoção das referências de bibliotecas externas (3rd Party) e configuração destas bibliotecas via NuGet
+
+Esta versão é basicamente uma recompilação da versão anterior (1.7.1), com a diferença que a partir de agora as versões
+do Framework Raízen não mais carregarão as bibliotecas de referências externas (antigas pastas Asp.Net, EntityFramework,
+Log, OpenXml, ReportViewer e Zip).
+
+A estrutura de deploy do Framework agora possui apenas as seguintes pastas:
+
+Raizen.Framework: biblioteca padrão do Framework Raízen
+SSO: biblioteca que contém o Módulo Interceptador IIS para integração com o SSO
+UserSystem: bibliotecas de integração com o UserSystem
+
+O restante das bibliotecas (dependências) deverão ser baixadas diretamente do NuGet. Para isto, os projetos que fazem
+uso das bibliotecas do Framework Raízen devem incluir, minimamente, os seguintes itens no arquivo de configuração do
+NuGet (packages.config):
+
+- Bibliotecas mínimas para uso do Framework Raízen:
+
+<package id="Antlr" version="3.4.1.9004" targetFramework="net40" />
+<package id="DataAnnotationsExtensions" version="1.1.0.0" targetFramework="net40" />
+<package id="EntityFramework" version="6.1.3" targetFramework="net40" />
+<package id="log4net" version="2.0.5" targetFramework="net40" />
+<package id="Microsoft.AspNet.Mvc" version="4.0.20710.0" targetFramework="net40" />
+<package id="Microsoft.AspNet.Razor" version="2.0.20710.0" targetFramework="net40" />
+<package id="Microsoft.AspNet.WebPages" version="2.0.20710.0" targetFramework="net40" />
+<package id="Microsoft.Net.Http" version="2.0.20710.0" targetFramework="net40" />
+<package id="Microsoft.Web.Infrastructure" version="1.0.0.0" targetFramework="net40" />
+<package id="Newtonsoft.Json" version="7.0.1" targetFramework="net40" />
+<package id="Unofficial.Ionic.Zip" version="1.9.1.8" targetFramework="net40" />
+
+Sugerimos incluir manualmente estas bibliotecas no arquivo packages.config, executar o comando UpdatePackage -reinstall
+no prompt do NuGet. Isso fará a reinstalação automática das bibliotecas, adicionando possíveis bibliotecas que não existam
+do projeto que está sendo compilado.
+
+IMPORTANTE: todas as bibliotecas listadas acima devem ser utilizadas nos projetos, caso contrário, os mecanismos internos
+do Framework não funcionarão corretamente.
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Versão: 1.7.1.25479
+Data: 20/05/2016
+Descrição: Correções na geração de log de contingência e validação de rotas legadas
+
+1) FIX: correção na lógica de geração do log de erro/operacional em tabelas de banco de dados (logger LogRaizen4Net).
+Não estavam sendo logados erros em arquivo (contingência) caso a operação de banco falhasse por algum motivo. Esta
+correção garante que o erro ocorrido na inserção do log no banco seja devidamente registrado no arquivo de log de
+contingência da aplicação (logger LogRollingFile).
+
+2) FIX: separação das lógicas de autorização de acesso à Controllers para páginas configuradas como tipo Legado e tipo
+MVC. Era utilizada uma lógica única, que buscava pelo nome da Controller, buscando os campos MVCAction e MVCId com
+valor nulo (nova regra de validação de rotas do tipo MVC). Como na antiga validação (legada) estes campos não existiam,
+para garantir que a autorização não seja executada incorretamente, a verificação destes campos foi removida, e foi
+mantido apenas a verificação da Controller em si.
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Versão: 1.7.0.20436
+Data: 09/05/2016
+Descrição: Separação de lógicas específicas para Rotas MVC e Urls padrão
+
+Resumo:
+
+Esta versão implementou uma separação de tipos de página a serem cadastradas no UserSystem. Até a versão 1.6, todas
+as páginas eram cadastradas usando um campo único chamado "Url". Para páginas MVC, existia um campo adicional chamado
+"Controller", e qualquer valor colocado no campo "Url" era tratado como uma "Action". Esta parametrização era confusa,
+e pouco escalável.
+
+O cadastro de páginas do UserSystem foi dividido em 3 tipos:
+
+- MVC: usado exclusivamente para sistemas implementados em MVC, onde temos dados de rota. Os componentes de rota
+manipulados neste caso são Area, Controller, Action e Id
+
+- Padrão: usado exclusivamente para sistemas que não utilizam implementação MVC, e usam um formato de Url padrão
+(ex: http://host.com/pasta1/pasta2/pagina.aspx)
+
+- Legado: usado para qualquer sistema que não tenha sido atualizado para a versão 1.7 (ou superior) do Framework Raízen.
+Basicamente, este tipo corresponde aos detalhes descritos no início do resumo, e foi mantido para que sistemas que usem
+versões anteriores a 1.7 funcionem corretamente.
+
+Esta alteração impactou tanto o UserSystem, como o SSO, e o próprio Framework Raízen. Houve uma grande alteração nas
+lógicas internas, desde montagem dos menus, até verificação de autorização de acesso às páginas. Porém, foi feita de
+maneira a garantir a compatibilidade para versões anteriores, evitando "quebras" no código fonte e/ou funcionamento
+incorreto das aplicações.
+
+IMPORTANTE: Caso sua aplicação seja atualizada para esta versão do Framework Raízen, não há obrigatoriedade de se alterar o
+cadastro das páginas no UserSystem, uma vez que todas as páginas são, inicialmente, consideradas como tipo "Legado". À
+medida em que novas páginas forem criadas, ou páginas existentes forem editadas, pode-se optar por atualizar o tipo, para
+um dos dois novos tipos criados. Note, porém, que os novos tipos NÃO são compatíveis com versões anteriores, então qualquer
+alteração feita nessas condições acarretará no funcionamento incorreto da integração da aplicação com o UserSystem e o SSO,
+montagem de menus, etc. A tela de edição de páginas do UserSystem foi atualizada para exibir uma mensagem de aviso quando uma
+página legada é alterada para um dos dois novos tipos. Porém, tal mensagem não é exibida no caso de criação de novas páginas.
+Sendo assim, pedimos atenção neste ponto ao realizar a criação de novas páginas, garantindo que seja usado o tipo "Legado"
+caso a versão do Framework Raízen usado pela sua aplicação seja anterior à 1.7.
+
+Detalhes técnicos:
+
+1) Adicionada classe Dominios (Raizen.Framework.UserSystem.Dominios), com enumerações referentes aos valores usados pelo
+UserSystem para identificações diversas. São elas:
+
+TipoPagina
+TipoStatus
+TipoUsuario
+SituacaoUsuario
+
+Todas as enumerações possuem a anotação Description, que podem ser utilizadas para leitura dos valores texto referentes à
+cada um dos itens. Utilizar o namespace Raizen.Framework.Utils.Extensions, que disponibiliza o método de extensão
+"GetDescription" para itens enumerados.
+
+2) Adicionado novo atributo customizado StringLengthRaizen (Raizen.Framework.Utils.CustomAnnotation). Este atributo
+permite definir o tamanho máximo de uma string, e um flag indicando se a string deve ser truncada ou não se seu tamanho
+exceder o máximo definido. Este atributo deve ser utilizado em conjunto com o método de extensão EnsureStringMaxLength
+(Raizen.Framework.Utils.Extensions), aplicado às classes de modelo. Segue um exemplo de uso deste conjunto:
+
+Considerando uma classe de modelo definida da seguinte maneira:
+
+public class LogErro
+{
+	[StringLengthRaizen(100, ErrorMessage = "Tamanho irregular para o campo.", TruncateIfStringLengthExceeded = true)]
+	[DataMember]
+	public String Message { get; set; }
+}
+
+Podemos utilizar a chamada de um método de insert (Adicionar) da seguinte maneira:
+
+base.Adicionar(logErro.EnsureStringMaxLength())
+
+Assim, antes de adicionar o objeto de model no banco de dados, o método EnsureStringMaxLength fará uma busca de todos os campos
+marcados com o atributo StringLengthRaizen, e que possuem a flag TruncateIfStringLengthExceeded = true. No exemplo acima, o campo
+Message tem um valor máximo definido para 100 caracteres, e o flag de checagem marcado. Assim, qualquer valor que exceda 100
+caracteres no campo Message será truncado na própria instância da model.
+
+O intuito é evitar que strings com tamanho maior do que o definido para a coluna no banco sejam enviados em comandos DDL, o que
+resultaria na mensagem de erro "String or binary data would be truncated" (no caso de bancos SQL Server).
+
+3) Adicionados novos métodos de extensão para Generics (Raizen.Framework.Utils.Extensions). São eles:
+
+- CompareProperties
+
+Finalidade: Compara os valores de todas as propriedades públicas de duas instâncias, e retorna o resultado da comparação.
+IMPORTANTE: Propriedades privadas ou protegidas NÃO são comparadas. Para uso deste método, é necessário adicionar a referência
+da biblioteca Newtonsoft.Json.dll (disponível em /DEPLOY/Asp.Net). Caso contrário, ocorrerá um erro de runtime, já que o método
+utiliza esta biblioteca para execução da lógica.
+
+Retorno: booleano indicando se os valores de todas as propriedades públicas são iguais (true) ou não (false).
+
+Assinatura: static bool CompareProperties<T>(this T source, T other) where T : class
+
+Exemplo:
+
+if (objeto1.CompareProperties(objeto2))
+	return "Propriedades públicas iguais";
+else
+	return "Propriedades públicas diferentes";
+
+- HasMarkerAttribute
+
+Finalidade: verifica se uma instância possui um determinado atributo associado.
+
+Retorno: booleano indicando se a instância possui o atributo do tipo especificado (true) ou não (false)
+
+Assinatura: static bool HasMarkerAttribute<T>(this Type source) where T : Attribute
+
+Exemplo:
+
+if (objeto1.HasMarkerAttribute<UUSAuthorizeActionAttribute>())
+	return "Objeto possui o atributo UUSAuthorizeAction";
+else
+	return "Objeto não possui o atributo UUSAuthorizeAction";
+
+- GetCustomAttributes
+
+Finalidade: lista todos os atributos customizados, de um determinado tipo, atrelados a uma determinada instância.
+
+Retorno: lista enumerada de atributos do tipo definido
+
+Assinatura: static IEnumerable<T> GetCustomAttributes<T>(this Type source) where T : Attribute
+
+Exemplo:
+
+// Retorna todos os atributos do tipo UUSAuthorizeAction atrelados à instância
+return objeto1.GetCustomAttributes<UUSAuthorizeActionAttribute>();
+
+- EnsureStringMaxLength
+
+Vide detalhes deste método no item 2
+
+4) Adicionados novos métodos de extensão para HttpRequest (Raizen.Framework.Utils.Extensions). São eles:
+
+- GetRequestBase
+
+Finalidade: obtém um objeto do tipo HttpRequestBase a partir de um objeto do tipo HttpRequest
+
+Retorno: instância do tipo HttpRequestBase
+
+Assinatura: static HttpRequestBase GetRequestBase(this HttpRequest request)
+
+- GetRouteDataValue
+
+Finalidade: obtém o valor de um determinado dado de rota, identificado pelo parâmetro "key"
+
+Retorno: valor (string) referente ao campo (key) de rota solicitado
+
+Assinatura: static string GetRouteDataValue(this HttpRequestBase request, string key)
+
+Exemplo:
+
+// Lê o valor do campo "controller" dos dados de rota associados ao request
+request.GetRouteDataValue("controller")
+
+- GetRouteTokenValue
+
+Finalidade: obtém o valor de um determinado token de rota, identificado pelo parâmetro "token"
+Obs.: alguns valores no dicionário de rotas são armazenados como tokens, e não como dados. Estes
+tokens não são diretamente ligados à resolução da Url, e carregam apenas informações adicionais
+em relação à rota (por exemplo, divisão de áreas em um projeto MVC). Para mais detalhes, consultar
+a documentação sobre DataTokens em:
+https://msdn.microsoft.com/en-us/library/system.web.routing.routedata.datatokens(v=vs.110).aspx
+
+Retorno: valor (string) referente ao token de rota solicitado
+
+Assinatura: static string GetRouteDataToken(this HttpRequestBase request, string token)
+
+Exemplo:
+
+// Lê o valor do token "area" dos dados de rota associados ao request
+request.GetRouteDataToken("area")
+
+5) Adicionada nova classe com métodos de extensão para tipos IQueryable. Os métodos disponíveis são:
+
+- ToTraceQuery
+
+Finalidade: obtém a query SQL que será gerada e executada no banco de dados pelo Entity Framework, já
+com os valores dos parâmetros substituídos. O resultado deste método é uma query que pode ser executada
+diretamente em um cliente SQL Server, para efeito de debug.
+
+Retorno: query SQL que será gerada pelo Entity Framework no momento que o objeto IQueryable for executado
+no banco de dados.
+
+Assinatura: static string ToTraceQuery<T>(this IQueryable<T> query)
+
+- ToTraceString
+
+Finalidade: obtém a query SQL que será gerada e executada no banco de dados pelo Entity Framework, porém
+sem os valores dos parâmetros substituídos. O resultado deste método mostra a query "crua" (intermediária)
+que o Entity Framework vai gerar, com parâmetros nomeados dinamicamente.
+
+Retorno: query SQL intermediária, que será gerada pelo Entity Framework antes da substituição dos valores
+dos parâmetros nomeados dinamicamente.
+
+Assinatura: static string ToTraceString<T>(this IQueryable<T> query)
+
+6) Adicionados novos métodos de extensão para String (Raizen.Framework.Utils.Extensions). São eles:
+
+- Truncate
+
+Finalidade: trunca (limita) uma string baseado em um tamanho máximo.
+
+Retorno: string truncada (caso o tamanho da instância exceda o tamanho máximo informado) ou string 
+sem alterações, caso contrário.
+
+Assinatura: static string Truncate(this string s, int maxLength)
+
+- EqualsNullWhiteSpace
+
+Finalidade: compara duas strings, considerando-as iguais se ambas são nulas, vazias ou possuem apenas
+espaços em branco (não importa a combinação, uma pode ser nula e outra possuir apenas espaços em branco,
+e ambas serão consideradas iguais)
+
+Retorno: booleano indicando se ambas as strings são nulas, vazias ou possuem apenas espaços em branco
+
+Assinatura: static bool EqualsNullWhiteSpace(this string s1, string s2)
+
+- TrimLeadingSlashes, TrimTrailingSlashes, TrimSlashes
+
+Finalidade: remove o caracter de barra (/) apenas do início (TrimLeadingSlashes), apenas do final
+(TrimTrailingSlashes) ou de ambos (TrimSlashes) de uma determinada string
+
+Retorno: string sem as barras no inicio, no final ou em ambos (dependendo do método utilizado)
+
+Assinaturas:
+static string TrimLeadingSlashes(this string s1)
+static string TrimTrailingSlashes(this string s1)
+static string TrimSlashes(this string s1)
+
+7) Alterado nome da classe "SerializeWeb" para "Serializer" (Raizen.Framework.Utils.Serialize). As funcionalidades
+não foram alteradas, então basta substituir o nome da classe nas chamadas construídas com as versões anteriores
+do Framework Raízen (o compilador acusará o erro quando a versão for atualizada).
+
+8) Criação de novos atributos para autorização do uso de Actions e IDs MVC, baseado na configuração do UserSystem.
+Os atributos criados são:
+
+- UUSAuthorizeActionAttribute (Raizen.Framework.Web.MVC.Attributes)
+
+Finalidade: autorizar o acesso à uma determinada Action MVC, baseado na configuração do perfil do usuário no UserSystem.
+Este atributo deve ser usado, exclusivamente, na decoração de métodos de Action em Controllers MVC.
+
+Requisitos: para uso deste atributo, deve existir, obrigatoriamente, um cadastro da Controller no UserSystem sem qualquer
+Action associada, além de um registro específico para a Action que está sendo autorizada. Caso contrário, não seria possível
+criar uma árvore de validação, nem negar acesso à Controller inteira.
+
+Exemplos de uso: considere o cenário abaixo
+
+Controller: Usuario
+Actions: Adicionar (decorado com o atributo UUSAuthorizeAction), Alterar, Remover, Selecionar
+
+A Action Adicionar estaria declarada como:
+
+[UUSAuthorizeAction]
+public ActionResult Adicionar(Model model) { ... }
+
+No UserSystem, deve haver, pelo menos, 2 registros cadastrados:
+/Usuario (sem action)
+/Usuario/Adicionar
+
+A regra de autorização da rota /Usuario/Adicionar neste caso seria:
+
+Primeiro: verificar acesso na Controller (registro sem Action). Se estiver negado no UserSystem, não permite acesso e termina
+Segundo: verificar se existe o atributo UUSAuthorizeAction para a Action Adicionar da controller Usuario. Caso não exista,
+o acesso é liberado (significa que não é para autorizar o uso da Action, então consideramos que pode ser acessada) e termina.
+Terceiro: verificar se o acesso está negado para a action Adicionar. Caso esteja, não permite acesso e termina. Caso
+contrário, autoriza
+
+Para as demais actions da Controller, mesmo existindo um registro no UserSystem negando o acesso, se não houver a decoração
+do atributo UUSAuthorizeAction, o acesso não é verificado e será liberado. Sendo assim, caso necessite validar a autorização
+de uma Action, deve-se cadastrá-la no UserSystem e também decorá-la no código fonte com o atributo UUSAuthorizeAction
+
+Existe a possibilidade de informar uma Tag de Ação específica do UserSystem, para ser validada junto com a Action. Por
+padrão, caso nenhuma tag seja especificada, o mecanismo valida a tag "load". Caso exista alguma tag adicional associada à
+Action, e seja especificada no atributo UUSAuthorizeAction, é esta tag que será utilizada para validar a autorização.
+Por exemplo, digamos que a rota /Usuario/Adicionar possui uma tag "add" no UserSystem, além da tag padrão de "load" e que
+a Action esteja declarada da seguinte maneira:
+
+[UUSAuthorizeAction(TagAcao="add")]
+public ActionResult Adicionar(Model model) { ... }
+
+Neste caso, o mecanismo vai ignorar a configuração da tag "load", e utilizará o que estiver configurado na tag "add" para validar
+a autorização de uso. Caso seja necessário autorizar também a tag "load", é necessário especificá-la explicitamente na lista. Então,
+o valor do parâmetro seria TagAcao="load,add".
+
+- UUSAuthorizeIdAttribute (Raizen.Framework.Web.MVC.Attributes)
+
+Finalidade: autorizar o acesso a um Id (ou grupo de Ids) específicos de uma Action MVC, baseado na configuração do perfil do usuário
+no UserSystem. Este atributo deve ser usado, exclusivamente, na decoração de métodos de Action em Controllers MVC.
+
+Requisitos: para uso deste atributo, deve existir, obrigatoriamente, uma parametrização para a Controller e Action à qual o Id pertence,
+segundo descrito no item acima (veja atributo UUSAuthorizeAction). Além disso, é necessário o cadastro da Action no UserSystem sem qualquer
+Id associado, além de um registro específico para cada Id. Caso contrário, como no atributo de autorização de Action, não seria possível
+criar uma árvore de validação.
+
+Exemplos de uso: considere o cenário abaixo, onde temos uma única Action para gerar relatórios diferentes, identificados por um Id, e que
+queremos controlar o acesso à cada tipo de relatório para perfis diferentes (configurado no UserSystem).
+
+Controller: Relatorio
+Action: Gerar (decorado com o atributo UUSAuthorizeId)
+Ids a serem validados: 1, 2 e 5
+
+A Action Gerar estaria declarada como:
+
+[UUSAuthorizeId]
+public ActionResult Adicionar(Model model) { ... }
+
+Apesar de ser permitido definir o atributo vazio (sem parâmetros), neste caso não faz sentido, pois como nenhum Id foi especificado,
+o acesso seria liberado para todos os Ids (o atributo não surtiria efeito). Neste atributo, só é verificada a autorização de uso do(s)
+Id(s) especificado(s) no atributo. Então, como no nosso exemplo, queremos validar apenas os Ids 1, 2 e 5, a declaração da Action deveria
+ser:
+
+[UUSAuthorizeId(Id="1,2,5")]
+public ActionResult Adicionar(Model model) { ... }
+
+Além de uma lista separada por vírgula, o parâmetro Id aceita expressões regulares simples. Por exemplo, se quisermos validar apenas
+Ids iniciados com o número 1, poderíamos declarar o parâmetro Id como "1*". Assim, qualquer Id 1, 15, 100, 1454, seriam incluídos na
+validação.
+
+No UserSystem, deve haver, pelo menos, 5 registros cadastrados:
+/Relatorio (sem action)
+/Relatorio/Gerar (sem id)
+/Relatorio/Gerar/1 (referente ao Id = 1)
+/Relatorio/Gerar/2 (referente ao Id = 2)
+/Relatorio/Gerar/5 (referente ao Id = 5)
+
+A regra de autorização da rota /Relatorio/Gerar/1 neste caso seria:
+
+Primeiro: executa exatamente os mesmos passos que são executados para o atributo UUSAuthorizeAction (vide especificação deste atributo
+para mais detalhes). Sendo assim, num cenário onde há autorização no nível de Id, não há necessidade de decorar a Action com o atributo
+UUSAuthorizeAction, uma vez que o atributo UUSAuthorizeId executa exatamente as mesmas validações que o anterior, além das validações
+do próprio nível de Id (a validação é hierárquica e top/down)
+Segundo: verificar se existe Id na rota que está sendo acessada. Caso não exista, o acesso é liberado e termina
+Terceiro: verificar se o Id da rota que está sendo acessada está na lista de Ids a serem validados, especificados no atributo (seja por
+valores separados por vírgula, ou por expressão regular). Caso não esteja na lista de Ids a serem validados, o acesso é liberado e termina
+Quarto: verificar se o acesso está negado para o Id = 1 da action Gerar. Caso esteja, não permite acesso e termina. Caso contrário, autoriza 
+
+Conforme já mencionado, o mecanismo valida a autorização APENAS dos Ids listados no parâmetro do atributo. Então, se a Action Gerar fosse
+utilizada usando o Id = 4, o mesmo seria liberado, já que ele não está na lista que deve ser validada. Como no atributo de validação
+de Action, o atributo de validação de Id funciona apenas se a Action estiver decorada conforme exemplo acima. Caso contrário, independente
+se o Id = 4 está ou não cadastrado no UserSystem com acesso negado, ele sempre seria liberado.
+
+Análogo ao atributo de autorização de Action, existe a possibilidade de informar uma Tag de Ação específica do UserSystem, para ser validada
+junto com o Id. Por padrão, caso nenhuma tag seja especificada, o mecanismo valida a tag "load". Caso exista alguma tag adicional associada ao
+Id, e seja especificada no atributo UUSAuthorizeId, é esta tag que será utilizada para validar a autorização. Por exemplo, digamos que a rota
+/Relatorio/Gerar/1 possui uma tag "gerarPDF" no UserSystem (usado, por exemplo, para habilitar ou não um botão de gerar PDF na tela),  e que
+a Action esteja declarada da seguinte maneira:
+
+[UUSAuthorizeId(Id="1,2,5", TagAcao="gerarPDF")]
+public ActionResult Gerar(Model model) { ... }
+
+Neste caso, o mecanismo vai ignorar a configuração da tag "load", e utilizará o que estiver configurado na tag "gerarPDF" para validar
+a autorização de uso. Caso seja necessário autorizar também a tag "load", é necessário especificá-la explicitamente na lista. Então,
+o valor do parâmetro seria TagAcao="load,gerarPDF".
+
+9) Adicionadas uma nova maneira de inicializar a classe BaseController (Raizen.Framework.Web.MVC.Bases), onde é possível ativar/desativar
+diversos mecanismos como tratamento de erros, integração com o SSO, autorização de uso, etc. Esta nova feature já existia para a classe
+de BasePage (para sistemas escritos em WebForms), e foram adaptados para uso em sistemas MVC. Para maiores detalhes sobre o funcionamento
+deste mecanismo, consultar os detalhes técnicos deste release notes, para a versão 1.2.5722.6468, item 1. O mecanismo é similar, a única
+diferença é que para páginas MVC, não existe a opção "IncluirQueryStringValidacaoAcesso", que é desnecessária em um cenário de rota MVC.
+
+10) Criada nova classe de modelo RotaMVC (Raizen.Framework.Models), para auxiliar na manipulação de Rotas MVC.
+Basicamente, existem diversos construtores (listados abaixo), que podem ser utilizados para inicializar a classe,
+que disponibiliza as informações da rota separadas em propriedades readonly. É uma classe para facilitar e
+centralizar a leitura de informações de rota, baseado em diversas fontes.
+
+Construtores:
+
+RotaMVC(InfoUrl pagina)
+RotaMVC(HttpRequestBase request)
+RotaMVC(string controller, string area = null, string action = null, string id = null)
+RotaMVC(RouteValueDictionary dadosRota)
+RotaMVC(ActionExecutingContext contexto)
+
+Propriedades readonly:
+
+string Area
+string Controller
+string Action
+string Id
+ActionExecutingContext ContextoActionExecuting (disponível apenas se o construtor ActionExecutingContext foi usado)
+ControllerDescriptor DescritorController (disponível apenas se o construtor ActionExecutingContext foi usado)
+ActionDescriptor DescritorAction (disponível apenas se o construtor ActionExecutingContext foi usado)
+string UrlRota
+RouteValueDictionary DadosRota
+
+Todos os itens criados foram devidamente documentados. Sendo assim, para mais detalhes sobre cada método, propriedade
+ou parâmetro, consultar via Intellisense na IDE do Visual Studio.
+
+11) Adicionados novos métodos na classe Logger (Raizen.Framework.Log.Client). São eles:
+
+- PesquisarLogErro (2 overloads)
+
+Finalidade: Permite a busca de registro de logs de erro, para aplicações que utilizam o mecanismo de tratamento de erros
+Framework Raízen, usando o Log4Net para geração de logs em banco (tabela Tb_LogErro).
+
+Filtros: objeto de filtro LogErroFiltro e filtro de paginação (overload 1), ou uma expressão Lambda (overload 2)
+
+Retorno: Lista contendo os itens do tipo LogErro que atendem ao filtro especificado.
+
+Assinaturas:
+ 
+Overload 1: public static List<LogErro> PesquisarLogErro(LogErroFiltro filtro, PaginadorModel paginador)
+Overload 2: public static List<LogErro> PesquisarLogErro(Expression<Func<LogErro, bool>> where)
+
+- CountPesquisaLogErro
+
+Finalidade: método para auxiliar no cálculo da paginação de dados. Deve ser utilizado em conjunto com o método
+PesquisarLogErro, para popular os dados do parâmetro Paginador.
+
+Filtros: objeto de filtro LogErroFiltro que será aplicado na contagem
+
+Retorno: quantidade de registros que atendem ao filtro especificado.
+
+Assinatura: public static int CountPesquisaLogErro(LogErroFiltro filtro) 
+
+12) Removido método "LogarErroApplication" da classe RaizenException (Raizen.Framework.Log.Bases). Para as aplicações que
+utilizavam este método, substituir pelo método "LogarErro" da seguinte maneira:
+
+Antes: new RaizenException().LogarErroApplication(exception)
+Depois: new RaizenException(mensagem, exception).LogarErro()
+
+O parâmetro "mensagem" pode ser qualquer valor string. Pode ser inclusive uma string vazia, mas sugermos que seja informado
+algum valor útil como, por exemplo, o nome do método que está tratando esta exceção, ou alguma outra identificação que
+auxilie na leitura do log gerado.
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Versão: 1.6.0.16814
+Data: 24/03/2016
+Descrição: Adição de novos métodos no Proxy do WCF do UserSystem
+
+Detalhes técnicos:
+1) Adicionados novos métodos na classe ClientService do UserSystem (Raizen.Framework.UserSystem.Proxy). São eles:
+
+- BuscarUsuariosAD
+
+Finalidade: Permite a busca de usuários no AD, baseado em um conjunto de filtros pré definidos.
+
+Filtros: o filtro UsuarioADFiltro (Raizen.UserSystem.SAL.Model.Filtro) permite definir as seguintes informações:
+
+1) Campo: tipo de campo a ser buscado (Usuario, Nome e Email). Tipo: CampoBuscaAD
+
+2) Operação: tipo de operação a ser executada (Igual, Contém, IniciaCom e TerminaCom). Tipo: OperacaoBuscaAD
+
+3) Domínio: dados do domínio no qual a busca deve ser realizada. A lista de domínios ativos pode ser obtida a partir
+do método "ListarDominiosADAtivos" da classe ClientService. Para melhor performance, sugerimos que as buscas sejam
+sempre direcionadas para um domínio específico. Caso o domínio não seja informado, a busca é realizada em todos os
+domínios ativos, o que aumenta o tempo de resposta. Tipo: InfoADDomain
+
+4) Valor: valor a ser buscado, correspondente ao campo definido na propriedade "Campo". É obrigatório que o valor
+tenha, no mínio, 3 caracteres. Tipo: string
+
+5) MaxResultados: valor máximo de registros retornados por consulta. O valor deve variar entre 1 e 20. Qualquer valor
+maior que 20 será considerado inválido e um erro será gerado. No caso de busca em vários domínios, a quantidade máxima
+será limitada por domínio. Por exemplo, se o valor MaxResultados for 10, e a busca for realizada em 3 domínios, serão
+retornados, no máximo, 10 registros por domínio, ou seja, a lista final terá no máximo 30 registros. Esta limitação é
+necessária para otimizar o acesso ao store do AD, garantir a performance na busca, e forçar que os filtros usados
+sejam o mais específico possível. Tipo: int
+
+Retorno: Container Response com o resultado da operação. No caso de operação bem sucedida (Success = true), o campo Data
+conterá uma lista com os usuários de AD que atendem ao filtro especificado (tipo UsuarioADModel), ordenada
+alfabeticamente pelo campo "cn" (Common Name).
+
+Assinatura: Response<List<UsuarioADModel>> BuscarUsuariosAD(UsuarioADFiltro filtro)
+
+2) Alteração dos seguintes métodos da classe ClientService (Raizen.Framework.UserSystem.Proxy):
+
+- ConsultarInformacaoUsuarioUserSystem
+- ConsultarInformacoesUsuarioAD
+- ExecutarPoliticaSenhaUsuarioExterno
+- ListarDominiosADAtivos
+- DesbloquearUsuarioExterno
+- EsqueciMinhaSenha
+
+A partir desta versão, qualquer chamada a estes métodos passa a ser autenticada, necessitando o preenchimento das
+credenciais de acesso do objeto Request (Login e Senha). O campo SiglaAplicacao continua sendo opcional para estes
+métodos. Vide item 5, para mais detalhes em relação ao uso de usuários de serviço para chamadas ao WCF.
+
+3) Alteração na lógica da geração do log de erros. Para identificação do usuário que será registrado no log, as seguintes
+verificações são realizadas:
+
+- Usuário logado na aplicação (dados de sessão obtidos pelo método UserSession.GetCurrentInfoUserSystem())
+- Caso não exista sessão criada, utiliza o usuário autenticado no contexto web (HttpContext.Current.User.Identity)
+- Caso não exista usuário autenticado no contexto web, utiliza a identidade do usuário que está executando o pool do
+site (web) ou programa (console)
+
+4) Reescrito mecanismo de acesso ao Active Directory (Raizen.Framework.Utils.ActiveDirectory). Os métodos existentes
+nas versões anteriores foram mantidos, para garantir a compatibilidade, e novos métodos foram criados, além de classes
+de suporte para itens enumerados, extensões, filtros, dados de usuário e ldap. As alterações não serão documentadas,
+uma vez que este mecanismo serve de apoio para os métodos disponibilizados no proxy do UserSystem. Todo e qualquer
+acesso ao AD deve ser feito via UserSystem, já que existem mecanismos disponíveis (autenticação e busca) que garantem
+a performance e controlam o acesso de maneira efetiva. Se, por alguma necessidade, esta classe tiver que ser usada
+diretamente, favor contatar o time de Arquitetura de Sistemas, para que seja feito o entendimento da necessidade, e
+verificada a possibilidade de disponibilizar novos mecanismos para serem reutilizados por todos.
+
+5) Incluídas novas chaves de configuração padrão para arquivos Web.config ou App.config:
+
+- USUARIO_WCF_USERSYSTEM: usuário a ser utilizado para acesso ao WCF do UserSystem
+- SENHA_WCF_USERSYSTEM: senha do usuário a ser utilizado para acesso ao WCF do UserSystem
+
+Estas chaves devem ser usadas em situações que não existe integração com o SSO e/ou a solução não utiliza os métodos
+do Framework para criação da sessão do usuário (CarregarPermissoesUsuario). O mecanismo do Framework realiza a
+leitura das credenciais de acesso a partir destas chaves, caso não seja encontrado dados de sessão gerado pelo próprio
+Framework..
+
+Este usuário deve ser do tipo Externo, deve ser exclusivo para uso de uma única aplicação, e ser configurado como
+Usuário de Serviço (sem expiração de senha). Esta configuração é permitida apenas para administradores do UserSystem.
+Caso haja necessidade, entrar em contato com o time de Arquitetura de Sistemas, para que seja feito o entendimento
+desta necessidade e realizada a configuração do usuário de serviço.
+
+6) Adicionadas funcionalidades na classe de Extensão "StringExtensions" (Raizen.Framework.Utils.Extensions):
+
+- Método "ToStringOrEmpty (void)": tratamento para conversão de objetos em string. Caso o objeto esteja nulo, converte
+em uma string vazia.
+
+7) Adicionadas funcionalidades na classe de Extensão "HtmlExtensionControls" (Raizen.Framework.Web.MVC.Extensions):
+
+- Método "CustomSelectListFor": gerador de html (Razor) para componentes do tipo Select List. Permite que sejam
+informados os campos de Valor, texto a ser exibido e tooltip (title), para situações onde o texto a ser exibido é
+maior do que o tamanho do componente (ao apontar o mouse na opção, é mostrado o tooltip com o valor completo do item).
+Exemplo de Uso: @Html.CustomSelectListFor(model => model.Filtro.IdPaginaSelecionada,
+                                          Model.ListaPaginas,
+                                          id => id.Valor,
+                                          disp => disp.Nome,
+                                          title => title.Nome,
+                                          new { @size = 8, @class = "form-control", @Style = "Width:100%" }); 
+Neste exemplo, estamos criando uma lista cujo valor selecionado está atrelado ao campo IdPaginaSelecionada da model
+de filtro, exibirá os valores contidos no campo ListaPaginas, utilizará o campo "Valor" para definir o id do item
+selecionado, e o campo "Nome" para exibição do item na lista e também do tooltip. Os estilos Html serão uma fonte
+de 8 px, a classe "form-control" e uma largura de 100% do container no qual este componente está sendo renderizado.
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Versão: 1.5.2.26070
+Data: 04/03/2016
+Descrição: Correção de bug no método de log de erro em banco de dados
+
+Detalhes técnicos:
+1) FIX: correção do método CapturarDadosClientErroLog (Raizen.Framework.Log.Utils). Este método insere o valor
+"<vazio/nulo>" no log caso o campo sendo logado seja uma string, e está nula ou vazia. Porém, no caso de log em banco,
+o campo de Sigla da Aplicação possui apenas 4 caracteres, o que resultava em erro na inserção do log na tabela, já
+que o valor sendo inserido possui 12 caracteres. Para corrigir, especificamente para o campo Sigla da Aplicação,
+inserimos o texto "null" para estes casos. O restante dos campos continuam sendo tratadas e logadas como "<vazio/nulo>".
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Versão: 1.5.1.27763
+Data: 25/02/2016
+Descrição: Correção de bug no método de obtenção da Url absoluta da aplicação
+
+Detalhes técnicos:
+1) FIX: correção do método de extensão AbsoluteUrlWithApp (Raizen.Framework.Utils.Extensions.HttpRequestExtensions).
+A Url resolvida por este método estava sendo gerada com uma barra extra antes da porção do Application Path, o que
+invalidava a Url. A lógica do método foi alterada para considerar os casos separadamente (situações com e sem o
+Application Path).
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Versão: 1.5.0.18968
+Data: 17/02/2016
+Descrição: Tratamento de redirecionamento para o SSO em chamadas Ajax
+
+Detalhes técnicos:
+1) Implementação de tratamento para acessos não autorizados (sessão expirada e/ou usuário não autenticado) durante os
+requests Ajax interceptados pelo SSO.
+
+Cenário: em chamadas Ajax, o Interceptador é capaz de reconhecer se existe sessão ativa para o usuário, e tomar a decisão
+de direcioná-lo de volta para o SSO caso não exista. Porém, num contexto Ajax, não há como realizar um redirecionamento
+do lado do servidor (Response.Redirect comum).
+
+Solução: na versão 1.5.0 da biblioteca Raizen.SSO.dll, foi incluída uma nova classe chamada SSOHelper.cs, no namespace
+Raizen.SSO.Pipeline. Esta classe provê lógicas de redirecionamento para validação do SSO, e também para LogOut,
+identificando automaticamente diversas situações, e executando os redirecionamentos. 
+
+Para a implementação desta solução, temos duas partes distintas:
+
+- Do lado servidor, uma vez identificada a falta/expiração da sessão, o Interceptador gera uma resposta HTTP com o
+código 350 Redirect SSO (código customizado criado especificamente para este fim), e retorna um objeto JSON contendo
+a Url para a qual o usuário deverá ser redirecionado.
+
+- Do lado cliente, é necessário que qualquer chamada Ajax verifique se o código 350 foi retornado e, em caso positivo,
+realize o redirecionamento do cliente. Para isto, é necessário a inclusão de um trecho de código na configuração do
+ajax (ajaxSetup), em algum local global (ex.: na view _Layout ou em algum Javascript de inicialização que é executado
+em todas as páginas). Com este tratamento, toda e qualquer chamada Ajax terá tratamento para o código 350 que, se ocorrer,
+vai direcionar corretamente o usuário de volta para o SSO para realizar nova autenticação. Segue abaixo o trecho
+de código necessário:
+
+$.ajaxSetup({
+	cache: false,
+	statusCode: {
+		350: function(jqXHR, textStatus, errorThrown) {
+			var response = $.parseJSON(jqXHR.responseText);
+			if (response != null && response.ssoResponse == true) {
+				window.document.location.href = response.redirectUrl;
+			}
+		}   
+	}
+});
+
+IMPORTANTE: para qualquer solução que utilize integração com o SSO, se o trecho de código acima não for adicionado,
+a solução não funcionará corretamente nas situações descritas no cenário.
+
+2) Adicionadas funcionalidades na classe de Extensão "UrlHelperExtensions" (Raizen.Framework.Web.MVC.Extensions):
+
+- Método "ControllerAbsoluteUri (void)": obtém a URL absoluta da controller sendo executada no contexto atual.
+
+- Método "ActionAbsoluteUri (action)": obtém a URL absoluta de uma action da controller sendo executada no contexto atual.
+
+- Método "ActionAbsoluteUri (action, controller)": obtém a URL absoluta de uma action da controller informada no parâmetro.
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Versão: 1.4.1.23605
+Data: 10/02/2016
+Descrição: Melhorias e correções
+
+Detalhes técnicos:
+1) FIX: Correção do AssemblyHelper, para ler informações de versão do assembly que está executando o contexto web.
+Da maneira que estava implementado, a leitura retornava o valor da própria versão do Framework (GetExecutingAssembly e
+GetCallingAssembly, ambos retornavam o assembly do Framework). Foi implementada uma lógica que realiza a busca do assembly
+do contexto (via hierarquia do Context) e, caso não esteja rodando em um contexto web,, retorna o assembly que está
+em execução.
+
+2) Alteração dos métodos do tipo "public" da BaseController para tipo "protected". Métodos públicos em Controllers são
+Actions por definição, porém, nenhum método público da BaseController era na realidade uma Action. A alteração foi
+necessária, pois alguns métodos de apoio incluídos na BaseController (exemplo: Logout), conflitavam com Actions criadas
+com o mesmo nome na Controller que herdava da base.
+
+3) Adicionados novos métodos na BaseController. São eles:
+
+- VerificarAcessoPagina
+
+Finalidade: Verifica se o usuário logado possui permissão de acesso à Controller que está sendo acessada. A ação verificada
+neste caso é a ação padrão de "load".
+
+Retorno: Booleano informando se o usuário possui permissão de acesso na Controller (true) ou não (false).
+
+- VerificarPermissaoAcao
+
+Finalidade: Verifica se o usuário logado possui permissão em uma determinada ação na Controller que está sendo acessada.
+
+Retorno: Booleano informando se o usuário possui permissão na ação da Controller (true) ou não (false).
+
+4) Adicionadas novas propriedades na BaseController. São elas:
+
+- ControllerAtual
+
+Finalidade: fornece o nome da Controller que está sendo acessada no request/contexto atual da aplicação.
+
+- ActionAtual
+
+Finalidade: fornece o nome da Action que está sendo executada no request/contexto atual da aplicação.
+
+5) FIX: Implementadas verificações adicionais durante validação de Permissão e Perfil, para garantir que usuários que
+não possuam perfil na aplicação (informações nulas) não falhem na verificação (evitar erros de object reference not set)
+
+6) Implementadas melhorias no mecanismo de Log em arquivo (rolling file) do Framework:
+
+- Tratamento de valores vazios e/ou zerados antes de gerar informação no arquivo de log. Estes itens não são mais incluídos
+no log caso estejam vazios ou zerados
+
+- Implementada lógica para logar o usuário corrente (WindowsIdentity) caso não seja possível obter a sessão com os dados do
+usuário logado via SSO/UserSystem. Mecanismo usado quando a aplicação não está rodando em um contexto Web (ex. Console)
+
+- Implementado tratamento de erros nos métodos de obtenção de informações do cliente (ClientInformation). Alguns métodos
+usavam objetos de Request Http, que não estão disponíveis em contextos não web (ex. Console)
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Versão: 1.4.0.18908
+Data: 12/01/2016
+Descrição: Adição de novos métodos no Proxy do WCF do UserSystem
+
+Detalhes técnicos:
+1) Adicionados novos métodos na classe ClientService do UserSystem (Raizen.Framework.UserSystem.Proxy). São eles:
+
+- ListarDominiosADAtivos
+
+Finalidade: Fornece uma lista com as informações de domínios cadastrados e ativos no UserSystem.
+
+Retorno: Container Response com o resultado da operação. No caso de operação bem sucedida (Success = true), o campo Data
+conterá uma lista com os detalhes de cada domínio ativo parametrizado no UserSystem (tipo InfoADDomain).
+
+Assinatura: Response<List<InfoADDomain>> ListarDominiosADAtivos()
+
+- CadastrarUsuario
+
+Finalidade: Realiza o cadastro de um novo usuário (Interno ou Externo) no banco de dados do UserSystem. As regras aplicadas para
+validação do cadastro são as mesmas aplicadas na tela de usuários do site Administrativo.
+
+Ponto de atenção: Especificamente para o cadastro de usuários do tipo Interno, o campo IdADDomain da model InfoUSuario é
+obrigatório. Este Id deve ser obtido através do método ListarDominiosADAtivos, correspondente ao domínio ao qual o usuário
+a ser cadastrado pertence.
+
+Retorno: Container Response com o resultado da operação. No caso de operação bem sucedida (Success = true), o campo Data
+conterá um objeto com os dados inseridos no banco do UserSystem (tipo InfoUsuario). Estes dados são retornados, pois algumas
+informações do parâmetro "usuario" recebido neste método podem ter sido alteradas antes da inserção no banco de dados, dependendo
+das regras executadas durante a validação dos dados.
+
+Assinatura: Response<InfoUsuario> CadastrarUsuario(InfoUsuario usuario)
+
+- RemoverAssociacaoUsuarioPerfilApp
+
+Finalidade: Remove a associação de um usuário com um perfil de aplicação.
+
+Retorno: Container Response com o resultado da operação. No caso de operação bem sucedida (Success = true), o campo Data
+conterá apenas uma mensagem informativa, confirmando a remoção da associação. Caso a combinação de Usuario X IdPerfilApp não 
+existir, é retornada uma mensagem de erro, e considerado Success = false.
+
+Assinatura: Response<string> RemoverAssociacaoUsuarioPerfilApp(InfoAssociarUsuarioPerfil dadosProfileApp)
+
+- AutenticarUsuarioUserSystem
+
+Finalidade: Autenticar um usuário do tipo Externo no UserSystem. Este método não realiza qualquer outro tipo de operação,
+que não seja validar a identidade do usuário cadastrado.
+
+Retorno: Container Response com o resultado da operação. No caso de operação bem sucedida (Success = true), o campo Data
+conterá um objeto com os dados do usuário autenticado (tipo InfoUserSystem).
+
+Assinatura: Response<InfoUserSystem> AutenticarUsuarioUserSystem(string login, string senha)
+
+2) Adicionada classe de Extensão "GenericsExtensions" (Raizen.Framework.Utils.Extensions), com métodos de suporte à
+objetos genéricos, contendo as seguintes funcionalidades:
+
+- Método "Clone": clona um objeto genérico (estrutura e valores) usando serialização Json. IMPORTANTE: para uso deste método,
+é necessário adicionar a referência da biblioteca Newtonsoft.Json.dll (disponível em /DEPLOY/Asp.Net). Caso contrário,
+ocorrerá um erro de runtime, já que o método utiliza esta biblioteca para execução da lógica.
+
+3) Adicionada funcionalidade na classe de Extensão "UrlHelperExtensions" (Raizen.Framework.Web.MVC.Extensions):
+
+- Método "ObterUrlBaseApp": obtém a URL do contexto Web atual, concatenando a porção Authority com a porção ApplicationPath.
+
+Exemplos: para um site rodando no host "usersystem.minhati.com.br" e na aplicação (virtual folder) "Admin", o resultado da
+chamada deste método será "http://usersystem.minhati.com.br/Admin/". Já para um site rodando no host "sso.minhati.com.br"
+como aplicação root (padrão), o resultado da chamada deste método será "http://sso.minhati.com.br/".
+
+4) Adicionadas bibliotecas homologadas do ReportViewer versão 11. Estas bibliotecas podem ser utilizadas para geração de
+relatórios baseados em templates (rdlc).
+
+5) Removido o overload do método EfetuarLogin(login, senha), que era utilizado para soluções anteriores ao SSO.
+Com a entrada do SSO no ar, este método foi marcado como obsoleto, e foi descontinuado nesta versão.
+
+Impacto para implementações existentes: utilizar o overload EfetuarLogin(login, senha, siglaAplicacao).
+
+6) Alterada assinatura do método EfetuarLogin(login, senha, siglaAplicacao), removendo o parâmetro opcional "CriptSenha".
+A partir desta versão, toda e qualquer comunicação do Framework com o WCF do UserSystem terá as senhas criptografadas por
+padrão, o que torna o uso deste parâmetro desnecessário.
+
+Impacto para implementações existentes: basta remover qualquer valor que seja informado neste parâmetro.
+
+7) Exposto método SetCurrentInfoUserSystem, da classe Raizen.Framework.UserSystem.Client.UserSession. Este método era
+do tipo internal, e, por necessidade de algumas aplicações controlarem a geração da sessão com os dados do usuário, o
+método foi alterado para public.
+
+8) FIX: Correção do mecanismo de obtenção dos dados do cliente/aplicação na geração de log. Foi incluída uma verificação
+na leitura dos dados armazenados em sessão (IdAplicacao e SiglaAplicacao), para evitar erro na geração do log para
+aplicações que não possuem tais informações em sessão (aplicações sem integração com o SSO).
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Versão: 1.3.0.25993
+Data: 07/12/2015
+Descrição: Autenticação multi domínio, novo método de consulta de usuários do UserSystem
+
+Detalhes técnicos:
+1) Adicionados overloads para os métodos ADAuthenticateUser e ADGetUserInfo da classe ActiveDirectoryServices (namespace
+Raizen.Framework.Utils.ActiveDirectory). Estes novos métodos permitem que a autenticação e a busca de informações sejam
+feitas em um domínio específico, através do parâmetro "ldap". Especificamente para o método ADGetUserInfo, existem
+parâmetros adicionais de usuário e senha, que possibilitam informar o usuário e senha a serem utilizados para autenticação
+no AD Store, para que a busca seja realizada. Se não forem informados os parâmetros, a busca é realizada com o usuário
+de contexto que está rodando a aplicação.
+
+2) Adicionadas classes de Helpers (estáticas) com as seguintes funcionalidades:
+
+- AssemblyHelper: fornece métodos para leitura de informações relacionadas à assemblies .NET (compilados em CLR).
+Dentre as informações disponibilizadas, estão o Nome/Descrição do assembly, as versões em formato texto (x.x.x.x)
+e numérico (xxxx), e também a data de compilação do assembly.
+Namespace: Raizen.Framework.Utils.Helpers
+
+- UrlHelper (apenas WebForms): disponibiliza um método para resolução de URLs, concatenando a versão do assembly no final
+do endereço. Este mecanismo pode ser usado para scripts Java e arquivos CSS, garantindo que haverá uma versão diferente
+à cada recompilação, e forçando o browser cliente a atualizar qualquer arquivo de script ou css que esteja armazenado
+em cache local. Para que esta solução funcione, a versão do assembly (AssemblyInfo.cs) deve ser alterada a cada nova
+compilação. Uma sugestão é utilizar o próprio mecanismo do Visual Studio para auto incremento de versões. Para maiores
+detalhes, consultar o seguinte endereço:
+https://msdn.microsoft.com/pt-br/library/system.reflection.assemblyversionattribute(v=vs.100).aspx
+Namespace: Raizen.Framework.Web.WebForms.Helpers
+
+3) Adicionadas classes de Extensão com as seguintes funcionalidades:
+
+- UrlHelperExtensions (apenas MVC/Razor): disponibiliza a mesma funcionalidade descrita acima para páginas WebForms,
+da classe UrlHelper. Porém, está escrito em formato de extensão para serem usados a partir da notação Razor (@Url.xxx)
+
+4) Adicionado método ConsultarInformacaoUsuarioUserSystem ao proxy de chamada do WCF do UserSystem (classe ClientService,
+namespace Raizen.Framework.UserSystem.Proxy). Este método permite que sejam consultadas informações de um determinado
+usuário no cadastro do UserSystem.
+
+5) FIX: Correção do mecanismo de geração de log de contingência, quando ocorre algum erro no mecanismo do Log4Net. Em
+algumas situações, o próprio log de contingência não funcionava, gerando apenas uma descrição de erro e não fornecendo
+qualquer detalhe sobre o problema ocorrido (stack trace).
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Versão: 1.2.5722.6468
+Data: 01/09/2015
+Descrição: Disponibilização de mecanismos para WebForms
+
+Detalhes técnicos:
+1) Implementados mecanismos para serem utilizados em projetos WebForms. As novas classes estão disponíveis no namespace
+Raizen.Framework.Web.WebForms e correspondem à:
+
+- BasePage: disponibiliza funcionalidades comuns à todas as páginas Web, como tratamento de erros, integração com o
+UserSystem e SSO (Single Sign On). A partir do construtor parametrizado, é possível informar as features que serão
+ativadas para a instância. Estas features estão listadas na seguinte enumeração:
+
+    enum BasePageOptions
+    {
+        Nenhuma = 0,
+        NaoValidarAcesso = 1,
+        NaoTratarErros = 2,
+        NaoIntegrarComSSO = 4,
+        IncluirQueryStringValidacaoAcesso = 8,
+    }
+
+Nenhuma: desativa toda e qualquer feature da BasePage
+
+NaoValidarAcesso: desativa feature que verifica automaticamente no UserSystem se o usuário autenticado possui permissão
+de acessar a página que está sendo aberta. Caso não tenha permissão, ocorre um redirecionamento automático para o endereço
+especificado no Web.config da aplicação, com a chave PAGINA_SEM_PERMISSAO. Por padrão, caso não exista página especificada,
+é feito o redirecionamento para o endereço ~/SemPermissao.aspx.
+
+NaoTratarErros: desativa feature que realiza o tratamento padrão de erros. Esta feature garante que todos os erros serão
+devidamente tratados e logados, e uma página de erro amigável seja exibida ao usuário. Na ocorrência de um erro, o usuário
+é redirecionado para o endereço especificado no Web.config da aplicação, com a chave PAGINA_ERRO. Por padrão, caso não
+exista página especificada, é feito o redirecionamento para o endereço ~/Erro.aspx.
+
+NaoIntegrarComSSO: desativa feature que integra as páginas WebForms à autenticação do SSO. A integração consiste em ativar
+o Interceptador de requisições HTML, que redireciona o usuário automaticamente para a página de login do SSO, caso não
+seja encontrado um token válido para a sessão corrente. Uma vez autenticado, o SSO redireciona o usuário de volta para
+a aplicação, com todas as informações do UserSystem populadas em sessão.
+
+IncluirQueryStringValidacaoAcesso: considera endereços com query string na validação de acesso à página feita no UserSystem.
+Por padrão, quaisquer valores de query string são desconsiderados nesta verificação. Porém, existem situações em que o
+endereço da página no UserSystem está cadastrado com um valor de query string (por exemplo, em situações que uma mesma
+página é usada por vários usuários de diferentes perfis). Caso haja necessidade desta verificação adicional, a feature
+deve ser habilitada.
+
+Exemplo de uso:
+
+// A página "MinhaPagina" está sendo instanciada utilizando o mecanismo de BasePage, e desativando o controle de acesso
+// e tratamento de erros. Para uso de mais de uma opção enumerada, separar os valores com o operador OU (|)
+public class MinhaPagina : BasePage
+{
+	public MinhaPagina() : base(BasePageOptions.NaoValidarAcesso | BasePageOptions.NaoTratarErros) { }
+}
+
+- MenuUsuario: disponibiliza métodos para facilitar a renderização HTML do menu do usuário, a partir dos seus acessos
+configurados no UserSystem. Os métodos geram um HTML dinâmico, a partir do endereço base do site, e também, permite
+ordenar as informações Alfabeticamente, ou seguindo a ordenação definida na configuração do UserSystem.
+IMPORTANTE: este mecanismo só está disponível para uso se houver integração com o SSO ativada. Do contrário, não
+haverá informações do usuário logado.
+
+2) Com a entrada das funcionalidades para uso em páginas WebForms, foi necessário reorganizar os namespaces anteriores.
+Sendo assim, a namespace Raizen.Framework.MVC, que continha os mecanismos disponíveis para uso em Views/Controllers MVC,
+foi movida para Raizen.Framework.Web.MVC. Ainda, as classes ApplicationSession e ClientInformation foram movidas para
+a namespace Raizen.Framework.Web.Common. Para atualização, sugerimos realizar um "replace all" de todas as namespaces
+antigas para a nova namespace. Sugerimos também ativar a compilação de Views no Visual Studio, e recompilar os projetos,
+para garantir que a parte Razor/MVC também seja validada pelo compilador, e qualquer erro seja detectado em tempo de
+compilação.
+Para ativação da compilação do Razor/MVC, favor consultar o link abaixo:
+http://blogs.msdn.com/b/jimlamb/archive/2010/04/20/turn-on-compile-time-view-checking-for-asp-net-mvc-projects-in-tfs-build-2010.aspx
+
+3) Adicionadas classes de Extensão com as seguintes funcionalidades:
+
+- EnumerableExtensions: extensões para tipos IEnumerable
+- NullableExtensions: extensões para tipos INullable
+- EnumExtensions: extensões para tipos enumerados (Enum)
+- HttpRequestExtensions: extensões para requests Http
+- StringExtensions: extensões para tipos String
+
+Todas as extensões estão disponíveis a partir do namespace Raizen.Framework.Utils.Extensions, e estão devidamente
+documentadas via Intellisense.
+
+4) Adicionadas classes de Helpers (estáticas) com as seguintes funcionalidades:
+
+- ConfigHelper: fornece métodos para leitura de dados a partir de arquivos de configuração das aplicações (Web.config
+e/ou App.config). Pelo método GetValue, é possível realizar a leitura de valores das partes ConnectionString ou AppSettings,
+realizar o cast automático de valores (a partir do uso de Generics), e informar um valor padrão a ser utilizado, caso
+a chave não seja encontrada no arquivo de configuração. No caso do valor padrão não ser informado e a chave não for
+encontrada, é gerada uma exceção do tipo ConfigurationErrorsException.
+
+- ContextHelper: fornece métodos para leitura e escrita de dados de sessão a nível do usuário (Session) ou da aplicação
+(Application). Usando mecanismos similares aos descritos acima para o ConfigHelper, é possível ler e escrever valores
+em Session ou Application, tratar situações de erro automaticamente, realizar cast dos dados via Generics, e informar
+valores padrão para leitura de informações. As exceções geradas são do tipo NullReferenceException (no caso do contexto
+não estar disponível no momento da leitura), InvalidOperationException (no caso do contexto que está sendo lido ser
+inválido), e KeyNotFoundException (no caso da chave sendo lida não existir, e não ter sido informado um valor padrão).
+
+- DnsHelper: fornece métodos para facilitar a leitura e resolução de nomes/IPs a partir da rede corporativa.
+
+- QueryStringHelper: fornece métodos para facilitar a manipulação de dados enviados via QueryString. As funcionalidades
+incluem adição/remoção de informações (usando Generics para realização de conversões de tipos) e criptografia de dados.
+
+Todos os novos mecanismos descritos acima estão disponíveis a partir do namespace Raizen.Framework.Utils, e estão
+devidamente documentadas via Intellisense.
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+Versão: 1.1.5697.28867
+Data: 07/08/2015
+Descrição: Versão unificada da biblioteca Raízen.Framework.dll
+
+Detalhes técnicos:
+1) A partir da versão 1.0, foram unificadas todas as DLLs abaixo da namespace Raizen.Framework.xxx.dll. Os namespaces 
+originais foram mantidos, e as classes foram apenas migradas para um mesmo projeto.
+
+2) Para atualização da versão, remover toda e qualquer referência das antigas bibliotecas, substituindo pela versão
+unificada. Compilar os projetos e corrigir possíveis divergências de namespaces.
+
+3) Adicionado componente de manipulação de caixas de email via protocolo POP3. Este componente já é parte do framework
+COSAN, e foi introduzido no framework Raízen para que possa ser reutilizado nos novos projetos. O componente é baseado
+no OpenPop.NET (http://hpop.sourceforge.net/). Para maiores informações de uso, consultar a documentação diretamente no
+site mencionado acima.
+
+Namespaces: 
+Raizen.Framework.Utils.Mail.Pop3 (leitura de emails)
+Raizen.Framework.Utils.Mail.Smtp (envio de emails)
+
+4) Com a adição dos componentes listados no item 3, foi necessário alterar o nome das classes MailModel e MailServices
+(namespace Raizen.Framework.Utils.Mail.Smtp) para SmtpModel e SmtpServices, para explicitar que o uso destas classes
+é exclusivo do mecanismo de envio de e-mails via protocolo Smtp.
+
+5) FIX: Correção do construtor parametrizado da classe RaizenException. Ao instanciar e utilizar o objeto utilizando o
+construtor com os parâmetros "message" e "innerException", a variável interna "message" não era inicializada, e gerava
+um NullException quando era utilizada.
+-----------------------------------------------------------------------------------------------------------------------

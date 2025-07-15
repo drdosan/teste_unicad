@@ -1,0 +1,153 @@
+﻿@using Raizen.Framework.Models
+@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Models
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.Framework.Web.MVC.Extensions;
+@using Raizen.UniCad.Model;
+
+@model Raizen.UniCad.Web.Models.ModelTipoAgenda
+@{
+    var urlValidacao = @Url.Action("ValidarObjetos", "TipoAgenda");
+
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+
+}
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.TipoAgenda.js")"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        raizenCoreJs.raizenCRUD.urlSalvar = '@Url.Action("Salvar", "TipoAgenda")';
+
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        raizenCoreJs.raizenMensagens.ExibirMensagemOperacao();
+        raizenCoreJs.raizenHelpers.urlValidacao = "@urlValidacao";
+
+    });
+
+</script>
+
+<div class="box border raizen" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event);" id="containerEdicao">
+    <div class="box-title">
+        <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Edição de Tipo de Agenda</span></h4>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-12">
+                <form id="frmEdicao" class="form-horizontal">
+                    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUDEdit" })
+                    @Html.HiddenFor(model => model.ChavePrimaria)
+                    <div class="row">
+                        @Html.BootstrapTextBoxFor(model => model.TipoAgenda.Nome, null, "Nome", new { maxlength = 1000 }, new HtmlHelperOption() { colunas = "col-md-6" })
+                        @Html.BootstrapDropDownListFor(model => model.TipoAgenda.IDTipo, new SelectList(GenericDelegate.ListarEnum<EnumTipoAgenda>(), "Value", "Key"), "Tipo de Agenda", null, new HtmlHelperOption() { colunas = "col-md-3" })
+                        @Html.BootstrapDropDownListFor(model => model.TipoAgenda.Status, new SelectList(GenericDelegate.AtivoInativo(), "Flag", "Nome"), "Status", new { @onchange = "raizenCoreJs.Usuario.OcultarCamposPerfilOperacao();" }, new HtmlHelperOption() { colunas = "col-md-3" })
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6" id="anexoTipoAgenda">
+                            
+                            @Html.HiddenFor(model => model.TipoAgenda.Anexo, new { @id = "Anexo-" + Model.TipoAgenda.ID })
+                            <label id="lbl_Documentos" style="display:none">Documentos</label>
+                            <label id="lbl_TipoAgenda_Anexo">Modelo de Documento</label>
+                            @if (string.IsNullOrEmpty(Model.TipoAgenda.Anexo))
+                            {
+                                <input id="input-701-@Model.TipoAgenda.ID" type="file" name="@Html.NameFor(p => p.TipoAgenda.Anexo)" class="anexoCount" data-buttonText="Selecione" data-iconName="glyphicon glyphicon-file">
+                            }
+                            else
+                            {
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <a href="@Url.Action("Download", "Arquivo")?file=@(Model.TipoAgenda.Anexo)" class="anexoCount" target="_blank" id="linkAnexo-@Model.TipoAgenda.ID">@Model.TipoAgenda.Anexo</a>
+                                        <button type="button" tabindex="500" id="limparAnexo-@Model.TipoAgenda.ID" title="Limpar" class="btn btn-default fileinput-remove fileinput-remove-button" onclick="RemoverAnexo(@Model.TipoAgenda.ID);"><i class="glyphicon glyphicon-trash"></i> </button>
+                                        <div id="inputDiv-@Model.TipoAgenda.ID" style="display:none">
+                                            <input id="input-701-@Model.TipoAgenda.ID" type="file" name="@Html.NameFor(p => p.TipoAgenda.Anexo)" class="anexoCount" data-buttonText="Selecione" data-iconName="glyphicon glyphicon-file">
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            <script>
+                                function RemoverAnexo(id) {
+                                    $('#Anexo-' + id).val('');
+                                    $('#limparAnexo-'+id).hide();
+                                    $('#linkAnexo-'+id).hide();
+                                    $("#inputDiv-"+id).show(800);
+                                }
+
+                                $("#input-701-@Model.TipoAgenda.ID").fileinput({
+                                    uploadUrl: '@Url.Action("AnexarArquivo", "Arquivo")',
+                                    dropZoneEnabled: false,
+                                    showUpload: false,
+                                    showPreview: false,
+                                    browseLabel: '',
+                                    uploadLabel: '',
+                                    removeLabel: '',
+                                    layoutTemplates: {
+                                        progress: ''
+                                    },
+                                });
+
+                                $('#input-701-@Model.TipoAgenda.ID').on('fileloaded', function (event, file, previewId, index, reader) {
+
+                                    var formData = new FormData();
+
+                                    formData.append('file', file);
+                                    raizenCoreJs.raizenHelpers.AbrirLoading();
+                                    $.ajax({
+                                        url: '@Url.Action("AnexarArquivo", "Arquivo")',
+                                        data: formData,
+                                        cache: false,
+                                        contentType: false,
+                                        processData: false,
+                                        type: 'POST',
+                                        success: function (response) {
+                                            raizenCoreJs.raizenHelpers.FecharLoading();
+
+                                            if (response == 'O Arquivo selecionado está vazio!') {
+                                                $('#anexoTipoAgenda .glyphicon.glyphicon-trash').trigger('click');
+                                                ShowErrorMenssage(response);
+                                            }
+                                            else if (response == 'Tamanho Arquivo')
+                                            {
+                                                ShowErrorMenssage('O arquivo deve ser menor que 20 MB, por favor, tente novamente', 20);
+                                                $('#anexoTipoAgenda .glyphicon.glyphicon-trash').trigger('click');
+                                            }
+                                            else if (response.indexOf('Formato de Arquivo Inválido') >= 0) {
+                                                ShowErrorMenssage(response, 20);
+                                                $('#anexoTipoAgenda .glyphicon.glyphicon-trash').trigger('click');
+                                            }
+                                            else {
+                                                $('#Anexo-@Model.TipoAgenda.ID').val(response);
+                                            }
+                                        },
+                                        error: function (response) {
+                                            ShowErrorMenssage('O arquivo deve ser menor que 20 MB, por favor, tente novamente', 20);
+                                        }
+                                    });
+                                });
+
+                            </script>
+                        </div>
+
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        $("#TipoAgenda_Densidade").unbind(".maskMoney");
+        $("#TipoAgenda_Densidade").maskMoney({
+            showSymbol: false,
+            symbol: "",
+            decimal: ",",
+            thousands: ".",
+            allowNegative: true,
+            allowZero: true,
+            precision: $("input[data-currency-field]").data('currency-precision') || 4
+        });
+    </script>
+</div>

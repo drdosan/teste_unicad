@@ -1,0 +1,117 @@
+﻿@model Raizen.UniCad.Model.View.PlacaDocumentoView
+
+<style>
+    .pop-hover {
+        margin-top: 10px;
+    }
+</style>
+
+<tr id="linha-@Model.GetHashCode()" class="gradeX">
+    @using (Html.BeginCollectionItem("Placa.Documentos"))
+    {
+        @Html.HiddenFor(p => p.ID)
+        @Html.HiddenFor(p => p.IDTipoDocumento)
+        @Html.HiddenFor(p => p.IDPlaca)
+        @Html.HiddenFor(p => p.Sigla)
+        @Html.HiddenFor(p => p.Obrigatorio)
+        @Html.HiddenFor(p => p.Descricao)
+        @Html.HiddenFor(p => p.DocumentoPossuiVencimento)
+        @Html.HiddenFor(model => model.Anexo, new { @id = "Anexo-" + Model.IDTipoDocumento })
+
+        var data = "";
+        if (!Model.Aprovar)
+        {
+            data = "display:none";
+        }
+        <td style="word-wrap: break-word;">@Model.Sigla</td>
+        <td style="word-wrap: break-word;">@Model.Descricao</td>
+        <td style="word-wrap: break-word;">@(Model.Obrigatorio ? "Si" : "No")</td>
+        <td style="word-wrap: break-word;">
+            @{if (!Model.DocumentoPossuiVencimento)
+                {
+                    @Html.HiddenFor(model => model.DataVencimento)
+                    <div align="center" style="@((Model.DataVencimento.HasValue && Model.DataVencimento.Value < DateTime.Now.Date) ? "color:red; font-weight:bold" : "")">@(Model.DataVencimento.HasValue ? Model.DataVencimento.Value.ToString("dd/MM/yyyy") : "")</div>
+                }
+                else
+                {
+                    <div>@Html.BootstrapDateBoxFor(model => model.DataVencimento, null, new { @class = "dataValidade form-control", @onkeyup = "mascaraData(this);", @style = (Model.DataVencimento.HasValue && Model.DataVencimento.Value < DateTime.Now.Date) ? "border-color: red" : "" }, new HtmlHelperOption { colunas = "col-md-12", hideLabel = true }, null, true)</div>
+                }
+            }
+        </td>
+        <td style="word-wrap: break-word;">
+            @if (string.IsNullOrEmpty(Model.Anexo))
+            {
+                <input id="input-701-@Model.IDTipoDocumento" type="file" name="@Html.NameFor(p => p.Anexo)" class="anexoCount" data-buttonText="Selecione" data-iconName="glyphicon glyphicon-file">
+            }
+            else
+            {
+                <button type="button" style="float: left; margin-right: 10px;" tabindex="500" id="limparAnexo-@Model.IDTipoDocumento" title="Limpar" class="btn btn-default fileinput-remove fileinput-remove-button" onclick="RemoverAnexo(@Model.IDTipoDocumento);"><i class="glyphicon glyphicon-trash"></i> </button>
+                <a href="@Url.Action("Download","Arquivo")?file=@(Model.Anexo)" style="margin-top:10px" class="anexoCount" target="_blank" title="@Model.Anexo" id="linkAnexo-@Model.IDTipoDocumento">@Html.PopoverTextFor(model => model.Anexo, 30)</a>
+                <div id="inputDiv-@Model.IDTipoDocumento" style="display:none">
+                    <input id="input-701-@Model.IDTipoDocumento" type="file" name="@Html.NameFor(p => p.Anexo)" class="anexoCount" data-buttonText="Selecione" data-iconName="glyphicon glyphicon-file">
+                </div>
+            }
+        </td>
+    }
+</tr>
+
+<script>
+    function RemoverAnexo(id) {
+        $('#limparAnexo-' + id).hide();
+        $('#linkAnexo-' + id).hide();
+        $("#inputDiv-" + id).show(800);
+    };
+
+    $("#input-701-@Model.IDTipoDocumento").fileinput({
+        uploadUrl: '@Url.Action("AnexarArquivo", "Arquivo")',
+        dropZoneEnabled: false,
+        showUpload: false,
+        showPreview: false,
+        browseLabel: '',
+        uploadLabel: '',
+        removeLabel: '',
+        initialCaption: "Tamaño máximo: 20MB",
+        layoutTemplates: {
+            progress: ''
+        },
+    });
+
+    $('#input-701-@Model.IDTipoDocumento').on('fileloaded', function (event, file, previewId, index, reader) {
+
+        var formData = new FormData();
+
+        formData.append('file', file);
+        raizenCoreJs.raizenHelpers.AbrirLoading();
+        $.ajax({
+            url: '@Url.Action("AnexarArquivo", "Arquivo")',
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            type: 'POST',
+            success: function (response) {
+                raizenCoreJs.raizenHelpers.FecharLoading();
+
+                if (response == 'O Arquivo selecionado está vazio!') {
+                    ShowErrorMenssage('¡El archivo seleccionado está vacío!');
+                    $('#linha-' + @Model.GetHashCode() +' .glyphicon.glyphicon-trash').trigger('click')
+                }
+                else if (response == 'Tamanho Arquivo') {
+                    ShowErrorMenssage('El archivo debe ser menor que 20 MB, inténtelo nuevamente', 20);
+                    $('#linha-' + @Model.GetHashCode() +' .glyphicon.glyphicon-trash').trigger('click')
+                }
+                else if (response.indexOf('Formato de Arquivo Inválido') >= 0) {
+                    ShowErrorMenssage('Formato de archivo inválido', 20);
+                    $('#linha-' + @Model.GetHashCode() +' .glyphicon.glyphicon-trash').trigger('click')
+                }
+                else {
+                    $('#Anexo-@Model.IDTipoDocumento').val(response);
+                }
+            },
+            error: function (response) {
+                ShowErrorMenssage('El archivo debe ser menor que 20 MB, inténtelo nuevamente', 20);
+            }
+        });
+    });
+
+</script>

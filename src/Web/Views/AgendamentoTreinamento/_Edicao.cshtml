@@ -1,0 +1,122 @@
+﻿@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.Framework.Web.MVC.Extensions;
+@using Raizen.UniCad.Model;
+
+@model Raizen.UniCad.Web.Models.ModelAgendamentoTreinamento
+@{
+    var urlValidacao = @Url.Action("ValidarObjetos", "AgendamentoTreinamento");
+
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+    int idTipo = ViewBag.IDTipo == null ? 0 : ViewBag.IDTipo;
+    int idTerminal = ViewBag.IdTerminal == null ? 0 : ViewBag.IdTerminal;
+    int idEmpresaCongenere = ViewBag.IdEmpresaCongenere == null ? 0 : ViewBag.IdEmpresaCongenere;
+}
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var operacao = $('#AgendamentoTreinamento_Operacao').val();
+        $('#AgendamentoTreinamento_CPF').mask('999.999.999-99')
+        $('#AgendamentoTreinamento_CPFCongenere').mask('999.999.999-99')
+        raizenCoreJs.AgendamentoTreinamento.carregarTipoAgenda();
+        raizenCoreJs.AgendamentoTreinamento.carregarTerminal();
+        raizenCoreJs.AgendamentoTreinamento.carregarNovosCampos(operacao);
+    });
+</script>
+<div class="box border raizen" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event);" id="containerEdicao">
+    <div class="box-title">
+        <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Agendamento de Treinamento</span></h4>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-12">
+                <form id="frmEdicao" class="form-horizontal">
+                    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUDEdit" })
+                    @Html.HiddenFor(model => model.ChavePrimaria)
+                    @Html.HiddenFor(model => model.AgendamentoTreinamento.IDMotorista)
+                    @Html.HiddenFor(model => model.AgendamentoTreinamento.IDAgendamentoTerminalHorario)
+                    @Html.HiddenFor(model => model.isEditar)
+                    @Html.Hidden("idTipo", idTipo)
+                    @Html.Hidden("idTerminalTreinamento",idTerminal)    
+                    @Html.Hidden("idEmpresaCongenere", idEmpresaCongenere)
+                    <div class="row">
+                        @Html.BootstrapDropDownListFor(model => model.AgendamentoTreinamento.IDTipoTreinamento, new SelectList(GenericDelegate.ListarTipoTreinamento(), "Value", "Key"), "Tipo de Treinamento", new { onchange = "raizenCoreJs.AgendamentoTreinamento.carregarTipoAgenda()" }, new HtmlHelperOption() { colunas = "col-md-3" })
+                        @Html.BootstrapDropDownListFor(model => model.AgendamentoTreinamento.IDTipo, null, "Tipo de Agenda", new { onchange = "raizenCoreJs.AgendamentoTreinamento.buscarMotorista(event,true);raizenCoreJs.AgendamentoTreinamento.empresaOperacaoTerminalChange()" }, new HtmlHelperOption() { colunas = "col-md-5" })
+                        @if (Model != null && Model.AgendamentoTreinamento != null && (Model.AgendamentoTreinamento.IDEmpresa == 0 || Model.AgendamentoTreinamento.IDEmpresa == 3))
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.AgendamentoTreinamento.IDEmpresa, new SelectList(GenericDelegate.LinhaDeNegocio(), "ID", "Nome"), "Linha de Negócio", new { onchange = "raizenCoreJs.AgendamentoTreinamento.buscarMotorista(event,true);raizenCoreJs.AgendamentoTreinamento.empresaOperacaoTerminalChange()" }, new HtmlHelperOption() { colunas = "col-md-2" })
+                        }
+                        else
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.AgendamentoTreinamento.IDEmpresa, new SelectList(GenericDelegate.LinhaDeNegocio(), "ID", "Nome"), "Linha de Negócio", new { onchange = "raizenCoreJs.AgendamentoTreinamento.buscarMotorista(event,true);raizenCoreJs.AgendamentoTreinamento.empresaOperacaoTerminalChange()" }, new HtmlHelperOption() { colunas = "col-md-2" }, true)
+                            @Html.HiddenFor(model => model.AgendamentoTreinamento.IDEmpresa)
+                        }
+
+                        @if (Model != null && Model.AgendamentoTreinamento != null && (string.IsNullOrEmpty(Model.AgendamentoTreinamento.Operacao) || Model.AgendamentoTreinamento.Operacao == "Ambos"))
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.AgendamentoTreinamento.Operacao, new SelectList(GenericDelegate.CifFobCongeneres(), "ID", "Nome"), "Operação", new { onchange = "raizenCoreJs.AgendamentoTreinamento.buscarMotorista(event,true);raizenCoreJs.AgendamentoTreinamento.empresaOperacaoTerminalChange();raizenCoreJs.AgendamentoTreinamento.carregarTerminal();" }, new HtmlHelperOption() { colunas = "col-md-2" })
+                        }
+                        else
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.AgendamentoTreinamento.Operacao, new SelectList(GenericDelegate.CifFobCongeneres(), "ID", "Nome"), "Operação", new { onchange = "raizenCoreJs.AgendamentoTreinamento.buscarMotorista(event,true);raizenCoreJs.AgendamentoTreinamento.empresaOperacaoTerminalChange();raizenCoreJs.AgendamentoTreinamento.carregarTerminal();" }, new HtmlHelperOption() { colunas = "col-md-2" }, true)
+                            @Html.HiddenFor(model => model.AgendamentoTreinamento.Operacao)
+                        }
+                    </div>
+                    <div class="row">
+                        @Html.BootstrapDropDownListFor(model => model.AgendamentoTreinamento.IDTerminal, null, "Terminal", new { onchange = "raizenCoreJs.AgendamentoTreinamento.buscarMotorista(event,true);raizenCoreJs.AgendamentoTreinamento.empresaOperacaoTerminalChange();raizenCoreJs.AgendamentoTreinamento.listarEmpresas();" }, new HtmlHelperOption() { colunas = "col-md-4" })
+                        @Html.BootstrapDateBoxFor(model => model.AgendamentoTreinamento.Data, "Data", new { onchange = "raizenCoreJs.AgendamentoTreinamento.buscarMotorista(event,true);raizenCoreJs.AgendamentoTreinamento.empresaOperacaoTerminalChange(false)" }, new HtmlHelperOption() { colunas = "col-md-2" })
+                        <div id="naoCongenere">
+                            @Html.BootstrapTextBoxFor(model => model.AgendamentoTreinamento.CPF, null, "CPF", new { onpaste = "raizenCoreJs.AgendamentoTreinamento.buscarMotorista(event,false);", maxlength = 14, onkeyup = "raizenCoreJs.AgendamentoTreinamento.buscarMotorista(event,false)" }, new HtmlHelperOption() { colunas = "col-md-2" })
+                        </div>
+                        <div id="congenere">
+                            @Html.BootstrapTextBoxFor(model => model.AgendamentoTreinamento.CPFCongenere, null, "CPF Congênere", new { onpaste = "raizenCoreJs.AgendamentoTreinamento.verificarCpf();", maxlength = 14, onkeyup = "raizenCoreJs.AgendamentoTreinamento.verificarCpf()" }, new HtmlHelperOption() { colunas = "col-md-2" })
+                            @Html.BootstrapTextBoxFor(model => model.AgendamentoTreinamento.NomeMotorista, null, "Nome Motorista Cong", new { maxlength = 200 }, new HtmlHelperOption() { colunas = "col-md-2" })
+                            @Html.BootstrapDropDownListFor(model => model.AgendamentoTreinamento.IDEmpresaCongenere, null, "Empresa Congênere", null, new HtmlHelperOption() { colunas = "col-md-2" })
+                        </div>
+                        <div class="col-md-4">
+                            @Html.BootstrapButtonAdd("btnNovo", null, ButtonType.BUTTON, "raizenCoreJs.AgendamentoTreinamento.EditarMotorista(1);", "style='margin-top:25px;margin-left:-28px;display: none;' title='Novo Motorista'")
+                        </div>
+                        <div class="col-md-4">
+                            <div class="row">
+                                <label id="lblNome" style="margin-top:30px !important">@Model.NomeMotorista</label>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12" id="containerHorarios" style="margin-top:20px;">
+                            @if (Model != null && Model.ListaAgendamentoTerminalHorario != null && Model.ListaAgendamentoTerminalHorario.Any())
+                            {
+                                Html.RenderPartial("_Horarios", Model.ListaAgendamentoTerminalHorario);
+                            }
+                        </div>
+                    </div>
+                </form>
+                <div class="row" style="text-align:center">
+                    <button class="btn btn-custom voltar" id="download" type="button" style="display:none" tabindex="2" onclick="raizenCoreJs.raizenCRUD.Voltar();">
+                        <i class="fa fa-download"></i> Baixar Checklist
+                    </button>
+                    <button class="btn btn-custom voltar" type="button" tabindex="2" onclick="raizenCoreJs.raizenCRUD.Voltar();">
+                        <i class="fa fa-long-arrow-left"></i> Voltar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $("#AgendamentoTreinamento_Densidade").unbind(".maskMoney");
+        $("#AgendamentoTreinamento_Densidade").maskMoney({
+            showSymbol: false,
+            symbol: "",
+            decimal: ",",
+            thousands: ".",
+            allowNegative: true,
+            allowZero: true,
+            precision: $("input[data-currency-field]").data('currency-precision') || 4
+        });
+    </script>
+</div>
+@{Html.RenderPartial("_Confirm", new Raizen.Framework.Web.MVC.Models.ModalConfirm() { MessageYes = "Sim", MessageNot = "Não" });}

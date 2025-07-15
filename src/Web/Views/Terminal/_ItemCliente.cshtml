@@ -1,0 +1,13 @@
+﻿@model Raizen.UniCad.Model.TerminalEmpresa
+<tr id="linha-@Model.ID" class="gradeX">
+    @using (Html.BeginCollectionItem("Terminal.TerminalEmpresa"))
+    {
+        @Html.HiddenFor(item => item.Nome, new { @class = "IDCliente" })        
+        <td style="width: 95%; word-wrap: break-word">
+            @Html.PopoverTextFor(item => item.Nome, 80, "right")
+        </td>
+        <td style="width: 5%; word-wrap: break-word">
+            @Html.BootstrapButtonDelete("", "", ButtonType.BUTTON, "raizenCoreJs.Terminal.removerCliente(" + Model.ID + ")")
+        </td>
+    }
+</tr>

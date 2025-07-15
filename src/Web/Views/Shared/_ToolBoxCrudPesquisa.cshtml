@@ -1,0 +1,25 @@
+﻿@model int[]
+<div class="box border raizen" id="ToolBoxCrudPesquisa">
+    <div class="box-body center">
+        <div class="btn-group center" style="float: none;">
+            <button class="btn btn-custom" id="btnCrudSalvar" type="button" tabindex="@Model[0]" onclick="raizenCoreJs.raizenCRUD.Salvar();">
+                <i class="fa fa-save"></i> Salvar</button>
+            <button class="btn btn-custom" type="button" tabindex="@Model[1]" onclick="raizenCoreJs.raizenCRUD.Voltar();">
+                <i class="fa fa-long-arrow-left"></i> Voltar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    RaizenHelpers.prototype.EnterPagina = function EnterPagina(e) {
+        if (e && e.keyCode == 13) {
+            $('#' + raizenCoreJs.raizenHelpers.IdFormulario).submit();
+        }
+    };
+
+    RaizenHelpers.prototype.EnterSalvar = function EnterSalvar(e) {
+        if (e && e.keyCode == 13) {
+            raizenCoreJs.raizenCRUD.Salvar();
+        }
+    };
+</script>

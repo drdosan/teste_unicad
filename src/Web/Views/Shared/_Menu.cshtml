@@ -1,0 +1,45 @@
+﻿@using Raizen.UniCad.Web.Models
+@using Raizen.UniCad.Web.Util
+@model IEnumerable<ItemMenuViewModel>
+
+<div id="sidebar" class="sidebar @(WebHelper.VerificarMenuAberto() ? "" : "mini-menu")">
+    <div class="sidebar-menu nav-collapse">
+        <ul>
+            @foreach (var item in Model)
+            {
+                var cssOpen = item.RotaAtual ? "open" : "";
+
+                
+                <li class="has-sub @cssOpen">
+                    <a href="#">
+                        <i class="fa @item.Icone"></i>
+                        <span class="menu-text">@item.Nome</span>
+                        <span class="arrow @cssOpen"></span>
+                    </a>
+                    @if (item.Filhos.Any())
+                    {
+                        @MontarSubMenu(item.Filhos, item.RotaAtual)
+                    }
+                </li>
+                
+            }
+        </ul>
+    </div>
+</div>
+@helper MontarSubMenu(IEnumerable<ItemMenuViewModel> itens, bool abrirSubMenu)
+{
+    <ul class="sub" style="@(abrirSubMenu ? "display: block;" : "")">
+        @foreach (var item in itens)
+        {
+            if (!item.Endereco.Contains("/Placa") || Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "Placa" && p.NomeAcao == "Listar") != null)
+            {
+            <li class="@(item.RotaAtual ? "current" : "")">
+                <a href="@Url.Content(item.Endereco)">
+                    <span class="sub-menu-text">@item.Nome</span>
+                </a>
+            </li>
+            }
+        }
+    </ul>
+}
+

@@ -1,0 +1,157 @@
+﻿@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Models
+@using Raizen.Framework.Models
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.UniCad.Model;
+@using Raizen.UniCad.Extensions;
+
+
+@model Raizen.UniCad.Web.Models.ModelImportacao
+@{
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+
+    var tabIndiceCrudEdicao = new int[2];
+    tabIndiceCrudEdicao[0] = 4;
+    tabIndiceCrudEdicao[1] = 5;
+
+}
+<link href="~/Content/css/Unicad.css" rel="stylesheet" />
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Importacao.js")"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        raizenCoreJs.raizenCRUD.urlPesquisa = '@Url.Action("Pesquisar", "Importacao")';
+        raizenCoreJs.raizenCRUD.urlNovo = '@Url.Action("Novo", "Importacao")';
+        raizenCoreJs.raizenCRUD.urlExcluir = '@Url.Action("ExcluirRegistro", "Importacao")';
+
+        RaizenCoreJs.prototype.Importacao.urlProcessar = '@Url.Action("Processar", "Importacao")';
+        RaizenCoreJs.prototype.Importacao.urlVerificar = '@Url.Action("Verificar", "Importacao")';
+
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        raizenCoreJs.raizenMensagens.ExibirMensagemOperacao();
+    });
+</script>
+@*Parte de Filtros*@
+<form id="frmPesquisa" class="form-horizontal">
+
+    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUDEdit" })
+    @Html.HiddenFor(model => model.ChavePrimaria)
+    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUD" })
+    @Html.HiddenFor(model => model.OperacaoSecundaria, new { @Id = "IdOperacaoSecundariaCRUD" })
+
+    @Html.HiddenFor(model => model.PaginadorDados.PaginaAtual)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdePaginas)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdeItensPagina)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdeTotalRegistros)
+    @Html.HiddenFor(model => model.PaginadorDados.Status)
+
+    <div class="row">
+        @Html.BootstrapTextBoxFor(model => model.Filtro.Nome, null, "Nome", null, new HtmlHelperOption() { colunas = "col-md-3" })
+        @*@Html.BootstrapDropDownListFor(model => model.Filtro.Status, new SelectList(GenericDelegate.AtivoInativo(), "Flag", "Nome"), "Status", null, new HtmlHelperOption() { colunas = "col-md-3" })*@
+    </div>
+
+    <div class="row" id="containerBotoes">
+        <div class="col-md-5">
+            <div class="form-group">
+                <label class="col-sm-5 control-label"></label>
+                <div class="col-sm-12">
+                    <div class="btn-group center" style="float: none;">
+                        <button class="btn btn-custom" type="button" tabindex="4" onclick="raizenCoreJs.raizenCRUD.RealizarPesquisa();">
+                            <i class="fa fa-search"></i> Pesquisar
+                        </button>
+                        <button class="btn btn-custom" type="button" acaopermissao="add" tabindex="5" onclick="raizenCoreJs.raizenCRUD.Novo();">
+                            <i class="fa fa-plus-square-o"></i> Novo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<div class="divide-1"></div>
+
+@*Resultado da Pesquisa*@
+
+<div id="datatable2_wrapper" class="dataTables_wrapper form-inline" role="grid">
+    <div class="row">
+        @if (!Model.ListaImportacao.IsNullOrEmpty())
+        {
+            <div class="col-md-12">
+                <table id="datatable2" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th colspan="7" align="center">
+                                Foram encontrados: @Model.PaginadorDados.QtdeTotalRegistros.ToString() registros
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Tipo</th>
+                            <th>Data</th>
+                            <th>Status</th>
+                            <th>Progresso</th>
+                            <th>Anexo</th>
+                            <th style="text-align:center">Operações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var app in Model.ListaImportacao)
+                        {
+                            string funcaoEdit = "raizenCoreJs.raizenCRUD.EditarRegistro('" + @app.ID.ToString() + "','" + Url.Action("Editar", "Importacao") + "');";
+
+                            <tr class="gradeX">
+                                <td style="width: 20%; word-wrap: break-word">
+                                    @app.Nome
+                                </td>
+                                <td style="width: 10%; word-wrap: break-word">
+                                    @(Raizen.UniCad.Extensions.EnumExtensions.GetDescription((EnumTipoImportacao)app.Tipo))
+                                </td>
+                                <td style="width: 10%; word-wrap: break-word">
+                                    @app.Data
+                                </td>
+                                <td style="width: 10%; word-wrap: break-word">
+                                    @(Raizen.UniCad.Extensions.EnumExtensions.GetDescription((EnumStatusImportacao)app.Status))
+                                </td>
+                                <td style="width: 20%; word-wrap: break-word">
+                                    <div class="progress">
+                                        <div class="progress-bar progress-bar-striped active  progress-@app.ID" role="progressbar"
+                                             aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="width: 10%; word-wrap: break-word">
+                                    <a href="@Url.Action("Download","Arquivo")?file=@(app.Anexo)" class="anexoCount" target="_blank">@Html.PopoverText(app.Anexo, app.Anexo, 30)</a>
+                                </td>
+                                <td align="center" style="width: 20%;">
+                                    <div class="btn-group center" style="float: none;">
+                                        <button class="btn btn-custom" type="button" title="Ver Importacao" onclick="@Html.Raw(funcaoEdit)">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                        <button class="btn btn-custom" type="button" title="Remover" onclick="raizenCoreJs.raizenCRUD.ExcluirRegistro(@app.ID);">
+                                            <i class="fa fa-trash-o"></i>
+                                        </button>
+                                        <button class="btn btn-custom" type="button" title="Processar" onclick="raizenCoreJs.Importacao.Processar(@app.ID);">
+                                            <i class="fa fa-arrow-right"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+    <div class="row">
+        @Html.Partial("_Paginador", Model)
+    </div>
+</div>
+
+<div id="divImportacaos"></div>

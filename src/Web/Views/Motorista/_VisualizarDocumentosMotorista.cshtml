@@ -1,0 +1,158 @@
+﻿@model Raizen.UniCad.Model.Motorista
+
+<div class="modal fade" id="containerVisualizar" tabindex="-1" data-backdrop="static" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="box border raizen" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event);" id="">
+                    <div class="box-title">
+                        <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Documentos do Motorista</span></h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="box border raizen" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event);" id="">
+                            <div class="box-title">
+                                <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Documentos</span></h4>
+                            </div>
+                            <div class="box-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h3>@Model.Nome</h3>
+                                        <table id="docTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                                            <thead>
+                                                <tr class="table-raizen">
+                                                    <th style="word-wrap: break-word; width:10%">
+                                                        Tipo Documento
+                                                    </th>
+                                                    <th style="word-wrap: break-word; width:30%">
+                                                        Descrição
+                                                    </th>
+                                                    <th style="word-wrap: break-word; width:10%">
+                                                        Data Vencimento
+                                                    </th>
+                                                    <th style="word-wrap: break-word; width:30%">
+                                                        Anexo
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (Model != null)
+                                                {
+                                                    foreach (var doc in Model.Documentos)
+                                                    {
+                                                        Html.RenderPartial("_ItemAnexo", doc);
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box border raizen">
+                            <div class="box-title">
+                                <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Treinamento Teórico</span></h4>
+                            </div>
+                            <div class="box-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        @if (Model != null && Model.ListaTreinamento != null && Model.ListaTreinamento.Any())
+                                        {
+                                            <table id="docTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                                                <thead>
+                                                    <tr class="table-raizen">
+                                                        <th style="word-wrap: break-word; width:70%">
+                                                            Justificativa
+                                                        </th>
+                                                        <th style="word-wrap: break-word; width:20%">
+                                                            Data/Hora
+                                                        </th>
+                                                        <th style="word-wrap: break-word; width:20%">
+                                                            Ação
+                                                        </th>
+                                                        <th style="word-wrap: break-word; width:20%">
+                                                            Usuário
+                                                        </th>
+                                                        <th style="word-wrap: break-word; width:20%">
+                                                            Anexo
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var historico in Model.ListaTreinamento)
+                                                    {
+                                                        <tr>
+                                                            <td style="word-wrap: break-word">@Html.PopoverTextFor(p => historico.Justificativa, 200, "right")</td>
+                                                            <td style="word-wrap: break-word; @((historico.Data < DateTime.Now.Date) ? "color:red; font-weight:bold" : "")">@historico.Data.ToShortDateString()</td>
+                                                            <td style="word-wrap: break-word">@(historico.TreinamentoAprovado.HasValue && historico.TreinamentoAprovado.Value ? "Aprovado" : "Reprovado")</td>
+                                                            <td style="word-wrap: break-word">@historico.CodigoUsuario</td>
+                                                            <td style="word-wrap: break-word"><a href="@Url.Action("Download", "Arquivo")?file=@historico.Anexo" class="anexoCount" target="_blank">@Html.PopoverTextFor(p => historico.Anexo, 30)</a></td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                                <br />
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box border raizen" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event);" id="">
+                            <div class="box-title">
+                                <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Treinamento Prático</span></h4>
+                            </div>
+                            <div class="box-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <table id="terminaisTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                                                            <thead>
+                                                                <tr class="table-raizen">
+                                                                    <th>Terminal</th>
+                                                                    <th>Usuário</th>
+                                                                    <th>Data Vencimento</th>
+                                                                    <th>Anexo</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr id="linha-2" class="gradeX">
+                                                                    @if (Model != null && Model.ListaTerminais != null)
+                                                                    {
+                                                                        foreach (var item in Model.ListaTerminais)
+                                                                        {
+                                                                            Html.RenderPartial("_ItemTerminalSomenteVisualizacao", item);
+                                                                        }
+                                                                    }
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row" style="text-align:center">
+                            <div class="col-md-12">
+                                <button class="btn btn-custom voltar" type="button" tabindex="2" onclick="$('#containerVisualizar').modal('hide');">
+                                    <i class="fa fa-long-arrow-left"></i> Fechar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

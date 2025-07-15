@@ -1,0 +1,313 @@
+﻿@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.Framework.Web.MVC.Extensions;
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Trigger hover
+        $('.pop-hover').popover({
+            trigger: 'hover'
+        });
+    });
+</script>
+<style>
+    .tab-pane {
+        border-left: 1px solid silver;
+        border-bottom: 1px solid silver;
+        border-right: 1px solid silver;
+        border-radius: 0px 0px 5px 5px;
+        padding: 30px;
+        margin-bottom: 20px;
+    }
+
+    .invisivel {
+        display: none;
+    }
+
+    .roxoRaizen {
+        background-color: #6f376c !important;
+    }
+
+    .modal-dialog {
+        max-width: 90% !important;
+    }
+</style>
+
+@model Raizen.UniCad.Web.Models.ModelMotoristaArgentina
+@{
+
+    var urlValidacao = @Url.Action("ValidarObjetos", "MotoristaArgentina");
+    
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+
+}
+
+<link href="~/Content/css/Unicad.css" rel="stylesheet" />
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        RaizenCoreJs.prototype.Motorista.urlAdicionarTerminal = '@Url.Action("AdicionarTerminal", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlSalvarTreinamento = '@Url.Action("SalvarTreinamento", "MotoristaArgentina")';
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        raizenCoreJs.raizenHelpers.urlValidacao = "@urlValidacao";
+        RaizenCoreJs.prototype.Motorista._idPais = 2;
+    });
+</script>
+
+<div class="box border raizen" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event);" id="containerEdicaoTreinamento">
+    <div class="box-title">
+        <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Entrenamiento</span></h4>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-12">
+                <form id="frmTreinamento" class="form-horizontal frmTreinamento">
+                    @Html.HiddenFor(model => model.ID)
+                    @Html.HiddenFor(model => model.MotoristaTreinamentoTerminal.ID)
+                    @Html.HiddenFor(model => model.TreinamentoView.Anexo, new { @id = "Anexo-34" })
+                    <label id="lbl_TreinamentoTeorico" style="visibility:hidden">Entrenamiento Teórico</label>
+                    <label id="lbl_TreinamentoPratico" style="visibility:hidden">Entrenamiento Práctico</label>
+                    <div class="box border raizen">
+                        <div class="box-title">
+                            <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Entrenamiento Teórico</span></h4>
+                        </div>
+                        <div class="box-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class="control-label">Anexo</label>
+                                            @if (string.IsNullOrEmpty(Model.TreinamentoView.Anexo))
+                                            {
+                                                {
+                                                    <input id="input-701" type="file" name="@Html.NameFor(p => p.TreinamentoView.Anexo)" class="anexoCount" data-buttonText="Seleccione" data-iconName="glyphicon glyphicon-file">
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <button type="button" style="float: left; margin-right: 10px;" tabindex="500;" id="limparAnexo" title="Limpiar" class="btn btn-default fileinput-remove fileinput-remove-button" onclick="RemoverAnexo();"><i class="glyphicon glyphicon-trash"></i> </button>
+                                                <a href="@Url.Action("Download","Arquivo")?file=@(Model.TreinamentoView.Anexo)" style="margin-top:10px" class="anexoCount" target="_blank" title="@Model.TreinamentoView.Anexo" id="linkAnexo">@Html.PopoverTextFor(model => model.TreinamentoView.Anexo, 50)</a>
+                                                <div id="inputDiv" style="display:none">
+                                                    <input id="input-701" type="file" name="@Html.NameFor(p => p.TreinamentoView.Anexo)" class="anexoCount" data-buttonText="Seleccione" data-iconName="glyphicon glyphicon-file">
+                                                </div>
+                                            }
+                                        </div>
+                                        @Html.BootstrapDateBoxFor(model => model.TreinamentoView.dataValidade, "Fecha de vencimiento", new { @class = "dataValidade form-control", @onkeyup = "mascaraData(this);" }, new HtmlHelperOption() { colunas = "col-md-3" }, null, true)
+                                        @Html.BootstrapTextAreaFor(model => model.TreinamentoView.Justificativa, "Justificación", null, new HtmlHelperOption { colunas = "col-md-6" })
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label class="control-label">Aprobado</label>
+                                            <input type="radio" name="TreinamentoView.TreinamentoAprovado" value="true" />
+                                            <label class="control-label">Desaprobado</label>
+                                            <input type="radio" name="TreinamentoView.TreinamentoAprovado" value="false" />
+                                        </div>
+                                    </div>
+                                    <script>
+                                        $("#input-701").fileinput({
+                                            uploadUrl: '@Url.Action("AnexarArquivo", "Arquivo")',
+                                            dropZoneEnabled: false,
+                                            showUpload: false,
+                                            showPreview: false,
+                                            browseLabel: '',
+                                            uploadLabel: '',
+                                            removeLabel: '',
+                                            layoutTemplates: {
+                                                progress: ''
+                                            },
+                                        });
+
+                                        function RemoverAnexo(id) {
+                                            //$('#FichaAlteracao_Anexo').val('');
+                                            $('#limparAnexo').hide();
+                                            $('#linkAnexo').hide();
+                                            $("#inputDiv").show(800);
+                                        };
+
+                                        $('#input-701').on('fileloaded', function (event, file, previewId, index, reader) {
+                                            var formData = new FormData();
+
+                                            formData.append('file', file);
+                                            raizenCoreJs.raizenHelpers.AbrirLoading();
+                                            $.ajax({
+                                                url: '@Url.Action("AnexarArquivo", "Arquivo")',
+                                                data: formData,
+                                                cache: false,
+                                                contentType: false,
+                                                processData: false,
+                                                type: 'POST',
+                                                success: function (response) {
+                                                    raizenCoreJs.raizenHelpers.FecharLoading();
+
+                                                    if (response == 'O Arquivo selecionado está vazio!') {
+                                                        $('.glyphicon.glyphicon-trash').trigger('click');
+                                                        ShowErrorMenssage('¡El archivo seleccionado está vacío!');
+                                                    }
+                                                    else if (response == 'Tamanho Arquivo')
+                                                    {
+                                                        ShowErrorMenssage('El archivo debe tener menos de 20 MB, intente nuevamente', 20);
+                                                        $('.glyphicon.glyphicon-trash').trigger('click');
+                                                    }
+                                                    else if (response.indexOf('Formato de Arquivo Inválido') >= 0) {
+                                                        ShowErrorMenssage('Formato de archivo inválido', 20);
+                                                        $('.glyphicon.glyphicon-trash').trigger('click');
+                                                    }
+                                                    else {
+                                                        $('#Anexo-34').val(response);
+                                                    }
+                                                },
+                                                error: function (response) {
+                                                    ShowErrorMenssage('El archivo debe tener menos de 20 MB, intente nuevamente', 20);
+                                                    raizenCoreJs.raizenHelpers.FecharLoading();
+                                                }
+                                            });
+                                        });
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-12">
+                                    @if (Model != null && Model.ListaTreinamento != null && Model.ListaTreinamento.Any())
+                                    {
+                                        <div class="box border raizen" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event);">
+                                            <div class="box-title">
+                                                <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Histórico</span></h4>
+                                            </div>
+                                            <div class="box-body" style="max-height:170px; overflow-x:auto">
+                                                <table id="docTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                                                    <thead>
+                                                        <tr class="table-raizen">
+                                                            <th style="word-wrap: break-word; width:70%">
+                                                                Justificación
+                                                            </th>
+                                                            <th style="word-wrap: break-word; width:20%">
+                                                                Fecha/Hora
+                                                            </th>
+                                                            <th style="word-wrap: break-word; width:20%">
+                                                                Acción
+                                                            </th>
+                                                            <th style="word-wrap: break-word; width:20%">
+                                                                Usuario
+                                                            </th>
+                                                            <th style="word-wrap: break-word; width:20%">
+                                                                Anexo
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var historico in Model.ListaTreinamento)
+                                                        {
+                                                            <tr>
+                                                                <td style="word-wrap: break-word">@Html.PopoverTextFor(p => historico.Justificativa, 200,"right")</td>
+                                                                <td style="word-wrap: break-word">@historico.Data.ToShortDateString()</td>
+                                                                <td style="word-wrap: break-word">@(historico.TreinamentoAprovado.HasValue && historico.TreinamentoAprovado.Value ? "Aprobado" : "Desaprobado")</td>
+                                                                <td style="word-wrap: break-word">@historico.CodigoUsuario</td>
+                                                                <td style="word-wrap: break-word"><a href="@Url.Action("Download", "Arquivo")?file=@historico.Anexo" class="anexoCount" target="_blank">@Html.PopoverTextFor(p => historico.Anexo, 30)</a></td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                            <br />
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+                    <div class="box border raizen" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event);" id="">
+                        <div class="box-title">
+                            <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Entrenamiento Práctico</span></h4>
+                        </div>
+                        <div class="box-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                @Html.BootstrapTextBox("TerminalAuto", null, "Terminal", new { maxlength = 200, @onchange = "VerificarSeDeveLimpar();", title = "Ingrese el nombre del terminal" }, new HtmlHelperOption { colunas = "col-md-9" })
+                                                <input type="hidden" id="Terminal" />
+                                                <input type="hidden" id="TerminalNome" />
+                                                @Html.BootstrapButtonAdd("BtnIncluir", "Incluir", ButtonType.BUTTON, "raizenCoreJs.Motorista.adicionarTerminal();", "style='margin-top: 25px;'")
+                                                <script>
+                                                    function TerminalAutoComplete(nomeCampo, url) {
+                                                        $("#TerminalAuto").autocomplete({
+                                                            minLength: 3,
+                                                            source: function (request, response) {
+                                                                $.ajax({
+                                                                    url: url,
+                                                                    type: "POST", dataType: "json",
+                                                                    data: { nome: request.term },
+                                                                    success: function (data) {
+                                                                        response($.map(data, function (item) {
+                                                                            return { label: item.Name, value: item.Name, codigo: item.ID };
+                                                                        }));
+                                                                    }
+                                                                });
+                                                            },
+                                                            select: function (event, ui) {
+                                                                $("#" + nomeCampo).val(ui.item.codigo);
+                                                                $("#" + nomeCampo + "Nome").val(ui.item.label);
+                                                            }
+                                                        });
+                                                    }
+                                                    var url = '@Url.Action("ListarTerminais", "MotoristaArgentina")';
+                                                    TerminalAutoComplete("Terminal", url);
+                                                </script>
+                                                <div class="col-md-12">
+                                                    <table id="terminaisTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                                                        <thead>
+                                                            <tr class="table-raizen">
+                                                                <th>Terminal</th>
+                                                                <th>Usuario</th>
+                                                                <th>Fecha Vencimento</th>
+                                                                <th>Anexo</th>
+                                                                <th></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr id="linha-2" class="gradeX">
+                                                                @if (Model != null && Model.ListaTerminais != null)
+                                                                {
+                                                                    foreach (var item in Model.ListaTerminais)
+                                                                    {
+                                                                        Html.RenderPartial("_ItemTerminal", item);
+                                                                    }
+                                                                }
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" style="text-align:center">
+                        <div class="col-md-12">
+                            <button class="btn btn-custom voltar" type="button" tabindex="2" onclick="raizenCoreJs.Motorista.SalvarTreinamento(@Model.ID)">
+                                <i class="fa fa-save"></i> Guardar
+                            </button>
+                            <button class="btn btn-custom voltar" type="button" tabindex="2" onclick="raizenCoreJs.Motorista.fecharModalMotorista();">
+                                <i class="fa fa-long-arrow-left"></i> Cerrar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

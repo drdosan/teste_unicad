@@ -1,0 +1,323 @@
+﻿@using Raizen.Framework.Models
+@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Models
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.Framework.Web.MVC.Extensions;
+@using Raizen.UniCad.Model;
+
+@model Raizen.UniCad.Web.Models.ModelTipoDocumento
+@{
+    var urlValidacao = Url.Action("ValidarObjetos", "TipoDocumento");
+    var idCategoriaVeiculo = 1;
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+    var TipoComposicao = Html.Raw(Json.Encode(Model.TipoDocumento.TiposComposicao));
+    var TipoProdutos = Html.Raw(Json.Encode(GenericDelegate.Listar<TipoProduto>()));
+}
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.TipoDocumento.js")"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        raizenCoreJs.raizenCRUD.urlSalvar = '@Url.Action("Salvar", "TipoDocumento")';
+
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        raizenCoreJs.raizenMensagens.ExibirMensagemOperacao();
+        raizenCoreJs.raizenHelpers.urlValidacao = "@urlValidacao";
+
+        RaizenCoreJs.prototype.TipoDocumento.urlGetComposicoes = '@Url.Action("GetComposicoes", "TipoDocumento")';
+        RaizenCoreJs.prototype.TipoDocumento.urlAdicionarTipoProduto = '@Url.Action("AdicionarTipoProduto", "TipoDocumento")';
+        RaizenCoreJs.prototype.TipoDocumento.urlAdicionarTipoVeiculo = '@Url.Action("AdicionarTipoVeiculo", "TipoDocumento")';
+        RaizenCoreJs.prototype.TipoDocumento.urlAdicionarComposicaoMotorista = '@Url.Action("AdicionarComposicaoMotorista", "TipoDocumento")';
+        urlSelecionarCategoria = '@Url.Action("CarregarCategorias", "TipoDocumento")';
+        RaizenCoreJs.prototype.TipoDocumento.urlSalvar = '@Url.Action("Salvar", "TipoDocumento")';
+        @{
+            if (Model.TipoDocumento != null && Model.TipoDocumento.IDCategoriaVeiculo > 0)
+            {
+                idCategoriaVeiculo = Model.TipoDocumento.IDCategoriaVeiculo;
+            }
+        }
+        CarregarCategorias(@idCategoriaVeiculo);
+
+        $(function () {
+            $("#TipoDocumento_tipoCadastro").change(function () {
+                CarregarCategorias(0);
+                TipoDocumento.prototype.exibePossuiVencimento();
+            });
+        });
+
+        function CarregarCategorias(categoria) {
+            var valor = $("#TipoDocumento_tipoCadastro").val();
+
+            var $select = $('#TipoDocumento_IDCategoriaVeiculo').selectize();
+            var control = $select[0].selectize;
+            control.clear();
+            control.clearOptions();
+            control.enable();
+            raizenCoreJs.raizenHelpers.AbrirLoading();
+            $.ajax({
+                type: 'GET',
+                url: urlSelecionarCategoria,
+                data: { idTipoCategoria: valor },
+                success: function (retorno) {
+                    raizenCoreJs.raizenHelpers.FecharLoading();
+                    if (retorno != '') {
+                        $.each(retorno, function (i, val) {
+                            control.addOption({value: val.Value, text: val.Text});
+                        });
+
+                        if (categoria != '' && categoria > 0)
+                            control.setValue(categoria);
+                    }
+                    control.refreshItems();
+                    if (valor == 2)
+                    {
+                        control.setValue('4');
+                        control.disable();
+                        return;
+                    }
+                },
+                error: function (partialView) {
+                    ShowMessage(partialView);
+                }
+            });
+
+            if (valor == 1) {
+                TipoDocumento.prototype.exibeRows(true);
+            }
+            else {
+                TipoDocumento.prototype.exibeRows(false);
+            }
+
+            raizenCoreJs.raizenHelpers.FecharLoading();
+        };
+
+        $("#modalcontainerEdicao").on('show.bs.modal', function () {
+            raizenCoreJs.TipoDocumento.exibePossuiVencimento();
+            raizenCoreJs.TipoDocumento.exibeRows();
+            raizenCoreJs.TipoDocumento.listarComposicoes();
+            raizenCoreJs.TipoDocumento.preencheComboProduto();
+            $('.selectize').selectize();
+        }).trigger('modal.shown');
+
+    });
+
+    var TipoComposicao = (@TipoComposicao).map(function (x) {
+        return { Id: x.ID, Placas: x.NumeroPlacas};
+    });
+
+    var TipoProdutos = @TipoProdutos;
+
+    raizenCoreJs.TipoDocumento.preencheComboProduto();
+</script>
+
+<div class="box border raizen" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event);" id="containerEdicao">
+    <div class="box-title">
+        <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Edição de Tipo de Documento</span></h4>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-12">
+                <form id="frmEdicao" class="form-horizontal">
+                    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUDEdit" })
+                    @Html.HiddenFor(model => model.ChavePrimaria)
+                    <div class="row">
+                        @Html.BootstrapDropDownListFor(model => model.TipoDocumento.IDPais, new SelectList(GenericDelegate.ListarPais(), "Value", "Key"), "País", null, new HtmlHelperOption() { colunas = "col-md-2" })
+                        @Html.BootstrapDropDownListFor(model => model.TipoDocumento.IDEmpresa, new SelectList(GenericDelegate.Listar<Empresa>(), "ID", "Nome"), "Linha de Negócio", null, new HtmlHelperOption() { colunas = "col-md-3" })
+                        @Html.BootstrapTextBoxFor(model => model.TipoDocumento.Sigla, null, "Sigla", new { maxlength = 10 }, new HtmlHelperOption() { colunas = "col-md-2" })
+                        @Html.BootstrapTextBoxFor(model => model.TipoDocumento.Descricao, null, "Descrição", new { maxlength = 500 }, new HtmlHelperOption() { colunas = "col-md-5" })
+
+                    </div>
+                    <div class="row">
+                        @Html.BootstrapDropDownListFor(model => model.TipoDocumento.Operacao, new SelectList(GenericDelegate.CifFobOuAmbos(), "ID", "Nome"), "Operação", null, new HtmlHelperOption() { colunas = "col-md-3" })
+                        @Html.BootstrapDropDownListFor(model => model.TipoDocumento.Status, new SelectList(GenericDelegate.AtivoInativo(), "Flag", "Nome"), "Status", null, new HtmlHelperOption() { colunas = "col-md-2" })
+                        @Html.BootstrapDropDownListFor(model => model.TipoDocumento.tipoCadastro, new SelectList(GenericDelegate.ListarEnum<EnumTipoCadastroDocumento>(), "Value", "Key"), "Tipo de Cadastro", null, new HtmlHelperOption() { colunas = "col-md-2" })
+                        @Html.BootstrapDropDownListFor(model => model.TipoDocumento.IDCategoriaVeiculo, null, "Categoria", null, new HtmlHelperOption() { colunas = "col-md-3" })
+                        @Html.BootstrapDropDownListFor(model => model.TipoDocumento.Obrigatorio, new SelectList(GenericDelegate.VerdadeiroOuFalso(), "Flag", "Nome"), "Obrigatório", null, new HtmlHelperOption() { colunas = "col-md-2" })
+
+                    </div>
+                    <div class="row">
+                        @Html.BootstrapDropDownListFor(model => model.TipoDocumento.TipoAcaoVencimento, new SelectList(GenericDelegate.AcaoVencimentoBloquearReprovar(), "Flag", "Nome"), "Ação Vencimento", new { onchange = "raizenCoreJs.TipoDocumento.esconderAcaoImediata(this)" }, new HtmlHelperOption() { colunas = "col-md-2" })
+                        @{
+                            var exibirBloqueio = "";
+                            if (Model != null && Model.TipoDocumento != null && Model.TipoDocumento.TipoAcaoVencimento == (int)EnumTipoAcaoVencimento.SemAcao)
+                            {
+                                exibirBloqueio = "display:none";
+                            }
+                        }
+
+                        <div id="divAcaoImediata" style="@exibirBloqueio">
+
+                            @Html.BootstrapDropDownListFor(model => model.TipoDocumento.BloqueioImediato, new SelectList(GenericDelegate.BloqueioVerdadeiroOuFalso(), "Flag", "Nome"), "Ação Imediata", new { onchange = "raizenCoreJs.TipoDocumento.escoderQtd(this)" }, new HtmlHelperOption() { colunas = "col-md-2" })
+                            @{
+                                var exibirQtdDias = "";
+                                if (Model != null && Model.TipoDocumento != null && (Model.TipoDocumento.BloqueioImediato == (int)EnumTipoBloqueioImediato.Sim || Model.TipoDocumento.BloqueioImediato == null))
+                                {
+                                    exibirQtdDias = "display:none";
+                                }
+                            }
+
+                            <div id="QtdDiasBloqueio" style="@exibirQtdDias">
+                                @Html.BootstrapNumberBoxFor(model => model.TipoDocumento.QtdDiasBloqueio, null, "Qtd Dias Ação", new { min = 1, max = 10000 }, new HtmlHelperOption() { colunas = "col-md-2" })
+                            </div>
+                        </div>
+
+                        @Html.BootstrapDropDownListFor(model => model.TipoDocumento.qtdeAlertas, new SelectList(GenericDelegate.QtdAlertas(), "ID", "Valor"), "Qtde. Alertas", null, new HtmlHelperOption() { colunas = "col-md-1", mostraTextoVazio = false })
+                        @Html.BootstrapNumberBoxFor(model => model.TipoDocumento.Alerta1, null, "1º Alerta", new { @disabled = "disabled" }, new HtmlHelperOption() { colunas = "col-md-1" })
+                        @Html.BootstrapNumberBoxFor(model => model.TipoDocumento.Alerta2, null, "2º Alerta", new { @disabled = "disabled" }, new HtmlHelperOption() { colunas = "col-md-1" })
+                        @Html.BootstrapNumberBoxFor(model => model.TipoDocumento.MesesValidade, null, "Meses de Validade", new { min = 1, max = 10000, title = "Usar para envio de data de emissão ao SAP" }, new HtmlHelperOption() { colunas = "col-md-2" })
+                        <div id="divPossuiVencimento">
+                            @Html.BootstrapDropDownListFor(model => model.TipoDocumento.DocumentoPossuiVencimento, new SelectList(GenericDelegate.VerdadeiroOuFalso(), "Flag", "Nome"), "Dcto Possui Vencimento", null, new HtmlHelperOption() { colunas = "col-md-2" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div id="linhaTipoProduto" class="col-md-6">
+                            <style>
+                                .collapsible-panel .box.border.raizen {
+                                    min-height: 240px;
+                                }
+                            </style>
+                            @using (Html.BootstrapCollapsiblePanel("Produtos a serem Carregados", "TiposProdutoPanel", false, "fa fa-product-hunt", null, new { style = "max-height:300px; overflow-x:visible; overflow-y:visible; margin-top:10px; " }))
+                            {
+                                <div class="row">
+                                    @Html.BootstrapDropDownList("TipoProduto", null, "Produto a ser Carregado", new { maxlength = 200 }, new HtmlHelperOption { colunas = "col-md-9" })
+                                    @Html.BootstrapButtonAdd("BtnIncluir", "Incluir", ButtonType.BUTTON, "raizenCoreJs.TipoDocumento.adicionarTipoProduto();", "style='margin-top: 25px;'")
+                                </div>
+                                <table id="TipoProdutoTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                                    <thead>
+                                        <tr class="table-raizen">
+                                            <th>Tipos de Produto</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.TipoDocumento != null && Model.TipoDocumento.TiposProduto != null)
+                                        {
+                                            foreach (var item in Model.TipoDocumento.TiposProduto)
+                                            {
+                                                Html.RenderPartial("_ItemTipoProduto", item);
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                        </div>
+                        <div id="linhaTipoVeiculo" class="col-md-6">
+
+                            @using (Html.BootstrapCollapsiblePanel("Tipos de Veículo", "TiposVeiculoPanel", false, "fa fa-truck", null, new { style = "max-height:300px; overflow-x:visible; overflow-y:visible; margin-top:10px;" }))
+                            {
+                                <div class="row">
+                                    @Html.BootstrapDropDownList("TipoVeiculo", new SelectList(GenericDelegate.ListarComplex<TipoVeiculo>(x => (int)x.Pais == 1), "ID", "Nome"), "Tipo de Veículo", new { maxlength = 200 }, new HtmlHelperOption { colunas = "col-md-9" })
+                                    @Html.BootstrapButtonAdd("BtnIncluir", "Incluir", ButtonType.BUTTON, "raizenCoreJs.TipoDocumento.adicionarTipoVeiculo();", "style='margin-top: 25px;'")
+                                </div>
+                                <table id="TipoVeiculoTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                                    <thead>
+                                        <tr class="table-raizen">
+                                            <th>Tipos de Veículo</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.TipoDocumento != null && Model.TipoDocumento.TiposVeiculo != null)
+                                        {
+                                            foreach (var item in Model.TipoDocumento.TiposVeiculo)
+                                            {
+                                                Html.RenderPartial("_ItemTipoVeiculo", item);
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                        </div>
+                        <div id="linhaTipoComposicaoMotorista" class="col-md-6">
+
+                            @using (Html.BootstrapCollapsiblePanel("Tipos de Composição", "linhaTipoComposicaoMotoristaPanel", false, "fa fa-truck", null, new { style = "max-height:300px; overflow-x:visible; overflow-y:visible; margin-top:10px;" }))
+                            {
+                                <div class="row">
+                                    @Html.BootstrapDropDownList("TipoComposicao", new SelectList(GenericDelegate.ListarComplex<TipoComposicao>(x => x.IdPais == 2), "ID", "Nome"), "Tipos de Composição", new { maxlength = 200 }, new HtmlHelperOption { colunas = "col-md-9" })
+                                    @Html.BootstrapButtonAdd("BtnIncluirComposicaoMotorista", "Incluir", ButtonType.BUTTON, "raizenCoreJs.TipoDocumento.adicionarTipoComposicaoMotorista();", "style='margin-top: 25px;'")
+                                </div>
+                                <table id="TipoComposicaoMotoristaTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                                    <thead>
+                                        <tr class="table-raizen">
+                                            <th>Tipos de Composição</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.TipoDocumento != null && Model.TipoDocumento.ComposicaoMotorista != null)
+                                        {
+                                            foreach (var item in Model.TipoDocumento.ComposicaoMotorista)
+                                            {
+                                                Html.RenderPartial("_ItemTipoComposicao", item);
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                        </div>
+                        <div id="linhaComposicao" class="col-md-6">
+                            @using (Html.BootstrapCollapsiblePanel("Tipos de Composição", "ComposicaoPanel", false, "fa fa-truck", null, new { style = "max-height:300px; overflow-x:visible; overflow-y:visible; margin-top:10px;" }))
+                            {
+                                <div class="row">
+                                    @Html.BootstrapDropDownList("Composicao", new SelectList(Model.TipoDocumento.TiposComposicao, "Id", "Nome"), "Tipos de Composição", new { maxlength = 200 }, new HtmlHelperOption { colunas = "col-md-5" })
+                                    @Html.BootstrapDropDownList("PlacaComposicao", null, "Placa", new { maxlength = 200 }, new HtmlHelperOption { colunas = "col-md-4" })
+                                    @Html.BootstrapButtonAdd("BtnIncluir_Composicao", "Incluir", ButtonType.BUTTON, "raizenCoreJs.TipoDocumento.adicionarComposicao();", "style='margin-top: 25px;'")
+                                </div>
+                                <table id="ComposicaoTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                                    <thead>
+                                        <tr class="table-raizen">
+                                            <th>Tipos de Composição</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="lista-composicao">
+                                        @if (Model.TipoDocumento != null && Model.TipoDocumento.ComposicaoPlaca != null)
+                                        {
+                                            foreach (var item in Model.TipoDocumento.ComposicaoPlaca)
+                                            {
+                                                Html.RenderPartial("_ItemTipoComposicaoPlaca", item);
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                        </div>
+                    </div>
+                    <div class="row">
+                        @Html.BootstrapTextAreaFor(model => model.TipoDocumento.Observacao, "Observação", new { maxlength = 1000 }, new HtmlHelperOption() { colunas = "col-md-6" })
+                    </div>
+                    <div class="row" style="text-align:center">
+                        <div class="col-md-12">
+                            <button class="btn btn-custom" id="btnCrudSalvar" type="button" tabindex="1" onclick="raizenCoreJs.TipoDocumento.Salvar()">
+                                <i class="fa fa-save"></i> Salvar
+                            </button>
+                            <button class="btn btn-custom voltar" type="button" tabindex="2" onclick="raizenCoreJs.raizenCRUD.Voltar()">
+                                <i class="fa fa-long-arrow-left"></i> Voltar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="linha-composicao">
+    <tr>
+        <input type="hidden" name="TipoDocumento.ComposicaoPlaca[{3}].IdPlaca" value="{1}" />
+        <input type="hidden" name="TipoDocumento.ComposicaoPlaca[{3}].IdComposicao" value="{2}" />
+        <input type="hidden" name="TipoDocumento.ComposicaoPlaca[{3}].NomePlaca" value="{4}" />
+        <input type="hidden" name="TipoDocumento.ComposicaoPlaca[{3}].NomeComposicao" value="{5}" />
+
+        <td>{0}</td>
+        <td>
+            <button type="button" class="btn btn-custom" onclick="raizenCoreJs.TipoDocumento.removerComposicao('{1}', '{2}')">
+                <span class="fa fa-trash-o"></span>
+            </button>
+        </td>
+    </tr>
+</script>

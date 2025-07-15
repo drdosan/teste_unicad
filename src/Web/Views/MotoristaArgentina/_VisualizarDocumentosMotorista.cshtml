@@ -1,0 +1,71 @@
+﻿@model Raizen.UniCad.Model.Motorista
+
+<div class="modal fade" id="containerVisualizar" tabindex="-1" data-backdrop="static" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="box border raizen" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event);" id="">
+                    <div class="box-title">
+                        <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Documentos del Conductor</span></h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="box border raizen" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event);" id="">
+                            <div class="box-title">
+                                <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Documentos</span></h4>
+                            </div>
+                            <div class="box-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h3>@Model.Nome</h3>
+                                        <table id="docTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                                            <thead>
+                                                <tr class="table-raizen">
+                                                    <th style="word-wrap: break-word; width:10%">
+                                                        Tipo Documento
+                                                    </th>
+                                                    <th style="word-wrap: break-word; width:30%">
+                                                        Descripción
+                                                    </th>
+                                                    <th style="word-wrap: break-word; width:10%">
+                                                        Fecha Vencimiento
+                                                    </th>
+                                                    <th style="word-wrap: break-word; width:30%">
+                                                        Anexo
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (Model != null)
+                                                {
+                                                    foreach (var doc in Model.Documentos)
+                                                    {
+                                                        Html.RenderPartial("_ItemAnexo", doc);
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row" style="text-align:center">
+                            <div class="col-md-12">
+                                <button class="btn btn-custom voltar" type="button" tabindex="2" onclick="$('#containerVisualizar').modal('hide');">
+                                    <i class="fa fa-long-arrow-left"></i> Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

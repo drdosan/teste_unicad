@@ -1,0 +1,311 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5F4045EC-8A4C-44DE-BE53-08DA2F93D784}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Raizen.UniCad.Model</RootNamespace>
+    <AssemblyName>Raizen.UniCad.Model</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>Raizen.UniCad.Model.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>Raizen.UniCad.Model.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DataAnnotationsExtensions, Version=1.1.0.0, Culture=neutral, PublicKeyToken=358a5681c50fd84c, processorArchitecture=MSIL">
+      <HintPath>..\packages\DataAnnotationsExtensions.1.1.0.0\lib\NETFramework40\DataAnnotationsExtensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Raizen.Framework, Version=1.8.5.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\binarios\Raizen.Framework\Raizen.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Base\LogExecucaoJobBase.cs" />
+    <Compile Include="Base\MotoristaArgentinaBase.cs" />
+    <Compile Include="Base\MotoristaBrasilBase.cs" />
+    <Compile Include="Base\MotoristaPesquisaBase.cs" />
+    <Compile Include="Base\MotoristaTipoComposicaoBase.cs" />
+    <Compile Include="Base\MotoristaTipoProdutoBase.cs" />
+    <Compile Include="Base\PaisBase.cs" />
+    <Compile Include="Base\PlacaArgentinaBase.cs" />
+    <Compile Include="Base\PlacaArgentinaBaseModel.cs" />
+    <Compile Include="Base\PlacaBrasilBase.cs" />
+    <Compile Include="Base\PlacaBrasilBaseModel.cs" />
+    <Compile Include="Filtro\ImpressaoCrachaFiltro.cs" />
+    <Compile Include="Filtro\LogDocumentosFiltro.cs" />
+    <Compile Include="Filtro\MotoristaValidarFiltro.cs" />
+    <Compile Include="Filtro\PlacaValidarFiltro.cs" />
+    <Compile Include="Filtro\TransportadoraFiltro.cs" />
+    <Compile Include="LogDocumentos.cs" />
+    <Compile Include="Base\LogDocumentosBase.cs" />
+    <Compile Include="Base\TerminalEmpresaBase.cs" />
+    <Compile Include="Filtro\TerminalEmpresaFiltro.cs" />
+    <Compile Include="LogExecucaoJob.cs" />
+    <Compile Include="MotoristaArgentina.cs" />
+    <Compile Include="MotoristaBrasil.cs" />
+    <Compile Include="MotoristaPesquisa.cs" />
+    <Compile Include="MotoristaTipoComposicao.cs" />
+    <Compile Include="MotoristaTipoProduto.cs" />
+    <Compile Include="Pais.cs" />
+    <Compile Include="PlacaArgentina.cs" />
+    <Compile Include="PlacaBrasil.cs" />
+    <Compile Include="View\CsonlineDriverRequestView.cs" />
+    <Compile Include="View\CsonlineDriverUpdateRequestView.cs" />
+    <Compile Include="View\CsonlineUpdateResponseView.cs" />
+    <Compile Include="View\CsonlineLoginRequestView.cs" />
+    <Compile Include="View\CsonlineLoginResponseView.cs" />
+    <Compile Include="View\CsonlineVehicleRequestView.cs" />
+    <Compile Include="View\CsonlineVehicleUpdateRequestView.cs" />
+    <Compile Include="View\PlacaClientesAlteradosView.cs" />
+    <Compile Include="View\SalesForceEncerrarTicketView.cs" />
+    <Compile Include="View\SalesForceResultadoView.cs" />
+    <Compile Include="View\SalesForceTokenView.cs" />
+    <Compile Include="SincronizacaoMotoristas.cs" />
+    <Compile Include="AgendamentoTreinamento.cs" />
+    <Compile Include="Base\SincronizacaoMotoristasBase.cs" />
+    <Compile Include="Base\AgendamentoTreinamentoBase.cs" />
+    <Compile Include="Base\AgendamentoTerminalHorarioBase.cs" />
+    <Compile Include="Base\AgendamentoTerminalBase.cs" />
+    <Compile Include="Base\HistoricoTreinamentoTeoricoMotoristaBase.cs" />
+    <Compile Include="Base\ChecklistComposicaoBase.cs" />
+    <Compile Include="Base\HistorioAtivarMotoristaBase.cs" />
+    <Compile Include="Base\HistorioBloqueioBase.cs" />
+    <Compile Include="Base\HistorioBloqueioMotoristaBase.cs" />
+    <Compile Include="Base\MotoristaBase.cs" />
+    <Compile Include="Base\HistorioBloqueioComposicaoBase.cs" />
+    <Compile Include="Base\MotoristaClienteBase.cs" />
+    <Compile Include="Base\MotoristaDocumentoBase.cs" />
+    <Compile Include="Base\MotoristaDocumentoBaseModel.cs" />
+    <Compile Include="Base\MotoristaTreinamentoTerminalBase.cs" />
+    <Compile Include="Base\EntidadeDocumentoBaseModel.cs" />
+    <Compile Include="Base\AgendamentoChecklistBase.cs" />
+    <Compile Include="Base\TipoAgendaBase.cs" />
+    <Compile Include="Base\TerminalBase.cs" />
+    <Compile Include="Base\TransportadoraBaseModel.cs" />
+    <Compile Include="Base\CategoriaVeiculoBase.cs" />
+    <Compile Include="Base\ComposicaoBaseModel.cs" />
+    <Compile Include="Base\ComposicaoBase.cs" />
+    <Compile Include="Base\ComposicaoEixoBase.cs" />
+    <Compile Include="Base\EstadoBase.cs" />
+    <Compile Include="Base\JobBase.cs" />
+    <Compile Include="Base\ConfiguracaoBase.cs" />
+    <Compile Include="Base\PlacaBaseModel.cs" />
+    <Compile Include="Base\PlacaBase.cs" />
+    <Compile Include="Base\PlacaClienteBaseModel.cs" />
+    <Compile Include="Base\PlacaClienteBase.cs" />
+    <Compile Include="Base\PlacaDocumentoBaseModel.cs" />
+    <Compile Include="Base\PlacaDocumentoBase.cs" />
+    <Compile Include="Base\PlacaSetaBaseModel.cs" />
+    <Compile Include="Base\PlacaSetaBase.cs" />
+    <Compile Include="Base\TipoCarregamentoBase.cs" />
+    <Compile Include="Base\TipoComposicaoBase.cs" />
+    <Compile Include="Base\TipoDocumentoBase.cs" />
+    <Compile Include="Base\TipoDocumentoTipoProdutoBase.cs" />
+    <Compile Include="Base\TipoDocumentoTipoVeiculoBase.cs" />
+    <Compile Include="Base\TipoProdutoBase.cs" />
+    <Compile Include="Base\TipoVeiculoBase.cs" />
+    <Compile Include="Base\UsuarioClienteBase.cs" />
+    <Compile Include="AgendamentoTerminalHorario.cs" />
+    <Compile Include="AgendamentoTerminal.cs" />
+    <Compile Include="CategoriaVeiculo.cs" />
+    <Compile Include="Filtro\AgendamentoTreinamentoFiltro.cs" />
+    <Compile Include="Filtro\AgendamentoTerminalHorarioFiltro.cs" />
+    <Compile Include="Filtro\AgendamentoTerminalFiltro.cs" />
+    <Compile Include="Filtro\AgendamentoChecklistFiltro.cs" />
+    <Compile Include="Filtro\SincronizacaoMotoristasFiltro.cs" />
+    <Compile Include="Filtro\TipoAgendaFiltro.cs" />
+    <Compile Include="HistoricoTreinamentoTeoricoMotorista.cs" />
+    <Compile Include="ChecklistComposicao.cs" />
+    <Compile Include="Composicao.cs" />
+    <Compile Include="ComposicaoEixo.cs" />
+    <Compile Include="Enumerators\Enums.cs" />
+    <Compile Include="Estado.cs" />
+    <Compile Include="Filtro\ComposicaoServicoFiltro.cs" />
+    <Compile Include="Filtro\MotoristaServicoFiltro.cs" />
+    <Compile Include="Filtro\PlacaServicoFiltro.cs" />
+    <Compile Include="Filtro\MotoristaFiltro.cs" />
+    <Compile Include="Filtro\ClienteFiltro.cs" />
+    <Compile Include="Filtro\JobFiltro.cs" />
+    <Compile Include="Filtro\LogFiltro.cs" />
+    <Compile Include="Filtro\ConfiguracaoFiltro.cs" />
+    <Compile Include="Filtro\ComposicaoFiltro.cs" />
+    <Compile Include="Filtro\PlacaFiltro.cs" />
+    <Compile Include="Filtro\TerminalFiltro.cs" />
+    <Compile Include="Filtro\TipoDocumentoFiltro.cs" />
+    <Compile Include="Filtro\UsuarioFiltro.cs" />
+    <Compile Include="Filtro\ProdutoFiltro.cs" />
+    <Compile Include="Configuracao.cs" />
+    <Compile Include="HistorioBloqueioMotorista.cs" />
+    <Compile Include="HistorioAtivarMotorista.cs" />
+    <Compile Include="HistorioBloqueioComposicao.cs" />
+    <Compile Include="Job.cs" />
+    <Compile Include="Motorista.cs" />
+    <Compile Include="MotoristaCliente.cs" />
+    <Compile Include="MotoristaDocumento.cs" />
+    <Compile Include="MotoristaTreinamentoTerminal.cs" />
+    <Compile Include="AgendamentoChecklist.cs" />
+    <Compile Include="TerminalEmpresa.cs" />
+    <Compile Include="TipoAgenda.cs" />
+    <Compile Include="Terminal.cs" />
+    <Compile Include="Base\TipoDocumentoTipoComposicaoBase.cs" />
+    <Compile Include="TipoDocumentoTipoComposicao.cs" />
+    <Compile Include="TipoDocumentoTipoComposicaoPlacaView.cs" />
+    <Compile Include="View\ComposicaoAAServicoView.cs" />
+    <Compile Include="View\ImpressaoCrachaRetornoView.cs" />
+    <Compile Include="View\MensagemValidacaoView.cs" />
+    <Compile Include="View\MotoristaDocumentoAAServicoView.cs" />
+    <Compile Include="View\MotoristaAAServicoView.cs" />
+    <Compile Include="View\PlacaDocumentoAAServicoView.cs" />
+    <Compile Include="View\PlacaAAServicoView.cs" />
+    <Compile Include="View\PopupQuestionModelView.cs" />
+    <Compile Include="View\LogDocumentosView.cs" />
+    <Compile Include="View\SalesForceCriarNovoTicketView.cs" />
+    <Compile Include="View\SincronizacaoMotoritasView.cs" />
+    <Compile Include="View\AgendamentoTreinamentoRetornoView.cs" />
+    <Compile Include="View\AgendamentoTreinamentoView.cs" />
+    <Compile Include="View\AgendamentoTerminalHorarioView.cs" />
+    <Compile Include="View\ControlePresencaMotoristaView.cs" />
+    <Compile Include="View\MotoristaAlteradoView.cs" />
+    <Compile Include="View\PlacaCompartimentoServicoView.cs" />
+    <Compile Include="View\PlacaPermissaoServicoView.cs" />
+    <Compile Include="View\MotoristaTreinamentoPraticoView.cs" />
+    <Compile Include="View\MotoristaPermissaoServicoView.cs" />
+    <Compile Include="View\MotoristaView.cs" />
+    <Compile Include="View\AgendamentoTerminalView.cs" />
+    <Compile Include="View\AgendamentoChecklistView.cs" />
+    <Compile Include="View\TipoAgendaView.cs" />
+    <Compile Include="View\TreinamentoView.cs" />
+    <Compile Include="View\TerminalTreinamentoView.cs" />
+    <Compile Include="View\CompartimentoView.cs" />
+    <Compile Include="View\CarteirinhaView.cs" />
+    <Compile Include="View\ComposicaoServicoView.cs" />
+    <Compile Include="View\MotoristaDocumentoServicoView.cs" />
+    <Compile Include="View\PlacaAlteradaView.cs" />
+    <Compile Include="Placa.cs" />
+    <Compile Include="PlacaCliente.cs" />
+    <Compile Include="PlacaDocumento.cs" />
+    <Compile Include="PlacaSeta.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Base\ProdutoBase.cs" />
+    <Compile Include="Produto.cs" />
+    <Compile Include="Base\TransportadoraBase.cs" />
+    <Compile Include="TipoCarregamento.cs" />
+    <Compile Include="TipoComposicao.cs" />
+    <Compile Include="TipoDocumento.cs" />
+    <Compile Include="TipoDocumentoTipoProduto.cs" />
+    <Compile Include="TipoDocumentoTipoVeiculo.cs" />
+    <Compile Include="TipoProduto.cs" />
+    <Compile Include="TipoVeiculo.cs" />
+    <Compile Include="Transportadora.cs" />
+    <Compile Include="Base\ClienteBase.cs" />
+    <Compile Include="Cliente.cs" />
+    <Compile Include="Base\PerfilBase.cs" />
+    <Compile Include="Perfil.cs" />
+    <Compile Include="Base\EmpresaBase.cs" />
+    <Compile Include="Empresa.cs" />
+    <Compile Include="Base\UsuarioBase.cs" />
+    <Compile Include="Usuario.cs" />
+    <Compile Include="Base\UsuarioTransportadoraBase.cs" />
+    <Compile Include="UsuarioCliente.cs" />
+    <Compile Include="UsuarioTransportadora.cs" />
+    <Compile Include="View\CapacidadeSetaView.cs" />
+    <Compile Include="View\ComposicaoView.cs" />
+    <Compile Include="View\EasyQueryView.cs" />
+    <Compile Include="View\MotoristaDocumentoView.cs" />
+    <Compile Include="View\MotoristaClienteView.cs" />
+    <Compile Include="View\PlacaDocumentoServicoView.cs" />
+    <Compile Include="View\PlacaDocumentoView.cs" />
+    <Compile Include="View\MotoristaServicoView.cs" />
+    <Compile Include="View\PlacaSetaView.cs" />
+    <Compile Include="View\PlacaServicoView.cs" />
+    <Compile Include="View\TipoDocumentoTipoVeiculoView.cs" />
+    <Compile Include="View\PlacaView.cs" />
+    <Compile Include="View\TipoDocumentoView.cs" />
+    <Compile Include="View\ProdutoView.cs" />
+    <Compile Include="View\TipoDocumentoTipoProdutoView.cs" />
+    <Compile Include="View\PlacaClienteView.cs" />
+    <Compile Include="View\ClienteTransportadoraView.cs" />
+    <Compile Include="View\UsuarioTransportadoraView.cs" />
+    <Compile Include="View\UsuarioClienteView.cs" />
+    <Compile Include="View\ExemploView.cs" />
+    <Compile Include="Filtro\ExemploFiltro.cs" />
+    <Compile Include="View\VisualizarCapacidadeSetaView.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".editorconfig" />
+    <None Include="app.config" />
+    <None Include="packages.config" />
+    <None Include="Raizen.UniCad.Model.ruleset" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,16 @@
+﻿apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: unicad-portal-app
+  description: unicad-portal-app
+  annotations:
+    github.com/project-slug: raizen-it/unicad-portal-app
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - actions
+    - security
+    - audit
+spec:
+  type: library
+  lifecycle: experimental
+  owner: squad-plataforma

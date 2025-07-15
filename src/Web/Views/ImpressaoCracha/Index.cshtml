@@ -1,0 +1,16 @@
+﻿@model Raizen.UniCad.Web.Models.ModelImpressaoCracha
+@{
+    ViewBag.Title = "Impressão de Crachá";
+    ViewBag.TituloModulo = "Impressão de Crachá";
+    Layout = "~/Views/Shared/_Panel.cshtml";
+
+    var tabIndexToolBoxCrudPesquisa = new int[2];
+    tabIndexToolBoxCrudPesquisa[0] = 3;
+    tabIndexToolBoxCrudPesquisa[1] = 4;
+}
+
+@section pesquisa
+    {
+    @Html.Partial("_Pesquisa", Model)
+}
+

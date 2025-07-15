@@ -1,0 +1,110 @@
+﻿@model Raizen.UniCad.Model.View.VisualizarCapacidadeSetaView
+
+@using Raizen.UniCad.Model;
+<style>
+    .invisivel {
+        display: none;
+    }
+</style>
+<div class="modal fade" id="containerVisualizar" tabindex="-1" data-backdrop="static" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="box border raizen" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event);" id="">
+                    <div class="box-title">
+                        <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Capacidade das Setas e Compartimentos</span></h4>
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row" style="margin:5px">
+                                    <div class="col-md-12">
+                                        <p>O cálculo para verificação do excesso de peso considera a mesma seta e o mesmo produto para os diferentes compartimentos e carretas. Caso o número de setas seja divergente, o cálculo não é realizado para aquelas que não tenham correspondência na outra placa. </p>
+                                    </div>
+                                </div>
+                                @if (Model != null && Model.placasCapacidadeSeta != null && Model.placasCapacidadeSeta.Any())
+                                {
+                                    foreach (var placa in Model.placasCapacidadeSeta.Where(p => p.Setas != null && p.Setas.Any()))
+                                    {
+                                        var i = 0;
+                                        <h3>Placas: @placa.PlacaVeiculo</h3>
+                                        foreach (var seta in placa.Setas)
+                                        {
+                                            if (Model != null && seta.Produtos != null)
+                                            {
+                                                i++;
+                                                <h3>Seta @i</h3>
+                                                <table id="docTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                                                    <thead>
+                                                        <tr class="table-raizen">
+                                                            <th style="word-wrap: break-word; width: 20%">
+                                                                Produto
+                                                            </th>
+                                                            <th style="word-wrap: break-word; width: 50%">
+                                                                Situação
+                                                            </th>
+                                                            <th style="word-wrap: break-word; width: 5%">
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var prod in seta.Produtos)
+                                                        {
+                                                            <tr class="gradeX">
+                                                                <td style="word-wrap: break-word;">@prod.Nome</td>
+                                                                @if (prod.Situacao == (int)EnumSituacaoPlacaLimite.Permitido)
+                                                                {
+                                                                    <td style="word-wrap: break-word;">Liberado para carregamento - Não atinge capacidade maxima da seta</td>
+                                                                    <td style="word-wrap: break-word; text-align: center"><i class="fa fa-check fa-2x" style="color: lawngreen"></i></td>
+                                                                }
+                                                                else if (prod.Situacao == (int)EnumSituacaoPlacaLimite.NaoPermitido)
+                                                                {
+                                                                    <td style="word-wrap: break-word;">Não Liberado para carregamento - Ultrapassa capacidade maxima da seta</td>
+                                                                    <td style="word-wrap: break-word; text-align: center"><i class="fa fa-close fa-2x" style="color: red"></i></td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="word-wrap: break-word;">No Limite para carregamento</td>
+                                                                    <td style="word-wrap: break-word; text-align: center"><i class="fa fa-exclamation fa-2x" style="color: blue"></i></td>
+                                                                }
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                        }
+                                    }
+                                }
+
+                                @if (Model != null && Model.placasCapacidadeSeta != null && Model.placasCompartimentos.Any())
+                                {
+                                    foreach (var item in Model.placasCompartimentos.Where(p => p.IDTipoVeiculo == (int)EnumTipoVeiculo.Truck || p.IDTipoVeiculo == (int)EnumTipoVeiculo.Carreta))
+                                    {
+                                        <div class="row"><div class="col-md-3"><h3>Placa: @item.PlacaVeiculo</h3></div></div>
+                                        Html.RenderPartial("_CompartimentoSeta", item);
+
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row" style="text-align:center">
+                    <div class="col-md-12">
+                        <button class="btn btn-custom voltar" type="button" tabindex="2" onclick="$('#containerVisualizar').modal('hide');">
+                            <i class="fa fa-long-arrow-left"></i> Fechar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

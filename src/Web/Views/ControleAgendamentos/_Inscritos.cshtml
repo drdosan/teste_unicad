@@ -1,0 +1,8 @@
+﻿@model  List<Raizen.UniCad.Model.View.ControlePresencaMotoristaView>
+
+@{
+    foreach (var item in Model)
+    {
+        Html.RenderPartial("_ItemInscrito", item);
+    }
+}

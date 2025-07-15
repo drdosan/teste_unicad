@@ -1,0 +1,16 @@
+﻿@model Raizen.UniCad.Model.TipoDocumentoTipoComposicaoPlacaView
+<tr>
+    @using (Html.BeginCollectionItem("TipoDocumento.ComposicaoPlaca"))
+    {
+        @Html.HiddenFor(item => item.IdPlaca, new { @id = "" })
+        @Html.HiddenFor(item => item.IdComposicao, new { @id = "" })
+        @Html.HiddenFor(item => item.NomePlaca, new { @id = "" })
+        @Html.HiddenFor(item => item.NomeComposicao, new { @id = "" })
+        <td>
+            @Html.DisplayTextFor(item => item.NomeComposicao) - @Html.DisplayTextFor(item => item.NomePlaca)
+        </td>
+        <td>
+            @Html.BootstrapButtonDelete("", "", ButtonType.BUTTON, "raizenCoreJs.TipoDocumento.removerComposicao('" + Model.IdPlaca + "', '" + Model.IdComposicao + "')")
+        </td>
+    }
+</tr>

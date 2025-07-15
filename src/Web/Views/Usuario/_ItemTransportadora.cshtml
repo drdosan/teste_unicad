@@ -1,0 +1,14 @@
+﻿@model Raizen.UniCad.Model.View.UsuarioTransportadoraView
+<tr id="linha-@Model.ID" class="gradeX">
+    @using (Html.BeginCollectionItem("Usuario.Transportadoras"))
+    {
+        @Html.HiddenFor(item => item.IDTransportadora, new { @class = "IDTransportadora" })
+        @Html.HiddenFor(item => item.Nome)
+        <td style="width: 95%; word-wrap: break-word">
+            @Html.PopoverTextFor(item => item.Nome, 80, "right")
+        </td>
+        <td style="width: 5%; word-wrap: break-word">
+            @Html.BootstrapButtonDelete("", "", ButtonType.BUTTON, "raizenCoreJs.Usuario.removerTransportadora(" + Model.ID + ")")
+        </td>
+    }
+</tr>

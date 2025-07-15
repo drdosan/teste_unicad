@@ -1,0 +1,317 @@
+﻿@using Raizen.Framework.Models
+@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Models
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.Framework.Web.MVC.Extensions;
+@using Raizen.UniCad.Model;
+
+@model Raizen.UniCad.Web.Models.ModelUsuario
+@{
+    var urlValidacao = @Url.Action("ValidarObjetos", "Usuario");
+
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+    
+    //R8) Verificar se o autocomplete na busca de clientes nas telas de veículo/motorista deve levar em consideração a regra que diz que "Não é possível indicar este código, pois o mesmo não faz parte de sua rede cadastrada no CS Online"
+    var isClienteAcs = Model.Usuario != null && (Model.Usuario.Perfil == EnumPerfil.CLIENTE_ACS || Model.Usuario.Perfil == EnumPerfil.CLIENTE_ACS_ARGENTINA) ? "true" : "false";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        raizenCoreJs.raizenCRUD.urlSalvar = '@Url.Action("Salvar", "Usuario")';
+
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        raizenCoreJs.raizenMensagens.ExibirMensagemOperacao();
+        raizenCoreJs.raizenHelpers.urlValidacao = "@urlValidacao";
+
+        RaizenCoreJs.prototype.Usuario.urlAdicionarCliente = '@Url.Action("AdicionarCliente", "Usuario")';
+        RaizenCoreJs.prototype.Usuario.urlAdicionarTransportadora = '@Url.Action("AdicionarTransportadora", "Usuario")';
+        RaizenCoreJs.prototype.Usuario.urlResetarSenha = '@Url.Action("ResetarSenha", "Usuario")';
+        RaizenCoreJs.prototype.Usuario.urlSalvar = '@Url.Action("Salvar", "Usuario")';
+
+        Usuario.prototype.OcultarCampoLinhaNegocio();
+        Usuario.prototype.OcultarCamposPerfilOperacao();
+    });
+
+</script>
+
+<div class="box border raizen" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event);" id="containerEdicao">
+    <div class="box-title">
+        <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Edição de Usuario</span></h4>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-12">
+                <form id="frmEdicao" class="form-horizontal">
+                    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUDEdit" })
+                    @Html.HiddenFor(model => model.ChavePrimaria)
+                    @Html.HiddenFor(model => model.Usuario.ID)
+                    <div class="row">
+
+                        @*R10) Ocultar/Exibir os campos Nome/Status/Empresa na tela de "Edição de Usuário"*@
+                        @if (Model.Usuario != null && Model.Usuario.ID > 0 && Model.Usuario.Perfil != null && (Model.Usuario.Perfil == EnumPerfil.CLIENTE_ACS || Model.Usuario.Perfil == EnumPerfil.CLIENTE_ACS_ARGENTINA))
+                        {
+                            @Html.BootstrapTextBoxFor(model => model.Usuario.Nome, null, "Nome", new { maxlength = 200 }, new HtmlHelperOption() { colunas = "col-md-6" }, true)
+                            @Html.HiddenFor(model => model.Usuario.Nome)
+                        }
+                        else
+                        {
+                            @Html.BootstrapTextBoxFor(model => model.Usuario.Nome, null, "Nome", new { maxlength = 200 }, new HtmlHelperOption() { colunas = "col-md-6" })
+                        }
+                        @if (Model.Usuario != null && Model.Usuario.ID > 0 && Model.Usuario.Externo)
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.Usuario.Operacao, new SelectList(GenericDelegate.CifFobOuAmbos(), "ID", "Nome"), "Operação", new { @onchange = "raizenCoreJs.Usuario.OcultarCamposPerfilOperacao();" }, new HtmlHelperOption() { colunas = "col-md-2" }, true)
+                            @Html.HiddenFor(model => model.Usuario.Operacao)
+                        }
+                        else
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.Usuario.Operacao, new SelectList(GenericDelegate.CifFobOuAmbos(), "ID", "Nome"), "Operação", new { @onchange = "raizenCoreJs.Usuario.OcultarCamposPerfilOperacao();" }, new HtmlHelperOption() { colunas = "col-md-2" })
+                        }
+                        @if (Model.Operacao == OperacoesCRUD.Insert)
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.Usuario.Externo, new SelectList(GenericDelegate.InternoOuExterno(), "ID", "Nome"), "Tipo de Usuário", new { @onchange = "raizenCoreJs.Usuario.OcultarCamposPerfilOperacao();" }, new HtmlHelperOption() { colunas = "col-md-2" })
+                        }
+                        else
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.Usuario.Externo, new SelectList(GenericDelegate.InternoOuExterno(), "ID", "Nome"), "Tipo de Usuário", new { @onchange = "raizenCoreJs.Usuario.OcultarCamposPerfilOperacao();" }, new HtmlHelperOption() { colunas = "col-md-2" }, true)
+                            @Html.HiddenFor(model => model.Usuario.Externo)
+                        }
+                        @if (Model.Operacao == OperacoesCRUD.Insert)
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.Usuario.IDPais, new SelectList(GenericDelegate.ListarPais(), "Value", "Key"), "País", null, new HtmlHelperOption() { colunas = "col-md-2" })
+                        }
+                        else
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.Usuario.IDPais, new SelectList(GenericDelegate.ListarPais(), "Value", "Key"), "País", null, new HtmlHelperOption() { colunas = "col-md-2" })
+                            @Html.HiddenFor(model => model.Usuario.IDPais)
+                        }
+                    </div>
+                    <div class="row">
+                        @*R10) Ocultar/Exibir os campos Nome/Status/Empresa na tela de "Edição de Usuário"*@
+                        @if (Model.Usuario != null && Model.Usuario.ID > 0 && Model.Usuario.Perfil != null && (Model.Usuario.Perfil == EnumPerfil.CLIENTE_ACS || Model.Usuario.Perfil == EnumPerfil.CLIENTE_ACS_ARGENTINA))
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.Usuario.Status, new SelectList(GenericDelegate.AtivoInativo(), "Flag", "Nome"), "Status", null, new HtmlHelperOption() { colunas = "col-md-2" }, true)
+                            @Html.HiddenFor(mode => Model.Usuario.Status)
+                        }
+                        else
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.Usuario.Status, new SelectList(GenericDelegate.AtivoInativo(), "Flag", "Nome"), "Status", null, new HtmlHelperOption() { colunas = "col-md-2" })
+                        }
+                        @*R10) Ocultar/Exibir os campos Nome/Status/Empresa na tela de "Edição de Usuário"*@
+                        @if (Model.Usuario != null && Model.Usuario.ID > 0 && Model.Usuario.Perfil != null && (Model.Usuario.Perfil == EnumPerfil.CLIENTE_ACS || Model.Usuario.Perfil == EnumPerfil.CLIENTE_ACS_ARGENTINA))
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.Usuario.IDEmpresa, new SelectList(GenericDelegate.Listar<Empresa>().OrderBy(p => p.Nome), "ID", "Nome"), "Linha de Negócio", null, new HtmlHelperOption() { colunas = "col-md-2" }, true)
+                            @Html.HiddenFor(model => model.Usuario.IDEmpresa)
+                        }
+                        else
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.Usuario.IDEmpresa, new SelectList(GenericDelegate.Listar<Empresa>().OrderBy(p => p.Nome), "ID", "Nome"), "Linha de Negócio", new { @onchange = "raizenCoreJs.Usuario.AtualizarLinhaNegocio();" }, new HtmlHelperOption() { colunas = "col-md-2" })
+                        }
+                        @if (Model.Operacao == OperacoesCRUD.Editando && Model.Usuario.Externo)
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.Usuario.Perfil, new SelectList(PerfilDelegate.Listar(true), "Nome", "Nome"), "Perfil", new { @onchange = "raizenCoreJs.Usuario.OcultarCamposPerfilOperacao();raizenCoreJs.Usuario.OcultarCampoLinhaNegocio();" }, new HtmlHelperOption() { colunas = "col-md-2" }, true)
+                            @Html.HiddenFor(model => model.Usuario.Perfil)
+                            @*R10) Ocultar/Exibir os campos Nome/Status/Empresa na tela de "Edição de Usuário"*@
+                            if (Model.Usuario.Perfil == EnumPerfil.CLIENTE_ACS || Model.Usuario.Perfil == EnumPerfil.CLIENTE_ACS_ARGENTINA)
+                            {
+                                @Html.BootstrapTextBoxFor(model => model.Usuario.Email, null, "Email", new { maxlength = 300, @type = "email" }, new HtmlHelperOption() { colunas = "col-md-3" })
+                                @Html.HiddenFor(model => model.Usuario.Login)
+                                @Html.BootstrapTextBoxFor(model => model.Usuario.Login, null, "Login", new { maxlength = 300 }, new HtmlHelperOption() { colunas = "col-md-3" }, true)
+                            }
+                            else
+                            {
+                                @Html.HiddenFor(model => model.Usuario.Login)
+                                @Html.BootstrapTextBoxFor(model => model.Usuario.Email, null, "Login(Email)", new { maxlength = 300, @type = "email" }, new HtmlHelperOption() { colunas = "col-md-3" }, true)
+                                @Html.HiddenFor(model => model.Usuario.Email)
+                            }
+
+
+                        }
+                        else
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.Usuario.Perfil, new SelectList(PerfilDelegate.Listar(), "Nome", "Nome"), "Perfil", new { @onchange = "raizenCoreJs.Usuario.OcultarCamposPerfilOperacao();raizenCoreJs.Usuario.OcultarCampoLinhaNegocio();" }, new HtmlHelperOption() { colunas = "col-md-2" })
+                            if (Model.Usuario != null && Model.Usuario.Externo)
+                            {
+                                @Html.HiddenFor(model => model.Usuario.Login)
+                                @Html.BootstrapTextBoxFor(model => model.Usuario.Email, null, "Login(Email)", new { maxlength = 300, @type = "email" }, new HtmlHelperOption() { colunas = "col-md-3" })
+                            }
+                            else
+                            {
+                                @Html.BootstrapTextBoxFor(model => model.Usuario.Email, null, "Email", new { maxlength = 300, @type = "email" }, new HtmlHelperOption() { colunas = "col-md-3" })
+
+                                if (Model.Operacao == OperacoesCRUD.Editando)
+                                {
+                                    @Html.BootstrapTextBoxFor(model => model.Usuario.Login, null, "Login", new { maxlength = 300 }, new HtmlHelperOption() { colunas = "col-md-2" }, true)
+                                    @Html.HiddenFor(model => model.Usuario.Login)
+                                }
+                                else
+                                {
+                                    @Html.BootstrapTextBoxFor(model => model.Usuario.Login, null, "Login", new { maxlength = 300 }, new HtmlHelperOption() { colunas = "col-md-2" })
+                                }
+                            }
+                        }
+                        @*R11) Ocultar/Exibir o botão resetar senhar na tela de "Edição de Usuário"*@
+                        @if (Model.Operacao == OperacoesCRUD.Editando && Model != null && Model.Usuario != null && Model.Usuario.Externo && Model.Usuario.Perfil != EnumPerfil.CLIENTE_ACS && Model.Usuario.Perfil != EnumPerfil.CLIENTE_ACS_ARGENTINA)
+                        {
+                            <div class="col-md-3">
+                                @Html.BootstrapButton("resetar", "Resetar Senha", ButtonType.BUTTON, "raizenCoreJs.Usuario.resetarSenha(" + @Model.Usuario.ID + ")", "style='margin-top:25px'")
+                            </div>
+                        }
+                    </div>
+                    @{
+                        //R12) Ocultar/Exibir o painel de busca de clientes na tela de "Edição de Usuário"
+                        var exibir = "display:none";
+                        if (Model.Usuario != null && Model.Usuario.Externo && (((Model.Usuario.Perfil == EnumPerfil.CLIENTE_ACS || Model.Usuario.Perfil == EnumPerfil.CLIENTE_ACS_ARGENTINA) && Model.Usuario.Operacao != "CIF")))
+                        {
+                            exibir = "";
+                        }
+                    }
+                    <div class="row">
+                        <div id="linhaCliente" style="@exibir" class="col-md-6">
+
+                            @using (Html.BootstrapCollapsiblePanel("Clientes", "clientesPanel", false, "fa fa-user-circle", null, new { style = "max-height:300px; overflow-x:hidden; overflow-y:auto; margin-top:10px; " }))
+                            {
+                                <div class="row">
+
+                                    <script>
+                                        function UnidadeAutoComplete(nomeCampo, url) {
+                                            $("#ClienteAuto").autocomplete({
+                                                minLength: 3,
+                                                source: function (request, response) {
+                                                    $.ajax({
+                                                        url: url,
+                                                        type: "POST", dataType: "json",
+                                                        data: { nome: request.term, empresa: $('#Usuario_IDEmpresa').val(), isClienteAcs: @isClienteAcs, idPais: $('#Usuario_IDPais').val() },
+                                                        success: function (data) {
+                                                            response($.map(data, function (item) {
+                                                                return { label: item.Name, value: item.Name, codigo: item.ID };
+                                                            }));
+                                                        }
+                                                    });
+                                                },
+                                                select: function (event, ui) {
+                                                    $("#" + nomeCampo).val(ui.item.codigo);
+                                                    $("#" + nomeCampo + "Nome").val(ui.item.label);
+                                                }
+                                            });
+                                        }
+                                        var url = '@Url.Action("ListarClientes", "Usuario")';
+                                        UnidadeAutoComplete("Cliente", url);
+                                    </script>
+
+                                    @Html.BootstrapTextBox("ClienteAuto", null, "Cliente", new { maxlength = 200, @onchange = "VerificarSeDeveLimpar();" }, new HtmlHelperOption { colunas = "col-md-9" })
+                                    <input type="hidden" id="Cliente" />
+                                    <input type="hidden" id="ClienteNome" />
+                                    @Html.BootstrapButtonAdd("BtnIncluir", "Incluir", ButtonType.BUTTON, "raizenCoreJs.Usuario.adicionarCliente();", "style='margin-top: 25px;'")
+                                </div>
+                                <table id="clientesTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                                    <thead>
+                                        <tr class="table-raizen">
+                                            <th>Cliente</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr id="linha-2" class="gradeX">
+                                            @if (Model.Usuario != null && Model.Usuario.Clientes != null)
+                                            {
+                                                foreach (var item in Model.Usuario.Clientes)
+                                                {
+                                                    Html.RenderPartial("_ItemCliente", item);
+                                                }
+                                            }
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            }
+                        </div>
+                        @{
+                            //R13) Ocultar/Exibir o painel de busca de transportadoras na tela de "Edição de Usuário"
+                            exibir = "display:none";
+                            if (Model.Usuario != null && Model.Usuario.Externo && (((Model.Usuario.Perfil == "Transportadora") || (Model.Usuario.Perfil == "Transportadora Argentina")) || ((Model.Usuario.Perfil == EnumPerfil.CLIENTE_ACS || Model.Usuario.Perfil == EnumPerfil.CLIENTE_ACS_ARGENTINA) && Model.Usuario.Operacao != "FOB")))
+                            {
+                                exibir = "";
+                            }
+                        }
+                        <div id="linhaTransportadora" style="@exibir" class="col-md-6">
+
+                            @using (Html.BootstrapCollapsiblePanel("Transportadoras", "TransportadorasPanel", false, "fa fa-user-circle", null, new { style = "max-height:300px; overflow-x:hidden; overflow-y:auto; margin-top:10px;" }))
+                            {
+                                <div class="row">
+                                    <script>
+                                        function UnidadeAutoComplete(nomeCampo, url) {
+                                            $("#TransportadoraAuto").autocomplete({
+                                                minLength: 3,
+                                                source: function (request, response) {
+                                                    $.ajax({
+                                                        url: url,
+                                                        type: "POST", dataType: "json",
+                                                        data: { nome: request.term, empresa: $('#Usuario_IDEmpresa').val(), operacao: "CIF", idPais: $('#Usuario_IDPais').val() },
+                                                        success: function (data) {
+                                                            response($.map(data, function (item) {
+                                                                return { label: item.Name, value: item.Name, codigo: item.ID };
+                                                            }));
+                                                        }
+                                                    });
+                                                },
+                                                select: function (event, ui) {
+                                                    $("#" + nomeCampo).val(ui.item.codigo);
+                                                    $("#" + nomeCampo + "Nome").val(ui.item.label);
+                                                }
+                                            });
+                                        }
+                                        var url = '@Url.Action("ListarTransportadoras", "Usuario")';
+                                        UnidadeAutoComplete("Transportadora", url);
+
+                                    </script>
+
+                                    @Html.BootstrapTextBox("TransportadoraAuto", null, "Transportadora", new { maxlength = 200, @onchange = "VerificarSeDeveLimparTransp();" }, new HtmlHelperOption { colunas = "col-md-9" })
+                                    <input type="hidden" id="Transportadora" />
+                                    <input type="hidden" id="TransportadoraNome" />
+                                    @Html.BootstrapButtonAdd("BtnIncluir", "Incluir", ButtonType.BUTTON, "raizenCoreJs.Usuario.adicionarTransportadora();", "style='margin-top: 25px;'")
+                                </div>
+                                <table id="TransportadorasTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                                    <thead>
+                                        <tr class="table-raizen">
+                                            <th>Transportadora</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr id="linha-2" class="gradeX">
+                                            @if (Model.Usuario != null && Model.Usuario.Transportadoras != null)
+                                            {
+                                                foreach (var item in Model.Usuario.Transportadoras)
+                                                {
+                                                    Html.RenderPartial("_ItemTransportadora", item);
+                                                }
+                                            }
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            }
+                        </div>
+                    </div>
+                    <div class="row" style="text-align:center">
+                        <div class="col-md-12">
+                            @if (Model != null && Model.Usuario != null && Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "Usuario" && p.NomeAcao == "Editar") != null)
+                            {
+                                <button class="btn btn-custom" id="btnCrudSalvar" type="button" tabindex="1" onclick="raizenCoreJs.Usuario.Salvar()">
+                                    <i class="fa fa-save"></i> Salvar
+                                </button>
+
+                            }
+                            <button class="btn btn-custom voltar" type="button" tabindex="2" onclick="raizenCoreJs.raizenCRUD.Voltar()">
+                                <i class="fa fa-long-arrow-left"></i> Voltar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

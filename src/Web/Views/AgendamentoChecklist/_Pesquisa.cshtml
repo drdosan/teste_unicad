@@ -1,0 +1,219 @@
+﻿@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Models
+@using Raizen.Framework.Models
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.UniCad.Model;
+
+
+@model Raizen.UniCad.Web.Models.ModelAgendamentoChecklist
+@{
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+
+    var tabIndiceCrudEdicao = new int[2];
+    tabIndiceCrudEdicao[0] = 4;
+    tabIndiceCrudEdicao[1] = 5;
+
+}
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.AgendamentoChecklist.js")"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        raizenCoreJs.raizenCRUD.urlPesquisa = '@Url.Action("Pesquisar", "AgendamentoChecklist")';
+        raizenCoreJs.raizenCRUD.urlNovo = '@Url.Action("Novo", "AgendamentoChecklist")';
+        raizenCoreJs.raizenCRUD.urlExcluir = '@Url.Action("ExcluirRegistro", "AgendamentoChecklist")';
+        RaizenCoreJs.prototype.AgendamentoChecklist.urlHorarios = '@Url.Action("CarregarHorarios", "AgendamentoChecklist")';
+        RaizenCoreJs.prototype.AgendamentoChecklist.urlObterComposicao = '@Url.Action("ObterComposicao", "AgendamentoChecklist")';
+        RaizenCoreJs.prototype.AgendamentoChecklist.urlExportar = '@Url.Action("Exportar", "AgendamentoChecklist")';
+        RaizenCoreJs.prototype.AgendamentoChecklist.urlGerarPdf = '@Url.Action("GerarPdf", "AgendamentoChecklist")';
+        RaizenCoreJs.prototype.AgendamentoChecklist.urlDownload = '@Url.Action("Download", "AgendamentoChecklist")';
+        RaizenCoreJs.prototype.AgendamentoChecklist.urlInscrever = '@Url.Action("Inscrever", "AgendamentoChecklist")';
+        RaizenCoreJs.prototype.AgendamentoChecklist.urlNovaComposicao = '@Url.Action("Editar", "Composicao")';
+        RaizenCoreJs.prototype.AgendamentoChecklist.urlBuscarTerminal = '@Url.Action("BuscarTerminal", "AgendamentoChecklist")';
+        RaizenCoreJs.prototype.AgendamentoChecklist.urlBuscarEmpresasCongeneres = '@Url.Action("BuscarEmpresasCongeneres", "AgendamentoChecklist")';
+
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        raizenCoreJs.raizenMensagens.ExibirMensagemOperacao();
+    });
+</script>
+@*Parte de Filtros*@
+<form id="frmPesquisa" class="form-horizontal">
+
+    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUDEdit" })
+    @Html.HiddenFor(model => model.ChavePrimaria)
+    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUD" })
+    @Html.HiddenFor(model => model.OperacaoSecundaria, new { @Id = "IdOperacaoSecundariaCRUD" })
+
+    @Html.HiddenFor(model => model.PaginadorDados.PaginaAtual)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdePaginas)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdeItensPagina)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdeTotalRegistros)
+    @Html.HiddenFor(model => model.PaginadorDados.Status)
+
+    <div class="row">
+        @Html.BootstrapTextBoxFor(model => model.Filtro.Placa, null, "Placa", null, new HtmlHelperOption() { colunas = "col-md-3" })
+
+        @if (Model != null && Model.Filtro != null && (Model.Filtro.IDEmpresaUsuario == null || Model.Filtro.IDEmpresaUsuario == 0 || Model.Filtro.IDEmpresaUsuario == 3))
+        {
+            @Html.BootstrapDropDownListFor(model => model.Filtro.IDEmpresa, new SelectList(GenericDelegate.Listar<Empresa>(), "ID", "Nome"), "Linha de Negócio", null, new HtmlHelperOption() { colunas = "col-md-2" })
+        }
+        else
+        {
+            @Html.BootstrapDropDownListFor(model => model.Filtro.IDEmpresa, new SelectList(GenericDelegate.Listar<Empresa>(), "ID", "Nome"), "Linha de Negócio", null, new HtmlHelperOption() { colunas = "col-md-2" }, true)
+            @Html.HiddenFor(model => model.Filtro.IDEmpresa)
+        }
+
+        @if (Model != null && Model.Filtro != null && (String.IsNullOrEmpty(Model.Filtro.OperacaoUsuario) || Model.Filtro.OperacaoUsuario == "Ambos"))
+        {
+            @Html.BootstrapDropDownListFor(model => model.Filtro.Operacao, new SelectList(GenericDelegate.CifFobOuAmbos(), "ID", "Nome"), "Operação", null, new HtmlHelperOption() { colunas = "col-md-2" })
+        }
+        else
+        {
+            @Html.BootstrapDropDownListFor(model => model.Filtro.Operacao, new SelectList(GenericDelegate.CifFobOuAmbos(), "ID", "Nome"), "Operação", null, new HtmlHelperOption() { colunas = "col-md-2" }, true)
+            @Html.HiddenFor(model => model.Filtro.Operacao)
+        }
+        @Html.BootstrapDateBoxFor(model => model.Filtro.DataInicio, "Data Início", null, new HtmlHelperOption() { colunas = "col-md-2" })
+        @Html.BootstrapDateBoxFor(model => model.Filtro.DataFim, "Data Fim", null, new HtmlHelperOption() { colunas = "col-md-2" })
+    </div>
+    <div class="row">
+        @Html.BootstrapDropDownListFor(model => model.Filtro.IDTipoComposicao, new SelectList(GenericDelegate.Listar<TipoComposicao>(), "ID", "Nome"), "Tipo de Composição", null, new HtmlHelperOption() { colunas = "col-md-3" })
+        @Html.BootstrapDropDownListFor(model => model.Filtro.IDTerminal, new SelectList(GenericDelegate.ListarTerminal(), "ID", "Nome"), "Terminal", null, new HtmlHelperOption() { colunas = "col-md-3" })
+    </div>
+
+    <div class="row" id="containerBotoes">
+        <div class="col-md-5">
+            <div class="form-group">
+                <label class="col-sm-5 control-label"></label>
+                <div class="col-sm-12">
+                    <div class="btn-group center" style="float: none;">
+                        <button class="btn btn-custom" type="button" tabindex="4" onclick="raizenCoreJs.raizenCRUD.RealizarPesquisa();">
+                            <i class="fa fa-search"></i> Pesquisar
+                        </button>
+                        @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "AgendamentoChecklist" && p.NomeAcao == "Adicionar") != null)
+                        {
+                            <button class="btn btn-custom" type="button" acaopermissao="add" tabindex="5" onclick="raizenCoreJs.raizenCRUD.Novo();">
+                                <i class="fa fa-plus-square-o"></i> Novo
+                            </button>
+                        }
+                        @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "AgendamentoChecklist" && p.NomeAcao == "Exportar") != null)
+                        {
+                            <button class="btn btn-custom" type="button" tabindex="1" onclick="raizenCoreJs.AgendamentoChecklist.Exportar();">
+                                <i class="fa fa-bar-chart"></i> Exportar
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<div class="divide-1"></div>
+
+@*Resultado da Pesquisa*@
+
+<div id="datatable2_wrapper" class="dataTables_wrapper form-inline" role="grid">
+    <div class="row">
+        @if (!Model.ListaAgendamentoChecklist.IsNullOrEmpty())
+        {
+            <div class="col-md-12">
+                <table id="datatable2" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th colspan="11" align="center">
+                                Foram encontrados: @Model.PaginadorDados.QtdeTotalRegistros.ToString() registros
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>Data</th>
+                            <th>Hora</th>
+                            <th>Linha de Negócio</th>
+                            <th>Operação</th>
+                            <th>Tipo de Composição</th>
+                            <th>Placa 1</th>
+                            <th>Placa 2</th>
+                            <th>Placa 3</th>
+                            <th>Placa 4</th>
+                            <th>Terminal</th>
+                            <th style="text-align:center">Operações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var app in Model.ListaAgendamentoChecklist)
+                        {
+                            string funcaoEdit = "raizenCoreJs.raizenCRUD.EditarRegistro('" + @app.ID.ToString() + "','" + Url.Action("Editar", "AgendamentoChecklist") + "');";
+                            string funcaoImprimir = "RaizenCoreJs.prototype.AgendamentoChecklist.Imprimir(" + @app.ID + ")";
+
+                            <tr class="gradeX">
+                                <td style="width: 10%; word-wrap: break-word">
+                                    @app.Data.ToShortDateString()
+                                </td>
+                                <td style="width: 10%; word-wrap: break-word">
+                                    @app.Horario
+                                </td>
+                                <td style="width: 10%; word-wrap: break-word">
+                                    @app.Empresa
+                                </td>
+                                <td style="width: 5%; word-wrap: break-word">
+                                    @app.Operacao
+                                </td>
+                                <td style="width: 7%; word-wrap: break-word">
+                                    @app.TipoComposicao
+                                </td>
+                                <td style="width: 7%; word-wrap: break-word">
+                                    @app.Placa1
+                                </td>
+                                <td style="width: 7%; word-wrap: break-word">
+                                    @app.Placa2
+                                </td>
+                                <td style="width: 7%; word-wrap: break-word">
+                                    @app.Placa3
+                                </td>
+                                <td style="width: 7%; word-wrap: break-word">
+                                    @app.Placa4
+                                </td>
+                                <td style="width: 10%; word-wrap: break-word">
+                                    @app.Terminal
+                                </td>
+                                <td align="center" style="width: 15%;">
+                                    <div class="btn-group center" style="float: none;">
+                                        @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "AgendamentoChecklist" && p.NomeAcao == "Editar") != null 
+                                            && ((app.Data == DateTime.Now.Date && app.HoraInicio >= DateTime.Now.TimeOfDay) || (app.Data > DateTime.Now.Date)))
+                                        {
+                                        <button class="btn btn-custom" type="button" title="Editar Agendamento de Checklist" onclick="@Html.Raw(funcaoEdit)">
+                                            <i class="fa fa-pencil"></i>
+                                        </button>
+                                        }
+                                        @if (((app.Data == DateTime.Now.Date && app.HoraInicio >= DateTime.Now.TimeOfDay) || (app.Data > DateTime.Now.Date))
+                                            && Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "AgendamentoChecklist" && p.NomeAcao == "Excluir") != null)
+                                        {
+                                            <button class="btn btn-custom" type="button" title="Remover" onclick="raizenCoreJs.raizenCRUD.ExcluirRegistro(@app.ID);">
+                                                <i class="fa fa-trash-o"></i>
+                                            </button>
+                                        }
+                                        @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "AgendamentoChecklist" && p.NomeAcao == "Imprimir") != null)
+                                        {
+                                            <button class="btn btn-custom" type="button" title="Imprimir" onclick="@Html.Raw(funcaoImprimir)">
+                                                <i class="fa fa-print"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+    <div class="row">
+        @Html.Partial("_Paginador", Model)
+    </div>
+</div>
+
+<div id="divAgendamentoChecklists"></div>

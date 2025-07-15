@@ -1,0 +1,445 @@
+trigger:
+  branches:
+    include:
+    - 'develop'
+  paths:
+    exclude:
+    - docs/**
+    - catalog-info.yaml
+    - mkdocs.yaml
+    - README.md
+pr:
+  branches:
+    include:
+    - 'develop'
+  paths:
+    exclude:
+    - docs/**
+    - catalog-info.yaml
+    - mkdocs.yaml
+    - README.md
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  projectKey: 'LEGADO_UNICAD' 
+  projectName: 'unicad'
+  appPoolName: 'unicad-dev' 
+  poolPath: 'D:\WebSites\unicad-dev'
+  destinationIP: 10.200.77.174 
+  AdminUserName: $(user-cpiisapp01vd)
+  AdminPass: $(pass-cpiisapp01vd)
+  kvName: 'kv-unicad-ldt-dev'
+  SCApp: 'SC_RG_UNICAD_LDT_DEV_EUS2' 
+
+stages:
+- stage: build
+  displayName: Build stage
+  jobs:
+    - job: Build
+      displayName: Build job
+      pool: 'AZSHWLEGADOVP'
+      steps:
+        - task: JavaToolInstaller@0
+          inputs:
+            versionSpec: 17
+            jdkArchitectureOption: x64
+            jdkSourceOption: AzureStorage
+            azureResourceManagerEndpoint: 'SC_RG_TOOLS_DEVOPS_PRD_EUS2'
+            azureStorageAccountName: terraformdevopsraizen
+            azureContainerName: java
+            azureCommonVirtualFile: 'jdk-17_windows-x64_bin.zip'
+            jdkDestinationDirectory: '$(agent.toolsDirectory)/jdk17'
+          displayName: 'Install Java SDK'
+
+        - task: NuGetToolInstaller@1
+          displayName: 'Install NuGet'
+
+        - task: NuGetCommand@2
+          inputs:
+            restoreSolution: '$(solution)'
+          displayName: 'NuGet Restore'
+
+        - task: SonarQubePrepare@5
+          inputs:
+            SonarQube: 'SC_SONARCLOUD_PIPELINE'
+            projectKey: $(projectKey)
+            projectName: $(projectName)
+            extraProperties: |
+              sonar.qualitygate.wait=true
+              sonar.sourceEncoding=UTF-8
+              sonar.cs.vstest.reportsPaths="$(Agent.TempDirectory)\TestResults\*.trx"
+              sonar.cs.vscoveragexml.reportsPaths=$(Agent.TempDirectory)\TestResults\DynamicCodeCoverage.coveragexml
+          displayName: 'Prepare SonarQube Analysis'
+
+        - task: VSBuild@1
+          inputs:
+            solution: 'src/Web/Raizen.UniCad.Web.csproj'
+            # solution: '$(solution)'
+            msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)\Web.zip"'
+            # platform: '$(buildPlatform)'
+            platform: 'AnyCPU'
+            configuration: '$(buildConfiguration)'
+          displayName: 'Build Solution'
+
+        - task: VSTest@2
+          inputs:
+            platform: '$(buildPlatform)'
+            configuration: '$(buildConfiguration)'
+          continueOnError: true
+          displayName: 'Run Tests'
+
+        - task: VisualStudioTestPlatformInstaller@1
+          inputs:
+            versionSelector: specificVersion
+            testPlatformVersion: 17.2.0
+          displayName: 'Install Test Platform'
+
+        - task: CoverageConverter@0
+          inputs:
+            vsTestExeFileLocation: '$(Agent.WorkFolder)\_tool\VsTest\17.2.0\x64\tools\net451\Common7\IDE\Extensions\TestPlatform\vstest.console.exe'
+            listTestFiles: |
+              **\$(buildConfiguration)\*test*.dll
+              !**\obj\**
+              temporaryFolderForCodeCoverage: '$(Agent.TempDirectory)'
+              codeCoverageExeFileLocation: '$(Agent.WorkFolder)\_tool\VsTest\17.2.0\x64\tools\net451\Team Tools\Dynamic Code Coverage Tools\CodeCoverage.exe'
+          continueOnError: true
+          displayName: 'Convert Coverage'
+
+        - task: SonarQubeAnalyze@5
+          continueOnError: true
+          displayName: 'Run SonarQube Analysis'
+
+        - task: PublishBuildArtifacts@1
+          inputs:
+            PathtoPublish: '$(build.artifactStagingDirectory)'
+            ArtifactName: '$(projectName)'
+          condition: succeededOrFailed()
+          displayName: 'Publish Artifacts'
+
+        - task: SonarQubePublish@5
+          displayName: 'Publish SonarQube Analysis Results'
+
+- stage: deploy
+  displayName: Deploy stage
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  dependsOn: build
+  jobs:
+    - job: Deploy
+      displayName: Deploy job
+      pool: 'AZSHWLEGADOVP'
+      steps:
+        - checkout: none
+          displayName: 'Checkout (None)'
+
+        - task: AzureKeyVault@2
+          inputs:
+            azureSubscription: 'SC_RG_TOOLS_DEVOPS_PRD_EUS2'
+            KeyVaultName: 'kv-azure-pipeline'
+          displayName: 'Azure Key Vault: kv-azure-pipeline'
+
+        - task: AzureKeyVault@2
+          inputs:
+            azureSubscription: '$(SCApp)'
+            KeyVaultName: '$(kvName)'
+          displayName: 'Azure Key Vault: $(kvName)'
+
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: $(projectName)
+            path: $(System.DefaultWorkingDirectory)/artifact
+          displayName: 'Download Pipeline Artifact'
+
+        - task: IISWebAppMgmt@3
+          inputs:
+            IISDeploymentType: IISApplicationPool
+            machinesList: $(destinationIP)
+            AdminUserName: $(AdminUserName)
+            AdminPassword: $(AdminPass)
+            WinRMProtocol: Http
+            ActionIISApplicationPool: StopAppPool
+            StartStopRecycleAppPoolName: $(appPoolName)
+          displayName: 'Stop Application Pool'
+
+        - powershell: |
+            $pass = ConvertTo-SecureString -AsPlainText -Force -String "$(AdminPass)"
+            $cred= New-Object -typename System.Management.Automation.PSCredential -argumentlist "$(AdminUserName)",$pass
+            $Session = New-PSSession -ComputerName $(destinationIP) -Port 5985 -Credential $cred
+
+            Invoke-Command -Session $Session -ScriptBlock {
+                write-host '***** Cleaning Folder *****'
+                ls '$(poolPath)'
+                remove-item '$(poolPath)\*' -force -recurse
+
+                write-host "***** Empty Folder *****"
+                ls '$(poolPath)'
+            }
+          displayName: 'Clean Destination Folder'
+
+        - powershell: |
+            $pass = ConvertTo-SecureString -AsPlainText -Force -String "$(AdminPass)"
+            $cred= New-Object -typename System.Management.Automation.PSCredential -argumentlist "$(AdminUserName)",$pass
+            $Session = New-PSSession -ComputerName $(destinationIP) -Port 5985 -Credential $cred
+
+            Copy-Item -Path $(System.DefaultWorkingDirectory)/artifact/Web.zip -ToSession $Session -Destination "$(poolPath)" -Recurse -Force 
+
+            write-host "***** Web.zip on Destination *****"
+
+            Invoke-Command -Session $Session -ScriptBlock {
+                ls '$(poolPath)'
+                Add-Type -assembly “system.io.compression.filesystem”
+                [io.compression.zipfile]::ExtractToDirectory("$(poolPath)/Web.zip", "$(poolPath)\")
+
+                Rename-Item -Path "$(poolPath)/Content" -NewName "ZipContent"
+
+                $packageTmpPath = Get-ChildItem -Path "$(poolPath)/ZipContent" -Recurse -Filter "PackageTmp" -Directory | Select-Object -ExpandProperty FullName
+                Get-ChildItem -Path $packageTmpPath | Move-Item -Destination $(poolPath)
+
+                write-host "***** Unzip *****"
+                ls '$(poolPath)'
+
+                write-host "***** Removing Web.zip *****"
+                remove-item "$(poolPath)\Web.zip"
+
+                write-host "***** Final Content *****"
+                ls '$(poolPath)'
+            }
+          displayName: 'Copy Files to Destination'
+
+        - powershell: |
+            $pass = ConvertTo-SecureString -AsPlainText -Force -String "$(AdminPass)"
+            $cred= New-Object -typename System.Management.Automation.PSCredential -argumentlist "$(AdminUserName)",$pass
+            $Session = New-PSSession -ComputerName $(destinationIP) -Port 5985 -Credential $cred
+
+            Invoke-Command -Session $Session -ScriptBlock {
+                function Update-XmlConfig(
+                    [Parameter(Mandatory = $true)][string]$configPath,
+                    [Parameter(Mandatory = $true)][hashtable[]]$replacements
+                ) {
+                    if (-not (Test-Path $configPath -PathType Leaf)) {
+                        Write-Host "Arquivo JSON não encontrado: $jsonFilePath"
+                        return
+                    }
+
+                    $xml = [xml](Get-Content $configPath)
+
+                    foreach ($replacement in $replacements) {
+                        $xpath = $replacement['XPath']
+                        $newValue = $replacement['Value']
+
+                        $node = $xml.SelectSingleNode($xpath)
+
+                        if ($node -ne $null) {
+                            $node.InnerText = $newValue
+                        }
+                        else {
+                            Write-Host "Nó não encontrado com XPath: $xpath"
+                        }
+                    }
+
+                    $xml.Save($configPath)
+                }
+
+                $path = '$(poolPath)/Web.config'
+                $replacements = @(
+                    @{
+                      XPath = "//connectionStrings/add[@name='UniCadContext']/@connectionString"
+                      Value = '$(connectionStrings-UniCadContext)'
+                    },
+                    @{
+                      XPath = "//connectionStrings/add[@name='LogContext']/@connectionString"
+                      Value = '$(connectionStrings-LogContext)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='PreserveLoginUrl']/@value"
+                      Value = '$(appSettings-PreserveLoginUrl)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='ClientValidationEnabled']/@value"
+                      Value = '$(appSettings-ClientValidationEnabled)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='UnobtrusiveJavaScriptEnabled']/@value"
+                      Value = '$(appSettings-UnobtrusiveJavaScriptEnabled)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='EmailNaoResponda']/@value"
+                      Value = '$(appSettings-EmailNaoResponda)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='usuarioWSCliente']/@value"
+                      Value = '$(appSettings-usuarioWSCliente)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='senhaWSCliente']/@value"
+                      Value = '$(appSettings-senhaWSCliente)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='usuarioWSFornecedor']/@value"
+                      Value = '$(appSettings-usuarioWSFornecedor)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='senhaWSFornecedor']/@value"
+                      Value = '$(appSettings-senhaWSFornecedor)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='usuarioWSIntegracaoSAP']/@value"
+                      Value = '$(appSettings-usuarioWSIntegracaoSAP)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='senhaWSIntegracaoSAP']/@value"
+                      Value = '$(appSettings-senhaWSIntegracaoSAP)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='usuarioWSEasyQuery']/@value"
+                      Value = '$(appSettings-usuarioWSEasyQuery)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='senhaWSEasyQuery']/@value"
+                      Value = '$(appSettings-senhaWSEasyQuery)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='CaminhoAnexos']/@value"
+                      Value = '$(appSettings-CaminhoAnexos)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='usuarioSalesForce']/@value"
+                      Value = '$(appSettings-usuarioSalesForce)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='senhaSalesForce']/@value"
+                      Value = '$(appSettings-senhaSalesForce)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='clientIdSalesForce']/@value"
+                      Value = '$(appSettings-clientIdSalesForce)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='clientSecretSalesForce']/@value"
+                      Value = '$(appSettings-clientSecretSalesForce)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='urlWSTokenSalesForce']/@value"
+                      Value = '$(appSettings-urlWSTokenSalesForce)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='LinkIntegracaoSalesForce']/@value"
+                      Value = '$(appSettings-LinkIntegracaoSalesForce)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='urlWSCliente']/@value"
+                      Value = '$(appSettings-urlWSCliente)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='urlWSFornecedor']/@value"
+                      Value = '$(appSettings-urlWSFornecedor)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='urlWSIntegracaoSAP']/@value"
+                      Value = '$(appSettings-urlWSIntegracaoSAP)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='urlWSIntegracaoSAPMotorista']/@value"
+                      Value = '$(appSettings-urlWSIntegracaoSAPMotorista)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='urlWSEasyQuery']/@value"
+                      Value = '$(appSettings-urlWSEasyQuery)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='VALIDAR_SESSION_FIXATION']/@value"
+                      Value = '$(appSettings-VALIDAR-SESSION-FIXATION)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='URL_SSO']/@value"
+                      Value = '$(appSettings-URL-SSO)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='SIGLA_APP']/@value"
+                      Value = '$(appSettings-SIGLA-APP)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='EXCECAO_AUTENTICACAO']/@value"
+                      Value = '$(appSettings-EXCECAO-AUTENTICACAO)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='ControleUsuarioUnicadServico']/@value"
+                      Value = '$(appSettings-ControleUsuarioUnicadServico)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='SenhaUsuarioUnicadServico']/@value"
+                      Value = '$(appSettings-SenhaUsuarioUnicadServico)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='ClienteAcsUnicadServico']/@value"
+                      Value = '$(appSettings-ClienteAcsUnicadServico)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='SenhaAcsUnicadServico']/@value"
+                      Value = '$(appSettings-SenhaAcsUnicadServico)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='ClienteAcsUnicadServicoArgentina']/@value"
+                      Value = '$(appSettings-ClienteAcsUnicadServicoArgentina)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='SenhaAcsUnicadServicoArgentina']/@value"
+                      Value = '$(appSettings-SenhaAcsUnicadServicoArgentina)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='ClienteAcsUnicadServicoTrading']/@value"
+                      Value = '$(appSettings-ClienteAcsUnicadServicoTrading)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='SenhaAcsUnicadServicoTrading']/@value"
+                      Value = '$(appSettings-SenhaAcsUnicadServicoTrading)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='urlAcsWebApi']/@value"
+                      Value = '$(appSettings-urlAcsWebApi)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='urlUserSystem']/@value"
+                      Value = '$(appSettings-urlUserSystem)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='EmailRemetentePadrao']/@value"
+                      Value = '$(appSettings-EmailRemetentePadrao)'
+                    },
+                    @{
+                      XPath = "//system.serviceModel/client/endpoint[@name='Raizen.UserSystem.SAL.Contract.IControleAcesso']/@address"
+                      Value = '$(system--serviceModel-client-RaizenUserSystemSALContractIControleAcesso)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='CsOnlineEndpoint']/@value"
+                      Value = '$(appSettings-CsOnlineEndpoint)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='CsOnlineOrigin']/@value"
+                      Value = '$(appSettings-CsOnlineOrigin)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='CsOnlinePin']/@value"
+                      Value = '$(appSettings-CsOnlinePin)'
+                    },
+                    @{
+                      XPath = "//appSettings/add[@key='CsOnlineApplicationKey']/@value"
+                      Value = '$(appSettings-CsOnlineApplicationKey)'
+                    }
+                )
+
+                Update-XmlConfig -configPath $path -replacements $replacements
+            }
+          displayName: 'Extract and Configure Files'
+
+        - task: IISWebAppMgmt@3
+          inputs:
+            machinesList: $(destinationIP)
+            AdminUserName: $(AdminUserName)
+            AdminPassword: $(AdminPass)
+            WinRMProtocol: Http
+            IISDeploymentType: IISApplicationPool
+            ActionIISApplicationPool: StartAppPool
+            StartStopRecycleAppPoolName: $(appPoolName)
+          displayName: 'Start Application Pool'

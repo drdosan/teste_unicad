@@ -1,0 +1,56 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- PAGE HEADER-->
+<div class="row">
+    <div class="col-sm-12">
+        <div class="divide-10"></div>
+    </div>
+</div>
+<!-- /PAGE HEADER -->    
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="box border raizen">
+            <div class="box-title">
+                <h4>
+                    <i class="fa fa-columns"></i>
+                    <span class="hidden-inline-mobile">Gerenciamento de @ViewBag.TituloModulo</span>
+                </h4>
+            </div>
+            <div class="box-body">
+                                
+                @*Parte de Edição de Pesquisa*@
+                <div id="containerPesquisa">
+                    <!-- BOX Filtros -->
+                    @RenderSection("pesquisa", required: false)
+                </div>
+
+                @*Parte de Edição do CRUD*@
+                <div class="modal fade" id="modalcontainerEdicao" tabindex="-1" data-backdrop="static" role="dialog" aria-labelledby="myModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content" style="">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div id="containerEdicao">
+                                    <div class="divide-10"></div>
+                                    @RenderSection("cadastro", required: false)
+                                    @RenderSection("opcoes", required: false)
+                                </div>
+                                @RenderSection("ToolBoxCrudPesquisa", required: false)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @RenderSection("operacoesExtras", required: false)
+            </div>
+        </div>
+    </div>
+</div>
+@{Html.RenderPartial("_ConfirmDelete", new Raizen.Framework.Web.MVC.Models.ModalConfirm() { MessageYes = "Sim", MessageNot = "Não" });}
+
+ 

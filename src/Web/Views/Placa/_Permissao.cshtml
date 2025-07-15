@@ -1,0 +1,103 @@
+﻿@using Raizen.UniCad.Model;
+
+@model Raizen.UniCad.Web.Models.ModelPlaca
+
+@{
+    //R8) Verifcar se o autocomplete do cliente deve ou não levar em consideração a regra que diz que "Não é possível indicar este código, pois o mesmo não faz parte de sua rede cadastrada no CS Online"
+    var isClienteAcs = Model.Usuario != null && (Model.Usuario.Perfil == EnumPerfil.CLIENTE_ACS || Model.Usuario.Perfil == EnumPerfil.CLIENTE_ACS_ARGENTINA) ? "true" : "false";
+}
+
+@if (Model.Placa.Operacao != "FOB")
+{
+    if (Model.Placa.LinhaNegocio == (int)Raizen.UniCad.Model.EnumEmpresa.Ambos)
+    {
+        <div class="row">
+            @Html.BootstrapDropDownListFor(model => model.Placa.IDTransportadora, new SelectList(TransportadoraDelegate.Listar("CIF", (int)Raizen.UniCad.Model.EnumEmpresa.Combustiveis, (int)EnumPais.Brasil), "ID", "RazaoSocial"), "Transportadora Combustível", new { @class = "manydata", title = "Digite a transportadora responsável pelo cadastro" }, new HtmlHelperOption() { colunas = "col-md-4" }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsIDTransportadoraAlterado ? Model.PlacaOficial.Transportadora : null)
+        </div>
+
+        <div class="row">
+            @Html.BootstrapDropDownListFor(model => model.Placa.IDTransportadora2, new SelectList(TransportadoraDelegate.Listar("CIF", (int)Raizen.UniCad.Model.EnumEmpresa.EAB, (int)EnumPais.Brasil), "ID", "RazaoSocial"), "Transportadora EAB", new { @class = "manydata", title = "Digite a transportadora responsável pelo cadastro" }, new HtmlHelperOption() { colunas = "col-md-4" }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsIDTransportadora2Alterado ? Model.PlacaOficial.Transportadora2 : null)
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @if (Model.Novo && Model.Placa.IDTransportadora.HasValue)
+            {
+                @Html.BootstrapDropDownListFor(model => model.Placa.IDTransportadora, new SelectList(TransportadoraDelegate.Listar("CIF", Model.Placa.LinhaNegocio, (int)EnumPais.Brasil), "ID", "RazaoSocial"), "Transportadora", new { @class = "manydata", title = "Digite a transportadora responsável pelo cadastro" }, new HtmlHelperOption() { colunas = "col-md-4" }, true, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsIDTransportadoraAlterado ? Model.PlacaOficial.Transportadora : null)
+                @Html.HiddenFor(model => model.Placa.IDTransportadora)
+            }
+            else
+            {
+                @Html.BootstrapDropDownListFor(model => model.Placa.IDTransportadora, new SelectList(TransportadoraDelegate.Listar("CIF", Model.Placa.LinhaNegocio, (int)EnumPais.Brasil), "ID", "RazaoSocial"), "Transportadora", new { @class = "manydata", title = "Digite a transportadora responsável pelo cadastro" }, new HtmlHelperOption() { colunas = "col-md-4" }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsIDTransportadoraAlterado ? Model.PlacaOficial.Transportadora : null)
+            }
+        </div>
+    }
+
+}
+@if (Model.Placa.Operacao != "CIF")
+{
+    <div id="linhaTransportadora" class="col-md-7">
+        @using (Html.BootstrapCollapsiblePanel("Informe os códigos para cadastro do veículo", "TransportadorasPanel", false, "fa fa-user-circle", null, new { style = "max-height:300px; overflow-x:hidden; overflow-y:auto; margin-top:10px;" }))
+        {
+            <div class="row">
+                <div id="linhaCliente" class="col-md-12">
+                    <div class="row">
+                        @Html.BootstrapTextBox("ClienteAuto", null, "Cliente", new { maxlength = 200, @onchange = "VerificarSeDeveLimpar();", title = "Insira o código ou razão social/nome" }, new HtmlHelperOption { colunas = "col-md-9" })
+                        <input type="hidden" id="Cliente" />
+                        <input type="hidden" id="ClienteNome" />
+                        @Html.BootstrapButtonAdd("BtnIncluir", "Incluir", ButtonType.BUTTON, "raizenCoreJs.Placa.adicionarCliente();", "style='margin-top: 25px;'")
+
+                        <script>
+                            function ClienteAutoComplete(nomeCampo, url) {
+                                $("#ClienteAuto").autocomplete({
+                                    minLength: 3,
+                                    source: function (request, response) {
+                                        $.ajax({
+                                            url: url,
+                                            type: "POST", dataType: "json",
+                                            data: { nome: request.term, empresa: @Model.Placa.LinhaNegocio, isClienteAcs: @isClienteAcs },
+                                            success: function (data) {
+                                                response($.map(data, function (item) {
+                                                    return { label: item.Name, value: item.Name, codigo: item.ID };
+                                                }));
+                                            }
+                                        });
+                                    },
+                                    select: function (event, ui) {
+                                        $("#" + nomeCampo).val(ui.item.codigo);
+                                        $("#" + nomeCampo + "Nome").val(ui.item.label);
+                                    }
+                                });
+                            }
+                            var url = '@Url.Action("ListarClientes", "Placa")';
+                            ClienteAutoComplete("Cliente", url);
+                        </script>
+                    </div>
+                    <table id="clientesTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr class="table-raizen">
+                                <th style="width: 75%;">Cliente</th>
+                                <th style="width: 25%;">Data Aprovação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="linha-2" class="gradeX">
+                                @if (Model.Placa.Clientes != null)
+                                {
+                                    foreach (var item in Model.Placa.Clientes)
+                                    {
+                                        Html.RenderPartial("_ItemCliente", item);
+                                    }
+                                }
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+}
+<div class="row">
+    @Html.BootstrapTextAreaFor(model => Model.Placa.Observacao, "Observação", new { maxlength = 1000, style = "height:120px;" }, new HtmlHelperOption() { colunas = "col-md-5" })
+</div>

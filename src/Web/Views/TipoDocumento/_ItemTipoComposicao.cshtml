@@ -1,0 +1,14 @@
+﻿@model Raizen.UniCad.Model.TipoDocumentoTipoComposicaoPlacaView
+<tr id="linha-composicao-motorista-@Model.IdComposicao" class="gradeX">
+    @using (Html.BeginCollectionItem("TipoDocumento.ComposicaoMotorista"))
+    {
+        @Html.HiddenFor(item => item.IdComposicao, new { @class = "IdTipoComposicao" })
+        @Html.HiddenFor(item => item.NomeComposicao)
+        <td style="width: 95%; word-wrap: break-word">
+            @Html.PopoverTextFor(item => item.NomeComposicao, 80, "right")
+        </td>
+        <td style="width: 5%; word-wrap: break-word">
+            @Html.BootstrapButtonDelete("", "", ButtonType.BUTTON, "raizenCoreJs.TipoDocumento.removerTipoComposicaoMotorista(" + Model.IdComposicao + ")")
+        </td>
+    }
+</tr>

@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Raizen.UniCad.SAL.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="Raizen_UniCad_SAL_WsEasyquery_wsEasyQueryACS" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://easyquerywebservice-dev.raizen.com/wsEasyQueryACS.asmx</Value>
+    </Setting>
+    <Setting Name="Raizen_UniCad_SAL_WSIntegracaoSAP_Veiculo_OutService" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://cpsvsappiq01.cosan.rede:50000/XISOAPAdapter/MessageServlet?senderParty=&amp;senderService=PORTAL_UNICAD&amp;receiverParty=&amp;receiverService=&amp;interface=Veiculo_Out&amp;interfaceNamespace=urn%3Aminhati.com.br%2Fv2%2Fportalunicad%2Fveiculo</Value>
+    </Setting>
+    <Setting Name="Raizen_UniCad_SAL_WsIntegracaoSAPMotorista_Motorista_OutService" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://rzvlxcisp1q00.cosan.rede:50200/XISOAPAdapter/MessageServlet?senderParty=&amp;senderService=PORTAL_UNICAD&amp;receiverParty=&amp;receiverService=&amp;interface=Motorista_Out&amp;interfaceNamespace=urn%3Aminhati.com.br%2Fv2%2Fportalunicad%2Fmotorista</Value>
+    </Setting>
+    <Setting Name="Raizen_UniCad_SAL_WsConsultarCliente_Cliente_OutService" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://cpsvsappiq01.cosan.rede:50000/XISOAPAdapter/MessageServlet?senderParty=&amp;senderService=PORTAL_UNICAD&amp;receiverParty=&amp;receiverService=&amp;interface=Cliente_Out&amp;interfaceNamespace=urn%3Aminhati.com.br%2Fv2%2Fportalunicad%2Fcliente</Value>
+    </Setting>
+    <Setting Name="Raizen_UniCad_SAL_WsConsultarFornecedor_Fornecedor_OutService" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://cpsvsappiq01.cosan.rede:50000/XISOAPAdapter/MessageServlet?senderParty=&amp;senderService=PORTAL_UNICAD&amp;receiverParty=&amp;receiverService=&amp;interface=Fornecedor_Out&amp;interfaceNamespace=urn%3Aminhati.com.br%2Fv2%2Fportalunicad%2Ffornecedor</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

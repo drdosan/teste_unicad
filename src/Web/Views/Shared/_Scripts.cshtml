@@ -1,0 +1,151 @@
+﻿@model Raizen.Framework.Web.MVC.Bases.ModelMVC
+@{
+    var urlGetitemMenu = Url.Action("GetItemMenuSelecionado", "Menu");
+    var urlSetitemMenu = Url.Action("AtualizarItemMenuSelecionado", "Menu");
+    var erroVersionPagina = Context.Request.ApplicationPath + "~/ErroNavegador.htm";
+    var menuEsquerdoHabilitado = Model.ConfiguracaoLayout.UtilizaMenuEsquerdo.ToString().ToLower(System.Globalization.CultureInfo.InvariantCulture);
+}
+
+<!--[if lte IE 8]>
+    <SCRIPT LANGUAGE="Javascript">
+        window.location = '@erroVersionPagina';
+    </SCRIPT>
+<![endif]-->
+
+@*//Scripts base do layout Cloud Admin*@
+
+
+@Scripts.Render("~/Content/js/third-party/jquery/jquery")
+@Scripts.Render("~/Content/js/third-party/jqueryui")
+@Scripts.Render("~/Content/js/third-party/bootstrapdist")
+
+@Scripts.Render("~/bundles/plugin/selectize")
+
+
+@*//Scripts de datepicker do BootStrap*@
+@*@Scripts.Render("~/Content/js/third-party/ckeditor/ckeditor")*@
+@*@Scripts.Render("~/Content/js/third-party/bootstrap-wysiwyg/bootstrap-wysiwyg")*@
+
+
+<!-- MULTIPLE DATE PICKER -->
+@Scripts.Render("~/Content/js/third-party/multipledatespicker/multipledatespicker")
+
+@*//Scripts do plugin SlimScroll do jQuery*@
+@*@Scripts.Render("~/Content/js/third-party/jQuery-slimScroll")*@
+
+@*//Scripts do plugin BlockUI do jQuery*@
+@*@Scripts.Render("~/Content/js/third-party/jQuery-BlockUI/jquery-blockui")*@
+
+@*//Scripts do plugin Cookie do jQuery*@
+@Scripts.Render("~/Content/js/third-party/jQuery-Cookie/jquery-cookie")
+
+@*//Scripts customizado do Cloud Admin*@
+@Scripts.Render("~/Content/js/third-party/custom-script-js")
+
+@*@Scripts.Render("~/Content/js/third-party/select2/select2")*@
+
+@*//Scripts de datepicker do BootStrap*@
+@*@Scripts.Render("~/Content/js/bootstrap-daterangepicker/daterangepicker")*@
+
+@*//Scripts de datepicker do BootStrap*@
+@Scripts.Render("~/Content/js/third-party/datepicker/datepicker")
+
+@*//Scripts do modernizr*@
+@Scripts.Render("~/Content/js/third-party/modernizr/modernizr-2.6.2")
+
+@*//Script para Simple Table*@
+@*@Scripts.Render("~/Content/js/third-party/tablecloth/js/tablecloth")*@
+
+@*//Script para Dynamic Table*@
+@*@Scripts.Render("~/Content/js/third-party/datatables/datatables")*@
+
+@*//Scripts para Mensagens*@
+@Scripts.Render("~/Content/js/third-party/hubspot-messenger/hubspot-messenger")
+
+@*//Scripts jQuery Validation Form's*@
+@Scripts.Render("~/Content/js/third-party/jqueryval")
+
+@*//Scripts Plugin jQuery de mascáras*@
+@Scripts.Render("~/Content/js/third-party/jquerymask")
+
+@*//Scripts Plugin jQuery jqGrid*@
+@Scripts.Render("~/Content/js/third-party/jqGrid")
+
+@*//Scripts Plugin Autocomplete do jQuery*@
+@Scripts.Render("~/Content/js/third-party/typeahead/typeahead")
+
+@*//Scripts Pugin Namespace*@
+@Scripts.Render("~/Content/js/third-party/namespace")
+
+@*@Scripts.Render("~/bundles/SIM")*@
+
+
+@*Scripts do Framework
+  /////////////////////////////////////////////////////////////////////////////////////////////////////*@
+@*//Script base para criação do container JS da Raízen*@
+@Scripts.Render("~/Content/js/raizen-init-container")
+@*//Script com a classe de domínios utilizado no JS da Raízen*@
+@Scripts.Render("~/Content/js/raizen-dominios")
+@*//Script com as funções e classes hepers do JS da Raízen*@
+@Scripts.Render("~/Content/js/raizen-helpers")
+@*//Script base para criação de mascaras para o JS da Raízen*@
+@Scripts.Render("~/Content/js/raizen-mask")
+@*//Script base para criação do container JS da Raízen*@
+@Scripts.Render("~/Content/js/raizen-menus")
+
+<script src="@Url.Content("~/Content/js/Raizen/Raizen.Init.js?")"></script>
+<script src="@Url.Content("~/Content/js/Raizen/Raizen.Dominios.js?")"></script>
+<script src="@Url.Content("~/Content/js/Raizen/Raizen.CRUD.js?")"></script>
+<script src="@Url.Content("~/Content/js/Raizen/Raizen.Engine.Polices.js?")"></script>
+<script src="@Url.Content("~/Content/js/Raizen/Raizen.CustomControlsBootStrap.js?")"></script>
+<script src="@Url.Content("~/Content/js/Raizen/Raizen.Menus.js?")"></script>
+<script src="@Url.Content("~/Content/js/Raizen/Raizen.Paginador.js?")"></script>
+<script src="@Url.Content("~/Content/js/Raizen/Raizen.PaginadorComponente.js?")"></script>
+<script src="@Url.Content("~/Content/js/Raizen/Raizen.Mask.js?")"></script>
+<script src="@Url.Content("~/Content/js/Raizen/Raizen.TreeView.js?")"></script>
+
+
+@*/////////////////////////////////////////////////////////////////////////////////////////////////////
+  Fim dos Scripts do Projeto*@
+
+@*Diversos?*@
+@*<script src="@Url.Content("~/Content/js/uniform/jquery.uniform.min.js")"></script>
+    <script src="@Url.Content("~/Content/js/bootbox/bootbox.min.js")"></script>
+    <script src="@Url.Content("~/Content/js/bootstrap-wizard/jquery.bootstrap.wizard.min.js")"></script>
+    <script src="@Url.Content("~/Content/js/bootstrap-wizard/form-wizard.js")"></script>
+    <script src="@Url.Content("~/Content/js/bootstrap-fyleStyle/bootstrap-filestyle.js")"></script>
+    <script src="@Url.Content("~/Content/js/jsTree/jstree.min.js")"></script>
+    <script src="@Url.Content("~/Content/js/select2/select2.min.js")"></script>
+    <script src="@Url.Content("~/Content/js/select2/select2_locale_pt-BR.js")"></script>
+    <script src="@Url.Content("~/Content/js/Cosan/Cosan.Form.js")"></script>*@
+
+<script type="text/javascript" language="javascript">
+    jQuery(document).ready(function () {        
+        App.init(); //Initialise plugins and elements
+        raizenCoreJs.raizenMenus.UrlGetItemMenu = "@urlGetitemMenu";
+        raizenCoreJs.raizenMenus.UrlSetItemMenu = "@urlSetitemMenu";
+        raizenCoreJs.raizenMenus.ManterPosicaoMenu();
+        raizenCoreJs.raizenMask.ConfigurarMaskaras();
+        $.ajaxSetup({
+            cache: false,
+            statusCode: {
+                350: function (jqXHR, textStatus, errorThrown) {
+                    var response = $.parseJSON(jqXHR.responseText);
+                    if (response != null && response.ssoResponse == true) {
+                        window.document.location.href = response.redirectUrl;
+                    }
+                }
+            }
+        });
+        raizenCoreJs.raizenHelpers.FecharLoading();
+        
+    });
+
+</script>
+
+
+<script src="~/Content/js/third-party/fileinput.min.js"></script>
+<script src="~/Content/js/third-party/locales/LANG.js"></script>
+<script src="~/Content/js/third-party/locales/pt-BR.js"></script>
+<script src="~/Content/js/third-party/locales/es.js"></script>
+<link href="~/Content/js/third-party/bootstrap-fileinput/css/fileinput.min.css" rel="stylesheet" />

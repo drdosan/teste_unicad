@@ -1,0 +1,136 @@
+﻿@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Models
+@using Raizen.Framework.Models
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.UniCad.Model;
+
+
+@model Raizen.UniCad.Web.Models.ModelLogDocumentos
+@{
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+
+    var tabIndiceCrudEdicao = new int[2];
+    tabIndiceCrudEdicao[0] = 4;
+    tabIndiceCrudEdicao[1] = 5;
+
+}
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.LogDocumentos.js")"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        raizenCoreJs.raizenCRUD.urlPesquisa = '@Url.Action("Pesquisar", "LogDocumentos")';
+        raizenCoreJs.raizenCRUD.urlNovo = '@Url.Action("Novo", "LogDocumentos")';
+        raizenCoreJs.raizenCRUD.urlExcluir = '@Url.Action("ExcluirRegistro", "LogDocumentos")';
+
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        raizenCoreJs.raizenMensagens.ExibirMensagemOperacao();
+    });
+</script>
+@*Parte de Filtros*@
+<form id="frmPesquisa" class="form-horizontal">
+
+    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUDEdit" })
+    @Html.HiddenFor(model => model.ChavePrimaria)
+    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUD" })
+    @Html.HiddenFor(model => model.OperacaoSecundaria, new { @Id = "IdOperacaoSecundariaCRUD" })
+
+    @Html.HiddenFor(model => model.PaginadorDados.PaginaAtual)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdePaginas)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdeItensPagina)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdeTotalRegistros)
+    @Html.HiddenFor(model => model.PaginadorDados.Status)
+
+
+    <div class="row">
+        @Html.BootstrapTextBoxFor(model => model.Filtro.Nome, null, "Assunto", null, new HtmlHelperOption() { colunas = "col-md-3" })
+        @Html.BootstrapTextBoxFor(model => model.Filtro.Mensagem, null, "Mensagem", null, new HtmlHelperOption() { colunas = "col-md-3" })
+        @Html.BootstrapTextBoxFor(model => model.Filtro.Email, null, "E-mail", null, new HtmlHelperOption() { colunas = "col-md-2" })
+        @Html.BootstrapDateBoxFor(model => model.Filtro.DataInicio, "Data Início", null, new HtmlHelperOption() { colunas = "col-md-2" })
+        @Html.BootstrapDateBoxFor(model => model.Filtro.DataFim, "Data Fim", null, new HtmlHelperOption() { colunas = "col-md-2" })
+    </div>
+
+    <div class="row" id="containerBotoes">
+        <div class="col-md-5">
+            <div class="form-group">
+                <label class="col-sm-5 control-label"></label>
+                <div class="col-sm-12">
+                    <div class="btn-group center" style="float: none;">
+                        <button class="btn btn-custom" type="button" tabindex="4" onclick="raizenCoreJs.raizenCRUD.RealizarPesquisa();">
+                            <i class="fa fa-search"></i> Pesquisar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<div class="divide-1"></div>
+
+@*Resultado da Pesquisa*@
+
+<div id="datatable2_wrapper" class="dataTables_wrapper form-inline" role="grid">
+    <div class="row">
+        @if (!Model.ListaLogDocumentos.IsNullOrEmpty())
+        {
+            <div class="col-md-12">
+                <table id="datatable2" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th colspan="6" align="center">
+                                Foram encontrados: @Model.PaginadorDados.QtdeTotalRegistros.ToString() registros
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>Assunto</th>
+                            <th>E-mail</th>
+                            <th>Mensagem</th>
+                            <th>Data</th>
+                            <th style="text-align:center">Operações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var app in Model.ListaLogDocumentos)
+                        {
+                            string funcaoEdit = "raizenCoreJs.raizenCRUD.EditarRegistro('" + @app.ID.ToString() + "','" + Url.Action("Editar", "LogDocumentos") + "');";
+
+                            <tr class="gradeX">
+                                <td style="width: 20%; word-wrap: break-word">
+                                    @Html.PopoverText(app.Nome, app.Nome, 40)
+                                </td>
+                                <td style="width: 20%; word-wrap: break-word">
+                                    @MvcHtmlString.Create(app.Email != null && app.Email.Length > 50 ? string.Concat(app.Email.Substring(0, 49), "...") : app.Email)
+                                </td>
+                                <td style="width: 30%; word-wrap: break-word">
+                                    @*@Html.PopoverText(app.Mensagem, app.Mensagem, 50)*@
+                                    @MvcHtmlString.Create(app.Mensagem.Length > 65 ? string.Concat(app.Mensagem.Substring(0, 64), "...") : app.Mensagem)
+                                </td>
+                                <td style="width: 10%; word-wrap: break-word">
+                                    @app.Data.ToString("dd/MM/yyyy HH:mm:ss")
+                                </td>
+                                <td align="center" style="width: 5%;">
+                                    <div class="btn-group center" style="float: none;">
+                                        <button class="btn btn-custom" type="button" title="Ver Log" onclick="@Html.Raw(funcaoEdit)">
+                                            <i class="fa fa-pencil"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+    <div class="row">
+        @Html.Partial("_Paginador", Model)
+    </div>
+</div>
+
+<div id="divLogDocumentoss"></div>

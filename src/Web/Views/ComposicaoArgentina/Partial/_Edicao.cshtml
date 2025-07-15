@@ -1,0 +1,592 @@
+﻿@using Raizen.Framework.Models
+@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.Framework.Web.MVC.Extensions;
+@using Raizen.UniCad.Model;
+
+@model Raizen.UniCad.Web.Models.ModelComposicao
+@{
+    string urlValidacao = @Url.Action("ValidarObjetos", "ComposicaoArgentina");
+
+    IHtmlString mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    IHtmlString dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    IHtmlString contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+}
+
+<style>
+    .tab-pane {
+        border-left: 1px solid silver;
+        border-bottom: 1px solid silver;
+        border-right: 1px solid silver;
+        border-radius: 0px 0px 5px 5px;
+        padding: 30px;
+        margin-bottom: 20px;
+    }
+
+    .invisivel {
+        display: none;
+    }
+
+    .invisivelLacre {
+        display: none;
+    }
+
+    .invisivelComp {
+        display: none !important;
+    }
+
+    .roxoRaizen {
+        background-color: #6f376c !important;
+    }
+
+    .modalDrop {
+        position: absolute;
+        background: white;
+        z-index: 9999;
+        border: 1px solid black;
+        padding: 30px;
+        border-radius: 5px;
+        display: none;
+    }
+
+    .modalDropQuestion {
+        position: absolute;
+        background: white;
+        z-index: 9999;
+        border: 1px solid black;
+        padding: 5px;
+        border-radius: 5px;
+        display: none;
+    }
+
+    .btn.btn-custom[disabled] {
+        background: silver;
+        border-color: silver;
+        opacity: 0.5;
+    }
+</style>
+
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Composicao.js")"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        raizenCoreJs.raizenCRUD.urlSalvar = '@Url.Action("Salvar", "ComposicaoArgentina")';
+        raizenCoreJs.raizenCRUD.urlAprovar = '@Url.Action("Aprovar", "ComposicaoArgentina")';
+
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        raizenCoreJs.raizenHelpers.urlValidacao = "@urlValidacao";
+
+        RaizenCoreJs.prototype.Composicao.urlValidarAlteracoes = '@Url.Action("ValidarAlteracoes", "ComposicaoArgentina")';
+        RaizenCoreJs.prototype.Composicao.urlListarDocumentos = '@Url.Action("ListarDocumentos", "ComposicaoArgentina")';
+        RaizenCoreJs.prototype.Composicao.urlObterQuantidades = '@Url.Action("ObterDados", "ComposicaoArgentina")';
+        RaizenCoreJs.prototype.Composicao.urlVerificarPlaca = '@Url.Action("VerificarPlaca", "ComposicaoArgentina")';
+        RaizenCoreJs.prototype.Composicao.urlNovaPlaca = '@Url.Action("Novo", "PlacaArgentina")';
+        RaizenCoreJs.prototype.Composicao.urlEditarPlaca = '@Url.Action("Editar", "PlacaArgentina")';
+        RaizenCoreJs.prototype.Composicao.urlLista = '@Url.Action("Index", "ComposicaoArgentina")';
+        RaizenCoreJs.prototype.Composicao.urlVerificarAlteracoes = '@Url.Action("VerificarAlteracoes", "ComposicaoArgentina")';
+        RaizenCoreJs.prototype.Composicao.urlBuscarTransportadora = '@Url.Action("BuscarTransportadora", "ComposicaoArgentina")';
+        RaizenCoreJs.prototype.Composicao.urlSalvar = '@Url.Action("Salvar", "ComposicaoArgentina")';
+        RaizenCoreJs.prototype.Composicao.urlObterEixos = '@Url.Action("ObterEixos", "ComposicaoArgentina")';
+        RaizenCoreJs.prototype.Composicao._idPais = 2;
+        RaizenCoreJs.prototype.Composicao._idTipoComp = 0;
+
+        $(document).keydown(function (e) {
+            if (e.wich == 39 || e.keyCode == 39) {
+                $('.nav-tabs.complemento > .active').next('li').find('a').trigger('click');
+            }
+
+            if (e.wich == 37 || e.keyCode == 37) {
+                $('.nav-tabs.complemento > .active').prev('li').find('a').trigger('click');
+            }
+        });
+
+        $("#Composicao_CUIT").mask("99-99999999-9");
+
+
+        tipoChange = function tipoChange() {
+            $('#btnAddPlaca1').show();
+            $('#btnEditPlaca1').hide();
+            $('#btnAddPlaca2').show();
+            $('#btnEditPlaca2').hide();
+            $('#btnAddPlaca3').show();
+            $('#btnEditPlaca3').hide();
+            $('#btnAddPlaca4').show();
+            $('#btnEditPlaca4').hide();
+
+            $("#Composicao_Placa1").val('');
+            $("#Composicao_Placa2").val('');
+            $("#Composicao_Placa3").val('');
+            $("#Composicao_Placa4").val('');
+
+            var IDTipoComposicao = $("#Composicao_IDTipoComposicao").val();
+
+            if (IDTipoComposicao != "") {
+                $("#lbl_Composicao_Placa1").text('Tractor');
+                switch (IDTipoComposicao) {
+                    case '5': /* Semirremolque Chico (Mínimo 20 m³ /Máximo 29 m³) */
+                        $("#AddPlaca1").fadeIn();
+                        $("#AddPlaca2").fadeIn();
+                        $("#AddPlaca3").hide();
+                        $("#AddPlaca4").hide();
+                        break;
+
+                    case '6': /* Semirremolque Grande (Mínimo 30 m³ /Máximo 39 m³) */
+                        $("#AddPlaca1").fadeIn();
+                        $("#AddPlaca2").fadeIn();
+                        $("#AddPlaca3").hide();
+                        $("#AddPlaca4").hide();
+                        break;
+
+                    case '7': /* Escalado (Mínimo 40 m³ /Máximo 49 m³) */
+                        $("#AddPlaca1").fadeIn();
+                        $("#AddPlaca2").fadeIn();
+                        $("#AddPlaca3").hide();
+                        $("#AddPlaca4").hide();
+                        break;
+
+                    case '8': /* Bitren Chico  (Mínimo 45 m³ /Máximo 55 m³) */
+                        $("#AddPlaca1").fadeIn();
+                        $("#AddPlaca2").fadeIn();
+                        $("#AddPlaca3").fadeIn();
+                        $("#AddPlaca4").hide();
+                        break;
+
+                    case '9': /* Bitren Grande  (Mínimo60 m³ /Máximo 70 m³) */
+                        $("#AddPlaca1").fadeIn();
+                        $("#AddPlaca2").fadeIn();
+                        $("#AddPlaca3").fadeIn();
+                        $("#AddPlaca4").hide();
+                        break;
+
+                    case '10': /* Truck  */
+                        $("#lbl_Composicao_Placa1").text('Patente Truck');
+                        $("#AddPlaca1").fadeIn();
+                        $("#AddPlaca2").hide();
+                        $("#AddPlaca3").hide();
+                        $("#AddPlaca4").hide();
+
+                        break;
+
+                    default:
+                        $("#AddPlaca1").hide();
+                        $("#AddPlaca2").hide();
+                        $("#AddPlaca3").hide();
+                        $("#AddPlaca4").hide();
+                }
+                RaizenCoreJs.prototype.Composicao._idTipoComp = $("#Composicao_IDTipoComposicao").val();
+                $('#IDTipoComposicaoAnterior').val($("#Composicao_IDTipoComposicao").val());
+            } else {
+                $("#AddPlaca1").hide();
+                $("#AddPlaca2").hide();
+                $("#AddPlaca3").hide();
+                $("#AddPlaca4").hide();
+            }
+        };
+
+        OperacaoChange = function OperacaoChange() {
+            this.tipoChange();
+        };
+    });
+
+</script>
+
+<input type="hidden" id="hdfpostou" value="false" />
+<div class="box border raizen" id="containerEdicao">
+    <div class="box-title">
+        <h4><i class="fa fa-puzzle-piece"></i><span class="hidden-inline-mobile">Composición</span></h4>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-12">
+                <form id="frmEdicao" class="form-horizontal" autocomplete="off">
+                    @if (Model != null)
+                    {
+                        @Html.HiddenFor(model => model.Composicao.CodigoEasyQuery)
+                        @Html.HiddenFor(model => model.Composicao.IDPlaca1)
+                        @Html.HiddenFor(model => model.Composicao.IDPlaca2)
+                        @Html.HiddenFor(model => model.Composicao.IDPlaca3)
+                        @Html.HiddenFor(model => model.Composicao.IDPlaca4)
+                        @Html.HiddenFor(model => model.Composicao.IDStatus)
+                        @Html.HiddenFor(model => model.UsuarioPerfil)
+                        @Html.HiddenFor(model => model.IdPais, new { @Value = (int)EnumPais.Argentina })
+                        @Html.HiddenFor(model => model.Composicao.isUtilizaPlacaChave)
+                        <input type="hidden" name="@Html.NameFor(model => model.Composicao.jaExiste)" value="@Model.Composicao.jaExiste.ToString()" />
+                        @Html.HiddenFor(model => model.Aprovar)
+                        @Html.HiddenFor(model => model.Reprovar)
+                        if (!Model.Aprovar && Model.Composicao.IDStatus != (int)EnumStatusComposicao.Reprovado)
+                        {
+                            <input type="hidden" name="@Html.NameFor(model => model.Operacao)" value="Insert" />
+                        }
+                        else
+                        {
+                            <input type="hidden" name="@Html.NameFor(model => model.Operacao)" value="Editando" />
+                        }
+                        <input type="hidden" name="@Html.NameFor(model => model.ChavePrimaria)" id="@Html.NameFor(model => model.ChavePrimaria)" value="@Model.ChavePrimaria" />
+                        @Html.HiddenFor(model => model.Composicao.ID)
+                        @Html.HiddenFor(model => model.Composicao.IDComposicao)
+                        @Html.HiddenFor(model => model.Composicao.LoginUsuario)
+                        @Html.HiddenFor(model => model.isArrendamento)
+                    }
+                    <input type="hidden" id="placaAdicionar" />
+                    <label style="visibility:hidden" id="lbl_Composicao">Composición</label>
+
+                    <div id="Tabs" class="nav-tabs-custom" role="tabpanel" style="margin-top: 10px;">
+                        <ul class="nav nav-tabs complemento">
+                            <li class="active"><a href="#tabPlacas" data-toggle="tab">Datos de Composición</a></li>
+                            @if (Model.Aprovar)
+                            {
+                                <li><a href="#tabVeiculo" data-toggle="tab">Complementos</a></li>
+                            }
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tabPlacas">
+                                <div class="row">
+                                    @if (Model != null && Model.Composicao != null && (Model.Composicao.IDEmpresa == 0 || Model.Composicao.IDEmpresa == 3) && Model.Operacao != OperacoesCRUD.Editando)
+                                    {
+                                        @Html.BootstrapDropDownListFor(model => model.Composicao.IDEmpresa, new SelectList(GenericDelegate.ListarComplex<Empresa>(x => x.ID == (int)EnumEmpresa.Combustiveis), "ID", "NomeEs"), "Línea de Negocio", new { onclick = "raizenCoreJs.Composicao.empresaChange(this)" }, new HtmlHelperOption() { colunas = "col-md-2", argentina = true })
+                                        <script>raizenCoreJs.Composicao.empresaChange(this);</script>
+                                    }
+                                    else
+                                    {
+                                        @Html.BootstrapDropDownListFor(model => model.Composicao.IDEmpresa, new SelectList(GenericDelegate.Listar<Empresa>(), "ID", "NomeEs"), "Línea de Negocio", null, new HtmlHelperOption() { colunas = "col-md-2", argentina = true }, true)
+                                        @Html.HiddenFor(model => model.Composicao.IDEmpresa)
+                                    }
+
+                                    @if (Model != null && Model.Composicao != null && (string.IsNullOrEmpty(Model.Composicao.Operacao) || Model.Composicao.Operacao == "Ambos"))
+                                    {
+                                        @Html.BootstrapDropDownListFor(model => model.Composicao.Operacao, new SelectList(GenericDelegate.CifOuFob(), "ID", "Nome"), "Operación", new { onchange = "OperacaoChange()", title = "Modo de Carga" }, new HtmlHelperOption() { colunas = "col-md-2", argentina = true })
+                                    }
+                                    else
+                                    {
+                                        @Html.BootstrapDropDownListFor(model => model.Composicao.Operacao, new SelectList(GenericDelegate.CifOuFob(), "ID", "Nome"), "Operación", new { title = "Modo de Carga" }, new HtmlHelperOption() { colunas = "col-md-2", argentina = true }, true)
+                                        @Html.HiddenFor(model => model.Composicao.Operacao)
+                                    }
+
+                                    @if (Model.Operacao != OperacoesCRUD.Editando)
+                                    {
+                                        @Html.BootstrapDropDownListFor(model => model.Composicao.IDTipoComposicao, new SelectList(GenericDelegate.ListarComplex<TipoComposicao>(x => x.IdPais == (int)EnumPais.Argentina), "ID", "Nome"), "Tipo de Composición", new { onchange = "tipoChange(this)" }, new HtmlHelperOption() { colunas = "col-md-2", argentina = true })
+                                    }
+                                    else
+                                    {
+                                        @Html.BootstrapDropDownListFor(model => model.Composicao.IDTipoComposicao, new SelectList(GenericDelegate.Listar<TipoComposicao>(), "ID", "Nome"), "Tipo de Composición", new { onchange = "tipoChange(this)" }, new HtmlHelperOption() { colunas = "col-md-2", argentina = true }, true)
+                                        @Html.HiddenFor(model => model.Composicao.IDTipoComposicao)
+                                    }
+                                    @Html.Hidden("IDTipoComposicaoAnterior", 0)
+
+                                    @{
+                                        var visivel = "display:none";
+                                        var nomePlaca = Model.Composicao.IDTipoComposicao == (int)EnumTipoComposicao.Truck_ARG
+                                              ? "Patente Truck"
+                                              : "Tractor";
+                                    }
+                                    @if (Model != null && Model.Composicao != null && !string.IsNullOrEmpty(Model.Composicao.Placa1) 
+                                        || (Model.Composicao.IDTipoComposicao > 0 && Model.Composicao.IDTipoComposicao != 10))
+                                    {
+                                        visivel = "";
+                                    }
+                                    else
+                                    {
+                                        visivel = "display:none";
+                                    }
+
+                                    <div class="form-group  col-md-3" id="AddPlaca1" style="@visivel">
+                                        @Html.HiddenFor(model => model.Composicao.PlacaOficial1)
+
+                                        @if ((Model.Composicao.IDTipoComposicao == (int)EnumTipoComposicao.SemirremolqueChico)
+                                            || (Model.Composicao.IDTipoComposicao == (int)EnumTipoComposicao.Truck_ARG))
+                                        {
+                                            if (Model.Operacao == OperacoesCRUD.Editando && (Model.Composicao.IDEmpresa == (int)EnumEmpresa.EAB || Model.Composicao.IDEmpresa == (int)EnumEmpresa.Ambos))
+                                            {
+                                                @Html.BootstrapTextBoxFor(model => model.Composicao.Placa1, null, nomePlaca, new { maxlength = "7", onkeyup = "raizenCoreJs.Composicao.placaChange(this, 1);", style = "text-transform:uppercase" }, new HtmlHelperOption() { colunas = "col-md-9" }, true)
+                                                @Html.HiddenFor(model => model.Composicao.Placa1)
+                                            }
+                                            else
+                                            {
+                                                @Html.BootstrapTextBoxFor(model => model.Composicao.Placa1, null, nomePlaca, new { maxlength = "7", onkeyup = "raizenCoreJs.Composicao.placaChange(this, 1);", style = "text-transform:uppercase;" }, new HtmlHelperOption() { colunas = "col-xs-9" })
+                                            }
+                                            if (Model.Operacao == OperacoesCRUD.Insert)
+                                            {
+                                                @Html.BootstrapButtonAdd("btnAddPlaca1", null, ButtonType.BUTTON, "raizenCoreJs.Composicao.novaPlaca(1, 2)", "style='margin-top:24px;margin-left:-12px; " + @visivel + "'")
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (Model.Operacao == OperacoesCRUD.Editando && (Model.Composicao.IDEmpresa == (int)EnumEmpresa.EAB || Model.Composicao.IDEmpresa == (int)EnumEmpresa.Ambos))
+                                            {
+                                                @Html.BootstrapTextBoxFor(model => model.Composicao.Placa1, null, "Tractor", new { maxlength = "7", onkeyup = "raizenCoreJs.Composicao.placaChange(this, 1);", style = "text-transform:uppercase" }, new HtmlHelperOption() { colunas = "col-md-9" }, true)
+                                                @Html.HiddenFor(model => model.Composicao.Placa1)
+                                            }
+                                            else
+                                            {
+                                                @Html.BootstrapTextBoxFor(model => model.Composicao.Placa1, null, "Tractor", new { maxlength = "7", onkeyup = "raizenCoreJs.Composicao.placaChange(this, 1);", style = "text-transform:uppercase" }, new HtmlHelperOption() { colunas = "col-md-9" })
+                                                visivel = "";
+                                                if (Model.Composicao.IDPlaca1.HasValue)
+                                                {
+                                                    visivel = "display:none";
+                                                }
+                                                @Html.BootstrapButtonAdd("btnAddPlaca1", null, ButtonType.BUTTON, "raizenCoreJs.Composicao.novaPlaca(1, 2)", "style='margin-top:24px;margin-left:-12px; " + @visivel + "'")
+                                            }
+                                        }
+
+                                        @{ visivel = ""; }
+                                        @if (!Model.Composicao.IDPlaca1.HasValue)
+                                        {
+                                            visivel = "display:none";
+                                        }
+
+                                        @Html.BootstrapButtonEdit("btnEditPlaca1", null, ButtonType.BUTTON, "raizenCoreJs.Composicao.EditarPlaca(1,'" + Model.Aprovar + "')", "style='margin-top: 24px;margin-left:-12px; " + @visivel + "', title='Edición Patente'")
+                                        @{
+                                            if (Model.Aprovar && Model.Composicao.IDPlaca1.HasValue)
+                                            {
+                                                if (Model.Composicao.isPlaca1Pendente || Model.Composicao.isPlaca1Alterada)
+                                                {
+                                                    <span class="fa fa-exclamation" style="color:#ff0000"></span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="fa fa-check" style="color:#36940d"></span>
+                                                }
+                                            }
+                                        }
+                                    </div>
+
+
+
+                                    @if (Model != null && Model.Composicao != null && !string.IsNullOrEmpty(Model.Composicao.Placa2) || (Model.Composicao.IDTipoComposicao > 1 && Model.Composicao.IDTipoComposicao != 10))
+                                    {
+                                        visivel = "";
+                                    }
+                                    else
+                                    {
+                                        visivel = "display:none";
+                                    }
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="form-group col-md-3" id="AddPlaca2" style="@visivel">
+                                        @Html.HiddenFor(model => model.Composicao.PlacaOficial2)
+                                        @if (Model.Operacao == OperacoesCRUD.Editando && (Model.Composicao.IDEmpresa == (int)EnumEmpresa.Combustiveis || Model.Composicao.IDEmpresa == (int)EnumEmpresa.Ambos))
+                                        {
+                                            @Html.BootstrapTextBoxFor(model => model.Composicao.Placa2, null, "Semirremolque 1", new { maxlength = "7", onkeyup = "raizenCoreJs.Composicao.checarPlacaRepetida(this,false);raizenCoreJs.Composicao.placaChange(this, 2);", style = "text-transform:uppercase;", title = "Edición no permitida" }, new HtmlHelperOption() { colunas = "col-xs-9" }, true)
+                                            @Html.HiddenFor(model => model.Composicao.Placa2)
+                                        }
+                                        else
+                                        {
+                                            @Html.BootstrapTextBoxFor(model => model.Composicao.Placa2, null, "Semirremolque 1", new { maxlength = "7", onkeyup = "raizenCoreJs.Composicao.checarPlacaRepetida(this,false);raizenCoreJs.Composicao.placaChange(this, 2);", style = "text-transform:uppercase; " }, new HtmlHelperOption() { colunas = "col-xs-9" })
+                                            visivel = "";
+                                            if (Model.Composicao.IDPlaca2.HasValue)
+                                            {
+                                                visivel = "display:none";
+                                            }
+                                            @Html.BootstrapButtonAdd("btnAddPlaca2", null, ButtonType.BUTTON, "raizenCoreJs.Composicao.novaPlaca(2, 2)", "style='margin-top:24px;margin-left:-12px; " + @visivel + "'")
+                                        }
+                                        @{visivel = ""; }
+                                        @if (!Model.Composicao.IDPlaca2.HasValue)
+                                        {
+                                            visivel = "display:none";
+                                        }
+                                        @Html.BootstrapButtonEdit("btnEditPlaca2", null, ButtonType.BUTTON, "raizenCoreJs.Composicao.EditarPlaca(2,'" + Model.Aprovar + "')", "style='margin-top: 24px;margin-left:-12px; " + @visivel + "', title='Edición no permitida'")
+                                        @{if (Model.Aprovar && Model.Composicao.IDPlaca2.HasValue)
+                                            {
+                                                if (Model.Composicao.isPlaca2Pendente || Model.Composicao.isPlaca2Alterada)
+                                                {
+                                                    <span class="fa fa-exclamation" style="color:#ff0000"></span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="fa fa-check" style="color:#36940d"></span>
+                                                }
+                                            }
+                                        }
+
+                                    </div>
+
+                                    @{ var texto = "Semirremolque 2";}
+                                    @if ((Model != null && Model.Composicao != null && !string.IsNullOrEmpty(Model.Composicao.Placa3) || Model.Composicao.IDTipoComposicao >= 8) && Model.Composicao.IDTipoComposicao != 10)
+                                    {
+                                        visivel = "";
+
+
+                                        if (Model.Composicao.IDTipoComposicao > 3)
+                                        {
+                                            texto = "Semirremolque 2";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        visivel = "display:none";
+                                    }
+
+                                    <div class="form-group col-md-3" id="AddPlaca3" style="@visivel">
+
+                                        @Html.BootstrapTextBoxFor(model => model.Composicao.Placa3, null, texto, new { maxlength = "7", onkeyup = "raizenCoreJs.Composicao.checarPlacaRepetida(this,false);raizenCoreJs.Composicao.placaChange(this, 3);", style = "text-transform:uppercase; " }, new HtmlHelperOption() { colunas = "col-md-9" })
+                                        @Html.HiddenFor(model => model.Composicao.PlacaOficial3)
+                                        @{ visivel = ""; }
+                                        @if (Model.Composicao.IDPlaca3.HasValue)
+                                        {
+                                            visivel = "display:none";
+                                        }
+                                        @Html.BootstrapButtonAdd("btnAddPlaca3", null, ButtonType.BUTTON, "raizenCoreJs.Composicao.novaPlaca(3, 2)", "style='margin-top:24px;margin-left:-12px; " + @visivel + "'")
+                                        @{ visivel = ""; }
+                                        @if (!Model.Composicao.IDPlaca3.HasValue)
+                                        {
+                                            visivel = "display:none";
+                                        }
+                                        @Html.BootstrapButtonEdit("btnEditPlaca3", null, ButtonType.BUTTON, "raizenCoreJs.Composicao.EditarPlaca(3,'" + Model.Aprovar + "')", "style='margin-top: 24px;margin-left:-12px; " + @visivel + "', title='Edición Patente'")
+                                        @{
+                                            if (Model.Aprovar && Model.Composicao.IDPlaca3.HasValue)
+                                            {
+                                                if (Model.Composicao.isPlaca3Pendente || Model.Composicao.isPlaca3Alterada)
+                                                {
+                                                    <span class="fa fa-exclamation" style="color:#ff0000"></span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="fa fa-check" style="color:#36940d"></span>
+                                                }
+                                            }
+                                        }
+                                    </div>
+
+                                    @Html.BootstrapTextBoxFor(model => model.Composicao.PBTC, null, "PBTC (t)", null, new HtmlHelperOption() { colunas = "col-md-2" }, true)
+
+                                    <div class="form-group col-md-3">
+                                        @Html.BootstrapDropDownListFor(model => model.Composicao.IDCategoriaVeiculo, new SelectList(CategoriaVeiculoDelegate.Listar(), "ID", "NomeEs"), "Categoría de Vehículo", new { title = "Edición no permitida" }, new HtmlHelperOption() { colunas = "col-md-10", argentina = true }, true)
+                                        @Html.HiddenFor(model => model.Composicao.IDCategoriaVeiculo, new { @class = "IDCategoriaVeiculo" })
+                                    </div>
+
+                                    <div class="form-group col-md-3">
+                                        @Html.BootstrapDropDownListFor(model => model.Composicao.TipoContratacao, new SelectList(TipoContratacaoComposicaoDelegate.Listar(), "Value", "Text"), "Tipo Contratacion",null, new HtmlHelperOption() { colunas = "col-md-10", mostraTextoVazio = false })
+                                        @Html.HiddenFor(model => model.Composicao.TipoContratacao, new { @class = "TipoContratacao" })
+                                    </div>
+
+
+                                    @{if (Model.Aprovar)
+                                        {
+                                            @Html.BootstrapTextAreaFor(model => model.Composicao.Justificativa, "Justificación", new { maxlength = 1000, @rows = "2" }, new HtmlHelperOption() { colunas = "col-md-10" });
+                                        }
+                                        else
+                                        {
+                                            @Html.BootstrapTextAreaFor(model => model.Composicao.Justificativa, "Justificación", new { maxlength = 1000, @rows = "2" }, new HtmlHelperOption() { colunas = "col-md-10" }, true);
+                                            @Html.HiddenFor(model => model.Composicao.Justificativa)
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tabVeiculo">
+                                <div class="row">
+                                    <div class="box border raizen">
+                                        <div class="box-title">
+                                            <h4><i class="fa fa-truck"></i><span class="hidden-inline-mobile">Transportador</span></h4>
+                                        </div>
+                                        <div class="box-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="col-md-3">
+                                                        <!--<label class="control-label" for="Composicao_CPFCNPJ" id="lbl_Composicao_CPFCNPJ">CPF/CNPJ (CUIT)</label> -->
+                                                        <label class="control-label" for="Composicao_CPFCNPJ" id="lbl_Composicao_CPFCNPJ">CUIT</label>
+                                                        <input type="text" class="form-control" id="Composicao_CUIT" name="@Html.NameFor(model => model.Composicao.CPFCNPJ)" value="@((Model != null && Model.Composicao != null) ? Model.Composicao.CPFCNPJ : string.Empty)" readonly />
+                                                    </div>
+
+                                                    <div class="col-md-3">
+                                                        @Html.BootstrapTextBoxFor(model => model.Composicao.RazaoSocial, null, "Razón Social", new { maxlength = 400, @readonly = "readonly", @Id = "" }, new HtmlHelperOption() { colunas = "col-md-12" })
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    @Html.BootstrapCurrencyBoxFor(model => model.Composicao.TaraComposicao, "Tara Composición", null, new HtmlHelperOption() { colunas = "col-md-2", hideIcone = true }, desabilitado: true)
+                                                    @Html.BootstrapTextBoxFor(model => model.Composicao.EixosComposicao, null, "Nº Composición Ejes", null, new HtmlHelperOption() { colunas = "col-md-2" }, true)
+                                                    @Html.BootstrapCurrencyBoxFor(model => model.Composicao.PBTC, "PBTC (t)", new { maxlength = 18, min = 0 }, new HtmlHelperOption() { colunas = "col-md-2", hideIcone = true })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @Html.HiddenFor(model => model.Composicao.TaraComposicao)
+                                    @Html.HiddenFor(model => model.Composicao.EixosComposicao)
+
+                                </div>
+                                <div id="documentosComposicao" class="row">
+                                    @if (Model != null && Model.Composicao != null && Model.Composicao.Documentos != null)
+                                    {
+                                        Html.RenderPartial("~/Views/ComposicaoArgentina/Partial/_Documentos.cshtml", Model.Composicao.Documentos);
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="modalcontainerEdicao" tabindex="-1" data-backdrop="static" role="dialog" aria-labelledby="myModalLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content" style="">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                        &times;
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="ModalPlaca">
+                                    </div>
+                                    <div class="row" style="text-align:center">
+                                        <div class="col-md-12">
+                                            <button class="btn btn-custom" id="btnCrudSalvar" type="button" tabindex="1" onclick="raizenCoreJs.Placa.Salvar(2)">
+                                                <i class="fa fa-save"></i> Guardar
+                                            </button>
+                                            <button class="btn btn-custom voltar" type="button" tabindex="2" onclick="$('#modalcontainerEdicao').modal('hide');">
+                                                <i class="fa fa-long-arrow-left"></i> Cancelar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" style="text-align:center">
+                        <div class="col-md-12" id="composicaoSalvar">
+                            @{if (Model.Aprovar)
+                                {
+                                    <button class="btn btn-custom" id="btnCrudSalvar" type="button" tabindex="1" onclick="raizenCoreJs.Composicao.Salvar(2,false)">
+                                        <i class="fa fa-save"></i> Aprobar
+                                    </button>
+                                    <button class="btn btn-custom" id="btnCrudSalvar" type="button" tabindex="1" onclick="raizenCoreJs.Composicao.Salvar(2,true)">
+                                        <i class="fa fa-save"></i> Aprobar con Reservas
+                                    </button>
+                                    <button class="btn btn-custom" id="btnCrudSalvar" type="button" tabindex="1" onclick="raizenCoreJs.Composicao.Reprovar()">
+                                        <i class="fa fa-save"></i> Desaprobar
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-custom" id="btnCrudSalvar" type="button" tabindex="1" onclick="raizenCoreJs.Composicao.SalvarComposicao(1,false, 1)">
+                                        <i class="fa fa-save"></i> Enviar para aprobación
+                                    </button>
+                                }
+                            }
+
+                            <button class="btn btn-custom voltar" type="button" tabindex="2" onclick="window.location = '@Url.Action("Index","ComposicaoArgentina")'">
+                                <i class="fa fa-long-arrow-left"></i> Volver
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@{Html.RenderPartial("_Confirm", new Raizen.Framework.Web.MVC.Models.ModalConfirm() { MessageConfirm = "¿Realmente quieres desaprobar esta composición?", MessageYes = "Sim", MessageNot = "No" });}
+@{Html.RenderPartial("_ConfirmEnviar", new Raizen.Framework.Web.MVC.Models.ModalConfirm() { MessageConfirm = "¿Quieres volver a enviar para su aprobación?", MessageYes = "Enviar", MessageNot = "Cancelar" });}
+
+<style>
+    .modal-dialog {
+        max-width: 632px;
+        margin: 30px auto;
+    }
+</style>

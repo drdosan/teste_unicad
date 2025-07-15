@@ -1,0 +1,47 @@
+﻿@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Models
+@using Raizen.Framework.Models
+@using Raizen.Framework.Utils.Extensions
+
+@model  List<Raizen.UniCad.Model.Job>
+@foreach (var app in Model)
+{
+    string funcaoEdit = "raizenCoreJs.raizenCRUD.EditarJob('" + @app.ID.ToString() + "','" + Url.Action("EditarJob", "Configuracao") + "');";
+
+    <tr class="gradeX">
+        <td style="width: 15%; word-wrap: break-word">
+            @app.Nome
+        </td>
+        <td style="width: 20%; word-wrap: break-word">
+            @app.NrPeriodicidadeMinutos
+        </td>
+        <td style="width: 50%; word-wrap: break-word">
+            @app.DtInicioJob
+        </td>
+        <td style="width: 50%; word-wrap: break-word">
+            @app.DtUltimaExecucao
+        </td>
+        <td style="width: 50%; word-wrap: break-word">
+            @{if (app.EmExecucao)
+                {
+                    Html.Display("Sim");
+                }
+                else
+                {
+                    Html.Display("Não");
+                }
+            }
+        </td>
+
+
+        <td align="center" style="width: 15%;">
+
+
+            <div class="btn-group center" style="float: none;">
+                <button class="btn btn-custom" type="button" title="Editar Job" onclick="@Html.Raw(funcaoEdit)">
+                    <i class="fa fa-pencil"></i>
+                </button>
+            </div>
+        </td>
+    </tr>
+}

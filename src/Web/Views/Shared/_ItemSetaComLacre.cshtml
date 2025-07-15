@@ -1,0 +1,384 @@
+﻿@model Raizen.UniCad.Model.Base.PlacaSetaBaseModel
+<tr class="linha-seta-@Model.Sequencial gradeX lacres">
+    @using (Html.BeginCollectionItem("Placa.Setas"))
+    {
+        var visivel = "visivel";
+        var multiseta = "invisivel";
+        @Html.HiddenFor(p => p.ID)
+        @Html.HiddenFor(p => p.IDPlaca)
+        @Html.HiddenFor(p => p.Colunas)
+        @Html.HiddenFor(p => p.Sequencial)
+        @Html.HiddenFor(p => p.Multiseta)
+        if (Model.Multiseta)
+        {
+            multiseta = "visivel";
+        }
+
+        string check = "";
+        if (Model != null && Model.CompartimentoPrincipal1.HasValue && Model.CompartimentoPrincipal1.Value)
+        {
+            check = "checked";
+        }
+
+        if (Model.Sequencial == 1)
+        {
+            <tr class="linha-seta-@Model.Sequencial lacre">
+            <td style="word-wrap: break-word;" class="">
+                Lacres
+            </td>
+            @{visivel = "visivel";}
+            @if (!Model.LacreCompartimento1.HasValue)
+            {
+                Model.LacreCompartimento1 = 0;
+            }
+            <td style="word-wrap: break-word" class="compartimento1 @visivel">
+                @Html.BootstrapCurrencyBoxFor(p => p.LacreCompartimento1, "Quantidade", new { maxlength =2 }, new HtmlHelperOption() { hideIcone = true }, "{0:0}")
+            </td>
+            @if (Model.Colunas < 2)
+            {
+                visivel = "invisivel";
+            }
+            else if (!Model.LacreCompartimento2.HasValue)
+            {
+                Model.LacreCompartimento2 = 0;
+            }
+
+            <td style="word-wrap: break-word" class="compartimento2 @visivel">
+                @Html.BootstrapCurrencyBoxFor(p => p.LacreCompartimento2, "Quantidade", new { maxlength = 2 }, new HtmlHelperOption() { hideIcone = true }, "{0:0}")
+            </td>
+            @if (Model.Colunas < 3)
+            {
+                visivel = "invisivel";
+            }
+            else if (!Model.LacreCompartimento3.HasValue)
+            {
+                Model.LacreCompartimento3 = 0;
+            }
+            <td style="word-wrap: break-word" class="compartimento3 @visivel">
+                @Html.BootstrapCurrencyBoxFor(p => p.LacreCompartimento3, "Quantidade", new { maxlength = 2 }, new HtmlHelperOption() { hideIcone = true }, "{0:0}")
+            </td>
+            @if (Model.Colunas < 4)
+            {
+                visivel = "invisivel";
+            }
+            else if (!Model.LacreCompartimento4.HasValue)
+            {
+                Model.LacreCompartimento4 = 0;
+            }
+
+            <td style="word-wrap: break-word" class="compartimento4 @visivel">
+                @Html.BootstrapCurrencyBoxFor(p => p.LacreCompartimento4, "Quantidade", new { maxlength = 2 }, new HtmlHelperOption() { hideIcone = true }, "{0:0}")
+            </td>
+            @if (Model.Colunas < 5)
+            {
+                visivel = "invisivel";
+            }
+            else if (!Model.LacreCompartimento5.HasValue)
+            {
+                Model.LacreCompartimento5 = 0;
+            }
+
+            <td style="word-wrap: break-word" class="compartimento5 @visivel">
+                @Html.BootstrapCurrencyBoxFor(p => p.LacreCompartimento5, "Quantidade", new { maxlength = 2 }, new HtmlHelperOption() { hideIcone = true }, "{0:0}")
+            </td>
+            @if (Model.Colunas < 6)
+            {
+                visivel = "invisivel";
+            }
+            else if (!Model.LacreCompartimento6.HasValue)
+            {
+                Model.LacreCompartimento6 = 0;
+            }
+
+            <td style="word-wrap: break-word" class="compartimento6 @visivel">
+                @Html.BootstrapCurrencyBoxFor(p => p.LacreCompartimento6, "Quantidade", new { maxlength = 2 }, new HtmlHelperOption() { hideIcone = true }, "{0:0}")
+            </td>
+            @if (Model.Colunas < 7)
+            {
+                visivel = "invisivel";
+            }
+            else if (!Model.LacreCompartimento7.HasValue)
+            {
+                Model.LacreCompartimento7 = 0;
+            }
+
+            <td style="word-wrap: break-word" class="compartimento7 @visivel">
+                @Html.BootstrapCurrencyBoxFor(p => p.LacreCompartimento7, "Quantidade", new { maxlength = 2 }, new HtmlHelperOption() { hideIcone = true }, "{0:0}")
+            </td>
+            @if (Model.Colunas < 8)
+            {
+                visivel = "invisivel";
+            }
+            else if (!Model.LacreCompartimento8.HasValue)
+            {
+                Model.LacreCompartimento8 = 0;
+            }
+
+            <td style="word-wrap: break-word" class="compartimento8 @visivel">
+                @Html.BootstrapCurrencyBoxFor(p => p.LacreCompartimento8, "Quantidade", new { maxlength = 2 }, new HtmlHelperOption() { hideIcone = true }, "{0:0}")
+            </td>
+            @if (Model.Colunas < 9)
+            {
+                visivel = "invisivel";
+            }
+            else if (!Model.LacreCompartimento9.HasValue)
+            {
+                Model.LacreCompartimento9 = 0;
+            }
+
+            <td style="word-wrap: break-word" class="compartimento9 @visivel">
+                @Html.BootstrapCurrencyBoxFor(p => p.LacreCompartimento9, "Quantidade", new { maxlength = 2 }, new HtmlHelperOption() { hideIcone = true }, "{0:0}")
+            </td>
+            @if (Model.Colunas < 10)
+            {
+                visivel = "invisivel";
+            }
+            else if (!Model.LacreCompartimento10.HasValue)
+            {
+                Model.LacreCompartimento10 = 0;
+            }
+
+            <td style="word-wrap: break-word" class="compartimento10 @visivel">
+                @Html.BootstrapCurrencyBoxFor(p => p.LacreCompartimento10, "Quantidade", new { maxlength = 2 }, new HtmlHelperOption() { hideIcone = true }, "{0:0}")
+            </td>
+            <td style="word-wrap: break-word;text-align:right"></td>
+        </tr>
+                }
+                visivel = "visivel";
+                <tr class="linha-seta-@Model.Sequencial lacre">
+                    <td style="word-wrap: break-word;">
+                        <div class="setaRow id visivel">
+                            
+                        </div>
+                        <div class="id visivel">
+                            Seta @Model.Sequencial
+                        </div>
+                    </td>
+                    @if (!Model.VolumeCompartimento1.HasValue)
+                    {
+                        Model.VolumeCompartimento1 = 0;
+                    }
+                    <td style="word-wrap: break-word" class="compartimento1 @visivel">
+                        <div class="setaRow @multiseta">
+                            <input onchange="checkPrincipal(this, 1)" type="checkbox" name="@Html.NameFor(p => p.CompartimentoPrincipal1)" class="checkPrincipal check1" tag="@Model.ID" value="true" @check /> Principal<br />
+                        </div>
+
+                        @Html.BootstrapCurrencyBoxFor(p => p.VolumeCompartimento1, null, new { maxlength = 5 }, new HtmlHelperOption() { hideLabel = true, hideIcone = true }, "{0:0}")
+                    </td>
+                    @if (Model.Colunas < 2)
+                    {
+                        visivel = "invisivel";
+                    }
+                    else if (!Model.VolumeCompartimento2.HasValue)
+                    {
+                        Model.VolumeCompartimento2 = 0;
+                    }
+                    @if (Model.CompartimentoPrincipal2.HasValue && Model.CompartimentoPrincipal2.Value)
+                    {
+                        check = "checked";
+                    }
+                    else
+                    {
+                        check = "";
+                    }
+                    <td style="word-wrap: break-word" class="compartimento2 @visivel">
+                        <div class="setaRow @multiseta">
+                            <input onchange="checkPrincipal(this, 2)" type="checkbox" name="@Html.NameFor(p => p.CompartimentoPrincipal2)" class="checkPrincipal check2" tag="@Model.ID" value="true" @check /> Principal<br />
+                        </div>
+                        @Html.BootstrapCurrencyBoxFor(p => p.VolumeCompartimento2, null, new { maxlength = 5 }, new HtmlHelperOption() { hideLabel = true, hideIcone = true }, "{0:0}")
+                    </td>
+                    @if (Model.Colunas < 3)
+                    {
+                        visivel = "invisivel";
+                    }
+                    else if (!Model.VolumeCompartimento3.HasValue)
+                    {
+                        Model.VolumeCompartimento3 = 0;
+                    }
+                    @if (Model != null && Model.CompartimentoPrincipal3.HasValue && Model.CompartimentoPrincipal3.Value)
+                    {
+                        check = "checked";
+                    }
+                    else
+                    {
+                        check = "";
+                    }
+                    <td style="word-wrap: break-word" class="compartimento3 @visivel">
+                        <div class="setaRow @multiseta">
+                            <input onchange="checkPrincipal(this, 3)" type="checkbox" name="@Html.NameFor(p => p.CompartimentoPrincipal3)" class="checkPrincipal check3" tag="@Model.ID" value="true" @check /> Principal<br />
+                        </div>
+                        @Html.BootstrapCurrencyBoxFor(p => p.VolumeCompartimento3, null, new { maxlength = 5 }, new HtmlHelperOption() { hideLabel = true, hideIcone = true }, "{0:0}")
+                    </td>
+                    @if (Model.Colunas < 4)
+                    {
+                        visivel = "invisivel";
+                    }
+                    else if (!Model.VolumeCompartimento4.HasValue)
+                    {
+                        Model.VolumeCompartimento4 = 0;
+                    }
+                    @if (Model != null && Model.CompartimentoPrincipal4.HasValue && Model.CompartimentoPrincipal4.Value)
+                    {
+                        check = "checked";
+                    }
+                    else
+                    {
+                        check = "";
+                    }
+                    <td style="word-wrap: break-word" class="compartimento4 @visivel">
+                        <div class="setaRow @multiseta">
+                            <input onchange="checkPrincipal(this, 4)" type="checkbox" name="@Html.NameFor(p => p.CompartimentoPrincipal4)" class="checkPrincipal check4" tag="@Model.ID" value="true" @check /> Principal<br />
+                        </div>
+                        @Html.BootstrapCurrencyBoxFor(p => p.VolumeCompartimento4, null, new { maxlength = 5 }, new HtmlHelperOption() { hideLabel = true, hideIcone = true }, "{0:0}")
+                    </td>
+                    @if (Model.Colunas < 5)
+                    {
+                        visivel = "invisivel";
+                    }
+                    else if (!Model.VolumeCompartimento5.HasValue)
+                    {
+                        Model.VolumeCompartimento5 = 0;
+                    }
+                    @if (Model != null && Model.CompartimentoPrincipal5.HasValue && Model.CompartimentoPrincipal5.Value)
+                    {
+                        check = "checked";
+                    }
+                    else
+                    {
+                        check = "";
+                    }
+                    <td style="word-wrap: break-word" class="compartimento5 @visivel">
+                        <div class="setaRow @multiseta">
+                            <input onchange="checkPrincipal(this, 5)" type="checkbox" name="@Html.NameFor(p => p.CompartimentoPrincipal5)" class="checkPrincipal check5" tag="@Model.ID" value="true" @check /> Principal<br />
+                        </div>
+                        @Html.BootstrapCurrencyBoxFor(p => p.VolumeCompartimento5, null, new { maxlength = 5 }, new HtmlHelperOption() { hideLabel = true, hideIcone = true }, "{0:0}")
+                    </td>
+                    @if (Model.Colunas < 6)
+                    {
+                        visivel = "invisivel";
+                    }
+                    else if (!Model.VolumeCompartimento6.HasValue)
+                    {
+                        Model.VolumeCompartimento6 = 0;
+                    }
+                    @if (Model != null && Model.CompartimentoPrincipal6.HasValue && Model.CompartimentoPrincipal6.Value)
+                    {
+                        check = "checked";
+                    }
+                    else
+                    {
+                        check = "";
+                    }
+                    <td style="word-wrap: break-word" class="compartimento6 @visivel">
+                        <div class="setaRow @multiseta">
+                            <input onchange="checkPrincipal(this, 6)" type="checkbox" name="@Html.NameFor(p => p.CompartimentoPrincipal6)" class="checkPrincipal check6" tag="@Model.ID" value="true" @check /> Principal<br />
+                        </div>
+                        @Html.BootstrapCurrencyBoxFor(p => p.VolumeCompartimento6, null, new { maxlength = 5 }, new HtmlHelperOption() { hideLabel = true, hideIcone = true }, "{0:0}")
+                    </td>
+                    @if (Model.Colunas < 7)
+                    {
+                        visivel = "invisivel";
+                    }
+                    else if (!Model.VolumeCompartimento7.HasValue)
+                    {
+                        Model.VolumeCompartimento7 = 0;
+                    }
+                    @if (Model != null && Model.CompartimentoPrincipal7.HasValue && Model.CompartimentoPrincipal7.Value)
+                    {
+                        check = "checked";
+                    }
+                    else
+                    {
+                        check = "";
+                    }
+                    <td style="word-wrap: break-word" class="compartimento7 @visivel">
+                        <div class="setaRow @multiseta">
+                            <input onchange="checkPrincipal(this, 7)" type="checkbox" name="@Html.NameFor(p => p.CompartimentoPrincipal7)" class="checkPrincipal check7" tag="@Model.ID" value="true" @check /> Principal<br />
+                        </div>
+                        @Html.BootstrapCurrencyBoxFor(p => p.VolumeCompartimento7, null, new { maxlength = 5 }, new HtmlHelperOption() { hideLabel = true, hideIcone = true }, "{0:0}")
+                    </td>
+                    @if (Model.Colunas < 8)
+                    {
+                        visivel = "invisivel";
+                    }
+                    else if (!Model.VolumeCompartimento8.HasValue)
+                    {
+                        Model.VolumeCompartimento8 = 0;
+                    }
+                    @if (Model != null && Model.CompartimentoPrincipal8.HasValue && Model.CompartimentoPrincipal8.Value)
+                    {
+                        check = "checked";
+                    }
+                    else
+                    {
+                        check = "";
+                    }
+                    <td style="word-wrap: break-word" class="compartimento8 @visivel">
+                        <div class="setaRow @multiseta">
+                            <input onchange="checkPrincipal(this, 8)" type="checkbox" name="@Html.NameFor(p => p.CompartimentoPrincipal8)" class="checkPrincipal check8" tag="@Model.ID" value="true" @check /> Principal<br />
+                        </div>
+                        @Html.BootstrapCurrencyBoxFor(p => p.VolumeCompartimento8, null, new { maxlength = 5 }, new HtmlHelperOption() { hideLabel = true, hideIcone = true }, "{0:0}")
+                    </td>
+                    @if (Model.Colunas < 9)
+                    {
+                        visivel = "invisivel";
+                    }
+                    else if (!Model.VolumeCompartimento9.HasValue)
+                    {
+                        Model.VolumeCompartimento9 = 0;
+                    }
+                    @if (Model != null && Model.CompartimentoPrincipal9.HasValue && Model.CompartimentoPrincipal9.Value)
+                    {
+                        check = "checked";
+                    }
+                    else
+                    {
+                        check = "";
+                    }
+                    <td style="word-wrap: break-word" class="compartimento9 @visivel">
+                        <div class="setaRow @multiseta">
+                            <input onchange="checkPrincipal(this, 9)" type="checkbox" name="@Html.NameFor(p => p.CompartimentoPrincipal9)" class="checkPrincipal check9" tag="@Model.ID" value="true" @check /> Principal<br />
+                        </div>
+                        @Html.BootstrapCurrencyBoxFor(p => p.VolumeCompartimento9, null, new { maxlength = 5 }, new HtmlHelperOption() { hideLabel = true, hideIcone = true }, "{0:0}")
+                    </td>
+                    @if (Model.Colunas < 10)
+                    {
+                        visivel = "invisivel";
+                    }
+                    else if (!Model.VolumeCompartimento10.HasValue)
+                    {
+                        Model.VolumeCompartimento10 = 0;
+                    }
+                    @if (Model != null && Model.CompartimentoPrincipal10.HasValue && Model.CompartimentoPrincipal10.Value)
+                    {
+                        check = "checked";
+                    }
+                    else
+                    {
+                        check = "";
+                    }
+                    <td style="word-wrap: break-word" class="compartimento10 @visivel">
+                        <div class="setaRow @multiseta">
+                            <input onchange="checkPrincipal(this, 10)" type="checkbox" name="@Html.NameFor(p => p.CompartimentoPrincipal10)" class="checkPrincipal check10" tag="@Model.ID" value="true" @check /> Principal<br />
+                        </div>
+                        @Html.BootstrapCurrencyBoxFor(p => p.VolumeCompartimento10, null, new { maxlength = 5 }, new HtmlHelperOption() { hideLabel = true, hideIcone = true }, "{0:0}")
+                    </td>
+                    <td style="word-wrap: break-word;text-align:right"></td>
+                </tr>
+
+                }
+    </tr>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //atp
+            $("input[data-currency-field]:not(#Placa_Tara):not(#Composicao_PBTC)").unbind(".maskMoney");
+            $("input[data-currency-field]:not(#Placa_Tara):not(#Composicao_PBTC)").maskMoney({
+                showSymbol: false,
+                symbol: "R$",
+                thousands: "",
+                allowNegative: false,
+                allowZero: true,
+                precision: 0
+            });
+        });
+    </script>

@@ -1,0 +1,34 @@
+﻿@model Raizen.UniCad.Model.View.TerminalTreinamentoView
+<tr id="linha-terminal-@Model.IDTerminal" class="gradeX">
+    @using (Html.BeginCollectionItem("ListaTerminais"))
+    {
+        @Html.HiddenFor(model => model.IDTerminal, new { @class = "ID" })
+        @Html.HiddenFor(model => model.Nome)
+        @Html.HiddenFor(model => model.CodigoUsuario)
+        @Html.HiddenFor(model => model.Usuario)
+        @Html.HiddenFor(model => model.Anexo, new { @id = "Anexo-35" })
+        <td style="width: 20%; word-wrap: break-word">
+            @Html.PopoverTextFor(model => model.Nome, 80, "right")
+        </td>
+        <td style="width: 10%; word-wrap: break-word">
+            @Html.PopoverTextFor(model => model.CodigoUsuario, 80, "right")
+        </td>
+        <td style="width: 15%; word-wrap: break-word">
+            @if (Model.dataValidade.HasValue)
+            {
+                <span style="@((Model.dataValidade.Value < DateTime.Now.Date) ? "color:red; font-weight:bold" : "")">@Model.dataValidade.Value.ToShortDateString()</span>
+            }
+        </td>
+        <td style="width: 35%; word-wrap: break-word">
+
+            @if (!string.IsNullOrEmpty(Model.Anexo))
+                {
+                <a href="@Url.Action("Download","Arquivo")?file=@(Model.Anexo)" style="margin-top:10px" class="anexoCount" target="_blank" title="@Model.Anexo" id="linkAnexo1">@Html.PopoverTextFor(model => model.Anexo, 50)</a>
+                <div id="inputDiv1" style="display:none">
+                    <input id="input-701" type="file" name="@Html.NameFor(p => p.Anexo)" class="anexoCount" data-buttonText="Selecione" data-iconName="glyphicon glyphicon-file">
+                </div>
+            }
+
+        </td>
+    }
+</tr>

@@ -1,0 +1,12 @@
+{
+  "ServerUri": "http://sonarqube.luxfacta.com.br/dashboard?id=raizen-unicad-argentina/",
+  "Organization": null,
+  "ProjectKey": "raizen-unicad-argentina",
+  "ProjectName": "RAIZEN-Unicad-Argentina",
+  "Profiles": {
+    "CSharp": {
+      "ProfileKey": "AW5gpeMvrA0rnxbPh62Z",
+      "ProfileTimestamp": "2019-11-12T14:25:16-03:00"
+    }
+  }
+}

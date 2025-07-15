@@ -1,0 +1,21 @@
+﻿@model Raizen.Framework.Web.MVC.Models.ModalConfirm
+<div class="modal fade" id="ModalConfirmExclusaoPlaca" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h4 id="MessageConfirmExclusaoPlaca">@Model.MessageConfirm</h4>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-custom" id="buttonApenasCliente" type="button" onclick="raizenCoreJs.raizenHelpers.ExecutarFuncaoConfirmExclusao();">Excluir apenas deste cliente</button>
+                <button class="btn btn-custom" type="button" onclick="raizenCoreJs.raizenHelpers.ExecutarFuncaoConfirmExclusaoRede();">Excluir para todos da rede</button>
+                <button class="btn btn-custom" type="button" onclick="raizenCoreJs.raizenHelpers.FecharConfirmExclusao();">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="option1Function" />
+<input type="hidden" id="option2Function" />
+

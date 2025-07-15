@@ -1,0 +1,339 @@
+﻿@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Models
+@using Raizen.Framework.Models
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.UniCad.Model;
+@using Raizen.UniCad.Web.Util;
+
+@model Raizen.UniCad.Web.Models.ModelMotoristaArgentina
+@{
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+    var isStatusEmAprovacao = @Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "ComposicaoArgentina" && p.NomeAcao == "Aprovar") != null;
+    var tabIndiceCrudEdicao = new int[2];
+    tabIndiceCrudEdicao[0] = 4;
+    tabIndiceCrudEdicao[1] = 5;
+
+}
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Motorista.js")"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        raizenCoreJs.raizenCRUD.urlPesquisa = '@Url.Action("Pesquisar", "MotoristaArgentina")';
+        raizenCoreJs.raizenCRUD.urlNovo = '@Url.Action("Novo", "MotoristaArgentina")';
+        raizenCoreJs.raizenCRUD.urlExcluir = '@Url.Action("ExcluirRegistro", "MotoristaArgentina")';
+        raizenCoreJs.raizenCRUD.urlExportar = '@Url.Action("Exportar", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlVisualizarDocumentos = '@Url.Action("VisualizarDocumentos", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlSolicitarAprovacao = '@Url.Action("SolicitarArovacao", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlReprovar = '@Url.Action("Reprovar", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlAtivarMotorista = '@Url.Action("Ativar", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlBloquearMotorista = '@Url.Action("Bloquear", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlSalvarBloquear = '@Url.Action("SalvarBloquear", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlSalvarAtivar = '@Url.Action("SalvarAtivar", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlVisualizarDocumentos = '@Url.Action("VisualizarDocumentos", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlCarteirinha  = '@Url.Action("Carteirinha", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlDowloadCarteirinha  = '@Url.Action("Download", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlEditarMotorista = '@Url.Action("EditarMotorista", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlGerarPdf = '@Url.Action("GerarPdf", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlTreinamento = '@Url.Action("Treinamento", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlUploadDocumentos = '@Url.Action("UploadDocumentos", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlSalvarDocumentos = '@Url.Action("SalvarDocumentos", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlExcluirMotorista = '@Url.Action("Excluir", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista._idPais = 2;
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        raizenCoreJs.raizenMensagens.ExibirMensagemOperacao();
+
+        $(".hidden-inline-mobile").replaceWith("<span> Manejo del Conductor </span>");
+
+        function TranspAutoComplete(nomeCampo, url) {
+            $("#TransportadoraAuto").autocomplete({
+                minLength: 3,
+                source: function (request, response) {
+                    $.ajax({
+                        url: url,
+                        type: "POST", dataType: "json",
+                        data: { nome: request.term, empresa: $('#Filtro_IDEmpresa').val(), idPais: 2 },
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return { label: item.Name, value: item.Name, codigo: item.ID };
+                            }));
+                        }
+                    });
+                },
+                select: function (event, ui) {
+                    $("#" + nomeCampo).val(ui.item.codigo);
+                    $("#" + nomeCampo + "Nome").val(ui.item.label);
+                }
+            });
+        }
+        function ClienteAutoCompletePesquisa(nomeCampo, url) {
+            $("#ClienteAutoPesquisa").autocomplete({
+                minLength: 3,
+                source: function (request, response) {
+                    $.ajax({
+                        url: url,
+                        type: "POST", dataType: "json",
+                        data: { nome: request.term, empresa: $('#Filtro_IDEmpresa').val(), idPais: 2 },
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return { label: item.Name, value: item.Name, codigo: item.ID };
+                            }));
+                        }
+                    });
+                },
+                select: function (event, ui) {
+                    $("#" + nomeCampo).val(ui.item.codigo);
+                    $("#" + nomeCampo + "Nome").val(ui.item.label);
+                }
+            });
+        }
+        var url = '@Url.Action("ListarTransportadoras", "ComposicaoArgentina")';
+        TranspAutoComplete("Transportadora", url);
+        url = '@Url.Action("ListarClientes","ComposicaoArgentina")';
+        ClienteAutoCompletePesquisa("Cliente", url);
+    });
+</script>
+@*Parte de Filtros*@
+<form id="frmPesquisa" class="form-horizontal">
+
+    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUDEdit" })
+    @Html.HiddenFor(model => model.ChavePrimaria)
+    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUD" })
+    @Html.HiddenFor(model => model.OperacaoSecundaria, new { @Id = "IdOperacaoSecundariaCRUD" })
+
+    @Html.HiddenFor(model => model.PaginadorDados.PaginaAtual)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdePaginas)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdeItensPagina)
+    @Html.HiddenFor(model => model.PaginadorDados.QtdeTotalRegistros)
+    @Html.HiddenFor(model => model.PaginadorDados.Status)
+    <input type="hidden" id="statusOriginalEmAprovacao" value="@isStatusEmAprovacao" />
+
+    <div class="row">
+        @Html.BootstrapTextBoxFor(model => model.Filtro.DNI, null, "DNI", new { maxlength = 14 }, new HtmlHelperOption() { colunas = "col-md-2" })
+        @Html.BootstrapTextBoxFor(model => model.Filtro.Apellido, null, "Apellido", new { maxlength = 100 }, new HtmlHelperOption() { colunas = "col-md-3" })
+        @Html.BootstrapTextBoxFor(model => model.Filtro.Nome, null, "Nombre", new { maxlength = 100 }, new HtmlHelperOption() { colunas = "col-md-3" })
+        @if (Model != null && Model.Filtro != null && (String.IsNullOrEmpty(Model.Filtro.OperacaoUsuario) || Model.Filtro.OperacaoUsuario == "Ambos"))
+        {
+            @Html.BootstrapDropDownListFor(model => model.Filtro.Operacao, new SelectList(GenericDelegate.CifOuFob(), "ID", "Nome"), "Operación", null, new HtmlHelperOption() { colunas = "col-md-2", argentina = true })
+        }
+        else
+        {
+            @Html.BootstrapDropDownListFor(model => model.Filtro.Operacao, new SelectList(GenericDelegate.CifOuFob(), "ID", "Nome"), "Operación", null, new HtmlHelperOption() { colunas = "col-md-2", argentina = true }, true)
+            @Html.HiddenFor(model => model.Filtro.Operacao)
+        }
+        @if (Model != null && Model.Filtro != null && (Model.Filtro.IDEmpresaUsuario == null || Model.Filtro.IDEmpresaUsuario == 0 || Model.Filtro.IDEmpresaUsuario == 3))
+        {
+            @Html.BootstrapDropDownListFor(model => model.Filtro.IDEmpresa, new SelectList(GenericDelegate.ListarComplex<Empresa>(x => x.ID == (int)EnumEmpresaArg.Combustibles), "ID", "NomeEs"), "Tipo de Negocio", null, new HtmlHelperOption() { colunas = "col-md-2", argentina = true })
+        }
+        else
+        {
+            @Html.BootstrapDropDownListFor(model => model.Filtro.IDEmpresa, new SelectList(GenericDelegate.LinhaDeNegocioAgentina(), "ID", "Nome"), "Tipo de Negocio", null, new HtmlHelperOption() { colunas = "col-md-2", argentina = true }, true)
+            @Html.HiddenFor(model => model.Filtro.IDEmpresa)
+        }
+
+        <input type="hidden" id="Transportadora" name="Filtro.IDTransportadora" value="@Model.Filtro.IDTransportadora" />
+        <input type="hidden" id="TransportadoraNome" name="Filtro.TransportadoraNome" value="@Model.Filtro.TransportadoraNome" />
+        <input type="hidden" id="Cliente" name="Filtro.IDCliente" value="@Model.Filtro.IDCliente" />
+        <input type="hidden" id="ClienteNome" name="Filtro.ClienteNome" value="@Model.Filtro.ClienteNome" />
+    </div>
+    <div class="row">
+        @Html.BootstrapDropDownListFor(model => model.Filtro.IDStatus, new SelectList(GenericDelegate.ListarEnum<EnumStatusMotoristaArg>(), "Value", "Key"), "Estado", null, new HtmlHelperOption() { colunas = "col-md-2" })
+        @Html.BootstrapTextBox("TransportadoraAuto", null, "Transportista", new { id = "TransportadoraAuto", maxlength = 200, @onchange = "VerificarSeDeveLimpar();" }, new HtmlHelperOption { colunas = "col-md-3" }, @Model.Filtro.TransportadoraNome)
+        @Html.BootstrapTextBox("ClienteAutoPesquisa", null, "Cliente", new { id="ClienteAutoPesquisa", maxlength = 100, @onchange = "VerificarSeDeveLimpar();" }, new HtmlHelperOption() { colunas = "col-md-3" }, Model.Filtro.ClienteNome)
+        @Html.BootstrapDateBoxFor(model => model.Filtro.DataInicio, "Fecha de Inicio", null, new HtmlHelperOption() { colunas = "col-md-2" })
+        @Html.BootstrapDateBoxFor(model => model.Filtro.DataFim, "Fecha Final", null, new HtmlHelperOption() { colunas = "col-md-2" })
+    </div>
+
+
+    <div class="row" id="containerBotoes">
+        <div class="col-md-5">
+            <div class="form-group">
+                <label class="col-sm-5 control-label"></label>
+                <div class="col-sm-12">
+                    <div class="btn-group center" style="float: none;">
+                        <button class="btn btn-custom" type="button" tabindex="4" onclick="raizenCoreJs.raizenCRUD.RealizarPesquisa();">
+                            <i class="fa fa-search"></i> Buscar
+                        </button>
+                        <button class="btn btn-custom" type="button" tabindex="4" onclick="raizenCoreJs.Motorista.LimparFiltros();">
+                            <i class="fa fa-eraser"></i> Limpiar
+                        </button>
+                        @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "MotoristaArgentina" && p.NomeAcao == "Adicionar") != null)
+                        {
+                            <button class="btn btn-custom" type="button" acaopermissao="add" tabindex="5" onclick="window.location = '@Url.Action("Editar", "MotoristaArgentina")'">
+                                <i class="fa fa-plus-square-o"></i> Nuevo
+                            </button>
+                        }
+                        <button class="btn btn-custom" type="button" tabindex="1" onclick="raizenCoreJs.Motorista.Exportar();">
+                            <i class="fa fa-bar-chart"></i> Exportar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="divide-1"></div>
+
+@*Resultado da Pesquisa*@
+
+<div id="datatable2_wrapper" class="dataTables_wrapper form-inline" role="grid">
+    <div class="row">
+        @if (!Model.ListaMotorista.IsNullOrEmpty())
+        {
+            string usuarioVisible = Model.Filtro.UsuarioExterno ? "display:none" : "";
+            <div class="col-md-12">
+                <table id="tableMotoristas" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th colspan="12" align="center">
+                                Fueron encontrados: @Model.PaginadorDados.QtdeTotalRegistros.ToString() registros
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>Tipo de Negocio</th>
+                            <th>Nombre</th>
+                            <th>DNI</th>
+                            <th>Transportista</th>
+                            <th>Operación</th>
+                            <th>Estado</th>
+                            <th style="@usuarioVisible">Usuario</th>
+                            <th>Fc. Actualización</th>
+                            <th style="text-align:center"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var app in Model.ListaMotorista)
+                        {
+                            string funcaoAprovar = "RaizenCoreJs.prototype.Motorista.Editar(" + @app.ID + ", true)";
+                            string funcaoExcluir = "RaizenCoreJs.prototype.Motorista.Excluir(" + @app.ID + "," + @app.IDStatus + ")";
+                            string funcaoEdit = "RaizenCoreJs.prototype.Motorista.Editar(" + @app.ID + ")";
+                            string funcaoClonar = "RaizenCoreJs.prototype.Motorista.ClonarMotorista(" + @app.ID + "," + @app.IDEmpresa + ")";
+                            string funcaoAtivar = "RaizenCoreJs.prototype.Motorista.Ativar(" + @app.ID + ")";
+                            string funcaoBloquear = "RaizenCoreJs.prototype.Motorista.Bloquear(" + @app.ID + ")";
+                            string funcaoCarteirinha = "RaizenCoreJs.prototype.Motorista.GerarCarteirinha(" + @app.ID + ")";
+                            string funcaoTreinamento = "RaizenCoreJs.prototype.Motorista.Treinamento(" + @app.ID + ")";
+                            string funcaoUploadDocumentos = "RaizenCoreJs.prototype.Motorista.UploadDocumentos(" + @app.ID + ")";
+                        <tr class="gradeX" id="motorista-linha-@app.ID">
+                            <td style="width: 10%; word-wrap: break-word">
+                                @EnumExtensions.GetDescription((EnumEmpresaArg)app.IDEmpresa)
+                            </td>
+                            <td style="width: 15%; word-wrap: break-word">
+                                @app.Nome
+                            </td>
+                            <td style="width: 6%; word-wrap: break-word">
+                                @app.DNI
+                            </td>
+                            <td style="width: 15%; word-wrap: break-word">
+                                @app.NomeCliente
+                            </td>
+                            <td style="width: 5%; word-wrap: break-word">
+                                @app.Operacao
+                            </td>
+                            <td style="width: 10%; word-wrap: break-word">
+                                <span class="span-status-bolinha" style="background-color: @StatusHelper.CorPorStaus((EnumStatusMotorista)app.IDStatus)"></span>
+                                @EnumExtensions.GetDescription((EnumStatusMotoristaArg)app.IDStatus)
+                            </td>
+                            <td style="@usuarioVisible; width: 10%; word-wrap: break-word">
+                                @app.UsuarioAlterouStatus
+                            </td>
+                            <td style="width: 12%; word-wrap: break-word">
+                                @app.DataAtualizazao
+                            </td>
+
+                            <td align="center" style="width: 10%;">
+                                <div class="btn-group dropdown pull-right" style="margin-bottom:10px">
+                                    <button class="btn btn-custom dropdown-toggle" data-toggle="dropdown">Acciones<span class="caret" style="margin-top: -4px;margin-left: 8px;"></span></button>
+                                    <ul class="dropdown-menu">
+
+                                        @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "MotoristaArgentina" && p.NomeAcao == "Aprovar") != null
+                                            && app.IDStatus == (int)EnumStatusMotorista.EmAprovacao)
+                                        {
+                                            <li>
+                                                <a class="btn btn-custom" title="Aprobar" onclick="@Html.Raw(funcaoAprovar)">
+                                                    <i class="fa fa-check fa-fw"></i>Aprobar/Desaprobar
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "MotoristaArgentina" && p.TagAcao == "delete") != null)
+                                        {
+                                            <li>
+                                                <a class="btn btn-custom" title="Excluir" onclick="@Html.Raw(funcaoExcluir)">
+                                                    <i class="fa fa-trash fa-fw"></i>Excluir
+                                                </a>
+                                            </li>
+                                        }
+                                        @if ((app.IDStatus == (int)EnumStatusMotorista.Reprovado || app.IDStatus == (int)EnumStatusMotorista.Aprovado) && Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "MotoristaArgentina" && p.NomeAcao == "Editar") != null)
+                                        {
+                                            <li>
+                                                <a class="btn btn-custom" title="Editar Conductor" onclick="@Html.Raw(funcaoEdit)">
+                                                    <i class="fa fa-pencil fa-fw"></i>Editar
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "MotoristaArgentina" && p.NomeAcao == "Ver Documento") != null)
+                                        {
+                                            <li>
+                                                <a class="btn btn-custom" title="Fecha de vencimiento del documento" onclick="raizenCoreJs.Motorista.VisualizarDocumentos(@app.ID)">
+                                                    <i class="fa fa-search fa-fw"></i>Fecha de Vencimiento
+                                                </a>
+                                            </li>
+                                        }
+                                        @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "MotoristaArgentina" && p.NomeAcao == "Bloquear") != null
+&& (app.IDStatus == (int)EnumStatusMotorista.Aprovado || app.IDStatus == (int)EnumStatusMotorista.Bloqueado))
+                                        {
+                                            <li>
+                                                <a class="btn btn-custom" title="Bloque/Desbloquear" onclick="raizenCoreJs.Motorista.Bloquear(@app.ID)">
+                                                    <i class="fa fa-lock fa-fw"></i>Bloque/Desbloquear
+                                                </a>
+                                            </li>
+                                        }
+                                        @*@if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "Motorista" && p.NomeAcao == "Upload Documento") != null)
+                    {
+                        <li>
+                            <a class="btn btn-custom" title="Remover" onclick="@Html.Raw(funcaoUploadDocumentos)">
+                                <i class="fa fa-upload fa-fw"></i>Upload de Documento
+                            </a>
+                        </li>
+                    }*@
+
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal fade" id="modalcontainerEdicao" tabindex="-1" data-backdrop="static" role="dialog" aria-labelledby="myModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content" style="">
+                        <div class="modal-header">
+                            <button type="button" class="close" onclick="raizenCoreJs.Motorista.fecharModalMotorista();" aria-hidden="true">
+                                &times;
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="ModalMotorista">
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+                                        }
+    </div>
+    <div class="row">
+        @Html.Partial("_Paginador", Model)
+    </div>
+</div>
+
+<div id="divMotoristas"></div>
+<div id="divModal"></div>
+@{Html.RenderPartial("_Confirm", new Raizen.Framework.Web.MVC.Models.ModalConfirm() { MessageYes = "Si", MessageNot = "No" });}
+<form id="frmClientes" style="visibility:hidden"></form>

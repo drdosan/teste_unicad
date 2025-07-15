@@ -1,0 +1,201 @@
+﻿@using Raizen.Framework.Models
+@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Models
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.Framework.Web.MVC.Extensions;
+@using Raizen.UniCad.Model;
+
+@model Raizen.UniCad.Web.Models.ModelAgendamentoChecklist
+@{
+    var urlValidacao = @Url.Action("ValidarObjetos", "AgendamentoChecklist");
+
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+
+    int idTerminal = ViewBag.IdTerminal == null ? 0 : ViewBag.IdTerminal;
+
+    int idEmpresaCongenere = ViewBag.IdEmpresaCongenere == null ? 0 : ViewBag.IdEmpresaCongenere;
+}
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var operacao = $('#AgendamentoChecklist_Operacao').val();
+        
+        raizenCoreJs.raizenCRUD.urlSalvar = '@Url.Action("Salvar", "AgendamentoChecklist")';
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        raizenCoreJs.raizenMensagens.ExibirMensagemOperacao();
+        raizenCoreJs.raizenHelpers.urlValidacao = "@urlValidacao";
+
+        raizenCoreJs.AgendamentoChecklist.carregarTerminal();
+        raizenCoreJs.AgendamentoChecklist.carregarNovosCampos(operacao);
+
+        if ($('#idTerminalChecklist').val() != '' && $('#idTerminalChecklist').val() > 0)
+            $('#AgendamentoChecklist_IDTerminal').val($('#idTerminalChecklist').val());
+        if ($('#idEmpresaCongenere').val() != '' && $('#idEmpresaCongenere').val() > 0)
+            $('#AgendamentoChecklist_IDEmpresaCongenere').val($('#idEmpresaCongenere').val());
+        
+    });
+
+
+
+    function Inscrever(idHorario) {
+        RaizenHelpers.prototype.AbrirConfirm('return funcInscrever(' + idHorario + ')', 'Deseja realmente se inscrever nesse horário?');
+    }
+
+    function funcInscrever(idHorario) {
+        var idComposicao = $('#AgendamentoChecklist_IDComposicao').val();
+        console.log(idComposicao);
+        if (idComposicao == '' || idComposicao == null || idComposicao == 0){
+            ShowMessage('Por favor digite uma placa');
+            return;
+        }
+        $('#AgendamentoChecklist_IDAgendamentoTerminalHorario').val(idHorario);
+
+        raizenCoreJs.raizenCRUD.ExibirControlesOcultos();
+        var dados = $('#frmEdicao').serialize();
+        raizenCoreJs.raizenCRUD.OcultarControlesOcultos();
+
+        raizenCoreJs.raizenHelpers.AbrirLoading();
+
+        $.ajax({
+            url: '@Url.Action("Inscrever", "AgendamentoChecklist")',
+            data: dados,
+            type: 'POST',
+            success: function (response) {
+                if (response == null || response.AgendamentoChecklist == null || response.AgendamentoChecklist.ID == "0") {
+                    ShowMessage('Problemas ao salvar o agendamento' + response.Mensagem);
+                }
+                else {
+                    ShowMessageSucess("Agendamento concluído com sucesso!",
+                            "raizenCoreJs.raizenCRUD.Voltar();$('#modalSucess').modal('hide');");
+                }
+
+                raizenCoreJs.raizenHelpers.FecharLoading();
+            }
+        });
+    };
+</script>
+
+<div class="box border raizen" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event);" id="containerEdicao">
+    <div class="box-title">
+        <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Agendamento de Checklist</span></h4>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-12">
+                <form id="frmEdicao" class="form-horizontal">
+                    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUDEdit" })
+                    @Html.HiddenFor(model => model.ChavePrimaria)
+                    @Html.HiddenFor(model => model.AgendamentoChecklist.IDComposicao)
+                    @Html.HiddenFor(model => model.AgendamentoChecklist.IDAgendamentoTerminalHorario)
+                    @Html.Hidden("idTerminalChecklist", idTerminal)
+                    @Html.Hidden("idEmpresaCongenere", idEmpresaCongenere)
+                    @{bool block = false;}
+                    <div class="row">
+                        @if (Model != null && Model.AgendamentoChecklist != null && (Model.AgendamentoChecklist.IDEmpresaUsuario == 0 || Model.AgendamentoChecklist.IDEmpresaUsuario == 3) && Model.Operacao != OperacoesCRUD.Editando)
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.AgendamentoChecklist.IDEmpresa, new SelectList(GenericDelegate.LinhaDeNegocio(), "ID", "Nome"), "Linha de Negócio", new { onchange = "$('#AgendamentoChecklist_Placa').val('');raizenCoreJs.AgendamentoChecklist.empresaOperacaoTerminalChange(true)" }, new HtmlHelperOption() { colunas = "col-md-2" })
+                            block = true;
+                        }
+                        else
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.AgendamentoChecklist.IDEmpresa, new SelectList(GenericDelegate.LinhaDeNegocio(), "ID", "Nome"), "Linha de Negócio", new { onchange = "$('#AgendamentoChecklist_Placa').val('');raizenCoreJs.AgendamentoChecklist.empresaOperacaoTerminalChange()" }, new HtmlHelperOption() { colunas = "col-md-2" }, true)
+                            @Html.HiddenFor(model => model.AgendamentoChecklist.IDEmpresa)
+                        }
+
+                        @if (Model != null && Model.AgendamentoChecklist != null && (string.IsNullOrEmpty(Model.AgendamentoChecklist.OperacaoUsuario) || Model.AgendamentoChecklist.OperacaoUsuario == "Ambos") && Model.Operacao != OperacoesCRUD.Editando)
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.AgendamentoChecklist.Operacao, new SelectList(GenericDelegate.CifFobCongeneres(), "ID", "Nome"), "Operação", new { onchange = "$('#AgendamentoChecklist_Placa').val('');raizenCoreJs.AgendamentoChecklist.empresaOperacaoTerminalChange(true);raizenCoreJs.AgendamentoChecklist.carregarTerminal();", title = "Modalidade de Carregamento" }, new HtmlHelperOption() { colunas = "col-md-2" })
+                            block = true;
+                        }
+                        else
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.AgendamentoChecklist.Operacao, new SelectList(GenericDelegate.CifFobCongeneres(), "ID", "Nome"), "Operação", new { title = "Modalidade de Carregamento", onchange = "$('#AgendamentoChecklist_Placa').val('');raizenCoreJs.AgendamentoChecklist.empresaOperacaoTerminalChange();raizenCoreJs.AgendamentoChecklist.carregarTerminal();" }, new HtmlHelperOption() { colunas = "col-md-2" }, true)
+                            @Html.HiddenFor(model => model.AgendamentoChecklist.Operacao)
+                        }
+                        @Html.BootstrapDropDownListFor(model => model.AgendamentoChecklist.IDTerminal, null, "Terminal", new { onchange = "raizenCoreJs.AgendamentoChecklist.empresaOperacaoTerminalChange();raizenCoreJs.AgendamentoChecklist.listarEmpresas();" }, new HtmlHelperOption() { colunas = "col-md-5" })
+                        @Html.BootstrapDateBoxFor(model => model.AgendamentoChecklist.Data, "Data", new { @class = "dataValidade", onchange = "raizenCoreJs.AgendamentoChecklist.empresaOperacaoTerminalChange(false)" }, new HtmlHelperOption() { colunas = "col-md-2" })
+                        <script>
+                            $('#AgendamentoChecklist_Data').datepicker({
+                                minDate: new Date(2018, 4 - 1, 23),
+
+                            });
+                        </script>
+                    </div>
+                    <div class="row">
+                        <div id="naoCongenere">
+                            <div class="form-group col-md-3" id="AddPlaca1">
+                                @if (block)
+                                {
+                                    @Html.BootstrapTextBoxFor(model => model.AgendamentoChecklist.Placa, null, "Placa", new { maxlength = "7", onkeyup = "raizenCoreJs.AgendamentoChecklist.placaChange(this, event);", style = "text-transform:uppercase;" }, new HtmlHelperOption() { colunas = "col-md-9" }, true)
+                                }
+                                else
+                                {
+                                    @Html.BootstrapTextBoxFor(model => model.AgendamentoChecklist.Placa, null, "Placa", new { maxlength = "7", onkeyup = "raizenCoreJs.AgendamentoChecklist.placaChange(this, event);", style = "text-transform:uppercase;" }, new HtmlHelperOption() { colunas = "col-md-9" })
+                                }
+                                @if (Model.Operacao == OperacoesCRUD.Editando)
+                                {
+                                    @Html.HiddenFor(model => model.AgendamentoChecklist.Placa)
+                                }
+
+                                @Html.BootstrapButtonAdd("btnAddPlaca1", null, ButtonType.BUTTON, "raizenCoreJs.AgendamentoChecklist.novaPlaca(1)", "style='margin-top:24px;margin-left:-12px; display:none'")
+                            </div>
+                        </div>
+                        <div id="congenere">
+                            @Html.BootstrapTextBoxFor(model => model.AgendamentoChecklist.PlacaCongenere, null, "Placa Congênere", new { maxlength = "7", style = "text-transform:uppercase;" }, new HtmlHelperOption() { colunas = "col-md-2" })
+                            @Html.BootstrapDropDownListFor(model => model.AgendamentoChecklist.IDTipoComposicaoCongenere, new SelectList(GenericDelegate.Listar<TipoComposicao>(), "ID", "Nome"), "Tipo de Composição", null, new HtmlHelperOption() { colunas = "col-md-2" })
+                            @Html.BootstrapDropDownListFor(model => model.AgendamentoChecklist.IDEmpresaCongenere, null, "Empresa Congênere", null, new HtmlHelperOption() { colunas = "col-md-2" })
+                        </div>
+                        <div class="col-md-8" style="padding-top: 20px; margin-left:-56px">
+                            @if (Model.AgendamentoChecklist != null)
+                            {
+                                <h5 id="placas">
+                                    @Model.AgendamentoChecklist.Placas
+                                </h5>
+                            }
+                            else
+                            {
+                                <h5 id="placas"></h5>
+                            }
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12" id="containerHorarios" style="margin-top:20px;">
+                            @if (Model != null && Model.ListaAgendamentoTerminalHorario != null && Model.ListaAgendamentoTerminalHorario.Any())
+                            {
+                                Html.RenderPartial("_Horarios", Model.ListaAgendamentoTerminalHorario);
+                            }
+                        </div>
+                    </div>
+                </form>
+                <div class="row" style="text-align:center">
+                    <button class="btn btn-custom voltar" id="download" style="display:none" type="button" tabindex="2" onclick="raizenCoreJs.raizenCRUD.Voltar();">
+                        <i class="fa fa-download"></i> Baixar Checklist
+                    </button>
+                    <button class="btn btn-custom voltar" type="button" tabindex="2" onclick="raizenCoreJs.raizenCRUD.Voltar();">
+                        <i class="fa fa-long-arrow-left"></i> Voltar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $("#AgendamentoChecklist_Densidade").unbind(".maskMoney");
+        $("#AgendamentoChecklist_Densidade").maskMoney({
+            showSymbol: false,
+            symbol: "",
+            decimal: ",",
+            thousands: ".",
+            allowNegative: true,
+            allowZero: true,
+            precision: $("input[data-currency-field]").data('currency-precision') || 4
+        });
+    </script>
+
+
+</div>
+@{Html.RenderPartial("_Confirm", new Raizen.Framework.Web.MVC.Models.ModalConfirm() { MessageYes = "Sim", MessageNot = "Não" });}

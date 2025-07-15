@@ -1,0 +1,15 @@
+﻿@model Raizen.UniCad.Web.Models.ModelMotoristaArgentina
+@{
+    ViewBag.Title = "Conductor";
+    ViewBag.TituloModulo = "Conductor";
+    Layout = "~/Views/Shared/_Panel.cshtml";
+    
+    var tabIndexToolBoxCrudPesquisa = new int[2];
+    tabIndexToolBoxCrudPesquisa[0] = 3;
+    tabIndexToolBoxCrudPesquisa[1] = 4;
+}
+
+@section pesquisa
+    {
+    @Html.Partial("_Pesquisa", Model)
+}

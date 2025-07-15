@@ -1,0 +1,27 @@
+﻿@model Raizen.Framework.Web.MVC.Models.ModalConfirm
+<div class="modal fade" id="ModalConfirmJustify" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h4>@Model.MessageConfirm</h4>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label" id="lbl_Licenca_ResponsavelOperacao">Justificativa</label>
+                            @Html.TextBox("txtJustificativa", null, new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-custom" type="button" onclick="raizenCoreJs.raizenHelpers.ExecutarFuncaoConfirmJustify();">@Model.MessageYes</button>
+                <button class="btn btn-custom" type="button" onclick="raizenCoreJs.raizenHelpers.FecharConfirmJustify();">@Model.MessageNot</button>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="confirmFunctionJustify" />
+

@@ -1,0 +1,18 @@
+﻿@model Raizen.UniCad.Model.View.MotoristaClienteView
+<tr id="linha-cliente-@Model.IDCliente" class="gradeX">
+    @using (Html.BeginCollectionItem("Motorista.Clientes"))
+    {
+        @Html.HiddenFor(item => item.IDCliente, new { @class = "IDCliente" })
+        @Html.HiddenFor(item => item.RazaoSocial)
+        @Html.HiddenFor(item => item.DataAprovacao)
+        <td style="width: 75%; word-wrap: break-word">
+            @Html.PopoverTextFor(item => item.RazaoSocial, 80, "right")
+        </td>
+        <td style="width: 20%; word-wrap: break-word">
+            @Html.DisplayFor(item => item.DataAprovacao)
+        </td>
+        <td style="width: 5%; word-wrap: break-word">
+            @Html.BootstrapButtonDelete("", "", ButtonType.BUTTON, "raizenCoreJs.Motorista.removerCliente(" + Model.IDCliente + ")")
+        </td>
+    }
+</tr>

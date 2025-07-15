@@ -1,0 +1,71 @@
+﻿@using Raizen.UniCad.Model
+@model List<Raizen.UniCad.Model.ComposicaoEixo>
+<style>
+    .CheckDrop {
+    }
+
+    .CodigoDrop {
+    }
+
+    .imagemDrop {
+            width: 300px;
+    }
+
+    .bordaDrop {
+            padding: 5px;
+                border: 1px solid silver;
+    }
+
+    .negrito {
+        font-weight: bold;
+    }
+    
+</style>
+
+
+<h3 align="center" style="margin-top:0; color:#961a8d">Selecione o tipo da composição</h3>
+
+@{
+    var msg = string.Empty;
+    if (Model.FirstOrDefault().IDTipoComposicao == (int)EnumTipoComposicao.Truck)
+    {
+        msg = "Veículo composto por uma <b>única</b> placa";
+    }
+    else if (Model.FirstOrDefault().IDTipoComposicao == (int)EnumTipoComposicao.Carreta)
+    {
+        msg = "Veículo composto por <b>duas</b> placas (Cavalo + 1 Carreta)";
+    }
+    else if (Model.FirstOrDefault().IDTipoComposicao == (int)EnumTipoComposicao.Bitrem)
+    {
+        msg = "Veículo composto por <b>três</b> placas (Cavalo + 2 Carretas)";
+    }
+    else
+    {
+        msg = "Veículo composto por <b>quatro</b> placas (Cavalo + 1 Carreta + Dolly + 1 Carreta)";
+    }
+
+    <h5 align="center" style="margin-top:0;">@Html.Raw(msg)</h5>
+}
+@foreach (var item in Model)
+{
+    <div class="row bordaDrop">
+        @*<div class="col-md-1">
+            <input class="CheckDrop" type="radio" name="radio" value="@item.ID" />
+        </div>*@
+        <div class="col-md-2">
+            <span class="CodigoDrop">@item.Codigo</span>
+        </div>
+        <div class="col-md-9">
+            <img class="imagemDrop" style="cursor:pointer" onclick="raizenCoreJs.Composicao.SelecionarEixo(@item.ID)" src="~/Content/img/sistema/@item.Imagem" />
+        </div>
+    </div>
+    <div class="divider"></div>
+}
+
+@*<div class="row" style="text-align:center; margin-top:10px">
+    <div class="col-md-12">
+        <button class="btn btn-custom" id="btnCrudSalvar" type="button" tabindex="1" onclick="raizenCoreJs.Composicao.SelecionarEixo()">
+            <i class="fa fa-save"></i> Selecionar
+        </button>
+    </div>
+</div>*@

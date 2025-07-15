@@ -1,0 +1,11 @@
+﻿@model  Raizen.UniCad.Model.AgendamentoTerminal
+
+@{
+    if (Model.ListaAgendamentoTerminalHorario != null)
+    {
+        foreach (var item in Model.ListaAgendamentoTerminalHorario)
+        {
+            Html.RenderPartial("_ItemHorario", item);
+        }
+    }
+}

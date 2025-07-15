@@ -1,0 +1,40 @@
+﻿@model List<Raizen.UniCad.Model.View.MotoristaDocumentoView>
+@if (Model == null)
+{
+    <div id="linhaDocumentos" class="col-md-12"><h2>Seleccione una operación y agregue al menos un tipo de composición y producto para mostrar los documentos requeridos.</h2></div>
+}
+@if (Model != null)
+            {
+    using (Html.BootstrapCollapsiblePanel("Documentos", "documentosPanel", false, "fa fa-arrows-h", null, new { style = "max-height:600px; overflow-x:hidden; overflow-y:auto; margin-top:10px; " }))
+    {
+
+        <table id="docTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+            <thead>
+                <tr class="table-raizen">
+                    <th style="word-wrap: break-word; width:6%">
+                        Documento
+                    </th>
+                    <th style="word-wrap: break-word; width:40%">
+                        Descripción
+                    </th>
+                    <th style="word-wrap: break-word; width:6%">
+                        Requerido
+                    </th>
+                    <th style="word-wrap: break-word; width:20%">
+                        Fecha vencimiento
+                    </th>
+                    <th style="word-wrap: break-word; width:28%">
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model.OrderByDescending(d => (d.Anexo ?? string.Empty).Split('_').First()))
+                {
+                    Html.RenderPartial("_ItemAnexo", item);
+                }
+             
+            </tbody>
+        </table>
+    }
+}

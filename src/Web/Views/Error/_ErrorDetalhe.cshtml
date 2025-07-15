@@ -1,0 +1,42 @@
+﻿@model Raizen.UniCad.Web.Models.ModelErro
+<div class="col-sm-6 col-sm-offset-3">
+    <div class="divide-20">
+    </div>
+    <div class="divide-20">
+    </div>
+    <div class="divide-20">
+    </div>
+    <div class="divide-20">
+    </div>
+    <div class="divide-20">
+    </div>
+    <div class="row row-fluid">
+        <span>
+            <h3>@Model.Titulo</h3>
+            <p>
+                @Model.MensagemAmigavel
+            </p>
+        </span>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(Model.DetalheTecnico))
+    {
+        <div class="divide-2">
+        </div>
+        <div class="row row-fluid">
+            <h4>
+                Detalhes</h4>
+            <p>
+                @Model.DetalheTecnico
+            </p>
+        </div>
+    }
+    <div class="divide-2">
+    </div>
+    <div class="row row-fluid">
+        <h4>
+            Ação</h4>
+        <p>
+            @Model.DescricaoAcaoUsuario
+        </p>
+    </div>
+</div>

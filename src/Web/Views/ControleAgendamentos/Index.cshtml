@@ -1,0 +1,19 @@
+﻿@model Raizen.UniCad.Web.Models.ModelControleAgendamentos
+    @{
+        ViewBag.Title = "Controle de Agendamentos";
+        ViewBag.TituloModulo = "Controle de Agendamentos";
+        Layout = "~/Views/Shared/_Panel.cshtml";
+
+        var tabIndexToolBoxCrudPesquisa = new int[2];
+        tabIndexToolBoxCrudPesquisa[0] = 3;
+        tabIndexToolBoxCrudPesquisa[1] = 4;
+    }
+
+    @section pesquisa
+    {
+        @Html.Partial("_Pesquisa", Model)
+    }
+    @section ToolBoxCrudPesquisa
+    {
+        @Html.Partial("_ToolBoxCrudPesquisa", tabIndexToolBoxCrudPesquisa)
+    }

@@ -1,0 +1,598 @@
+﻿
+@using Raizen.Framework.Models
+@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.UniCad.Model;
+<style>
+    .tab-pane {
+        border-left: 1px solid silver;
+        border-bottom: 1px solid silver;
+        border-right: 1px solid silver;
+        border-radius: 0px 0px 5px 5px;
+        padding: 30px;
+        margin-bottom: 20px;
+    }
+
+    .invisivel {
+        display: none;
+    }
+
+    .roxoRaizen {
+        background-color: #6f376c !important;
+    }
+
+    .modal-dialog {
+        max-width: 90% !important;
+    }
+</style>
+
+@model Raizen.UniCad.Web.Models.ModelPlaca
+@{
+    var urlValidacao = @Url.Action("ValidarObjetos", "Placa");
+
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+
+    //R9) Ocultar alguns componentes visuais na tela de edição de veículo caso usuário seja do perfil "Cliente ACS"
+    var isClienteAcs = Model.Usuario != null && (Model.Usuario.Perfil == EnumPerfil.CLIENTE_ACS || Model.Usuario.Perfil == EnumPerfil.CLIENTE_ACS_ARGENTINA) ? "true" : "false";
+}
+
+<link href="~/Content/css/Unicad.css" rel="stylesheet" />
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Placa.js")"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Placa_PlacaArgentina_CUIT").mask("99-99999999-9");
+
+        raizenCoreJs.raizenCRUD.urlSalvar = '@Url.Action("Salvar", "Placa")';
+
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        raizenCoreJs.raizenHelpers.urlValidacao = "@urlValidacao";
+
+        RaizenCoreJs.prototype.Placa.urlAdicionarCliente = '@Url.Action("AdicionarCliente", "PlacaArgentina")';
+        RaizenCoreJs.prototype.Placa.urlAdicionarSeta = '@Url.Action("AdicionarSeta", "PlacaArgentina")';
+        RaizenCoreJs.prototype.Placa.urlSalvar = '@Url.Action("Salvar", "PlacaArgentina")';
+        RaizenCoreJs.prototype.Placa.urlListarDocumentos = '@Url.Action("ListarDocumentos", "PlacaArgentina")';
+        RaizenCoreJs.prototype.Placa.urlBuscarTransportadora = '@Url.Action("BuscarTransportadora", "PlacaArgentina")';
+        RaizenCoreJs.prototype.Placa.urlAbrirPopupAjuda = '@Url.Action("AbrirPopupQuestion", "Placa")';
+        RaizenCoreJs.prototype.Placa._idPais = 2;
+
+        var tooltipSpan = $('#modalQuestion')[0];
+
+        $('.alertQuestion').mouseover(function(event) {
+            var x = $(this).offset().left,
+                y = $(this).offset().top;
+
+            var url = RaizenCoreJs.prototype.Placa.urlAbrirPopupAjuda;
+            $('#modalQuestion').hide();
+            $.ajax({
+                url: url,
+                data: { idControle: event.target.id },
+                type: 'POST',
+                success: function(response) {
+                    acompanharMouse = true;
+                    $('#modalQuestion').html(response);
+
+                    setTimeout(function() {
+                        var tooltipWidth = $(tooltipSpan).width();
+                        var tooltipHeight = $(tooltipSpan).height();
+
+                        tooltipSpan.style.top = (y - (tooltipHeight * 0.53)) + 'px';
+                        tooltipSpan.style.left = (x - (tooltipWidth * 1.3)) + 'px';
+
+                        $('#modalQuestion').fadeIn(250);
+                    }, 100);
+                },
+                error: function(e) {
+                    ShowMessage(e);
+                }
+            });
+        }).mouseout(function() {
+            $('#modalQuestion').hide();
+        });
+
+        //atp
+        /*
+        $("input[data-currency-field]:not(#Placa_Tara):not(#Composicao_PBTC):not(#Composicao_TaraComposicao").unbind(".maskMoney");
+        $("input[data-currency-field]:not(#Placa_Tara):not(#Composicao_PBTC):not(#Composicao_TaraComposicao").maskMoney({
+            showSymbol: false,
+            symbol: "R$",
+            thousands: "",
+            allowNegative: false,
+            allowZero: true,
+            precision: 0
+        });
+        */
+
+        $("#Placa_PlacaArgentina_PBTC").unbind(".maskMoney");
+        $("#Placa_PlacaArgentina_PBTC").maskMoney({
+            showSymbol: false,
+            symbol: "R$",
+            decimal: ",",
+            thousands: ".",
+            allowNegative: true,
+            allowZero: true,
+            precision: 2
+        });
+
+        $("#Placa_PlacaArgentina_PBTC").bind("paste", function (e) {
+            var pastedData = e.originalEvent.clipboardData.getData("text");
+
+            if (isNumber(pastedData)) {
+                $(this).val('');
+            }
+            else {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        function isNumber(value) {
+            value = value.replace(",", ".");
+
+            if ((undefined === value) || (null === value)) {
+                return false;
+            }
+            if (typeof value == 'number') {
+                return true;
+            }
+            return !isNaN(value - 0);
+        }
+
+        $("#Placa_Tara").unbind(".maskMoney");
+        $("#Placa_Tara").maskMoney({
+            showSymbol: false,
+            symbol: "R$",
+            decimal: ",",
+            thousands: ".",
+            allowNegative: true,
+            allowZero: true,
+            precision: 2
+        });
+
+        function buscarTransportadora(valor) {
+            console.log(valor);
+
+            if (valor.replace(/\D/g, '').length > 10){
+                raizenCoreJs.raizenHelpers.AbrirLoading();
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("BuscarTransportadora", "PlacaArgentina")',
+                    data: { cnpj: valor, frete: $('#Placa_Operacao').val(), idEmpresa: $('#Composicao_IDEmpresa').val(), idPais: 2 },
+                    success: function (retorno) {
+                        $('#Placa_RazaoSocial').val(retorno);
+                        raizenCoreJs.raizenHelpers.FecharLoading();
+                    },
+                    error: function (retorno) {
+                        ShowMessage(retorno);
+                        raizenCoreJs.raizenHelpers.FecharLoading();
+                    }
+                });
+            }else{
+                $('#Placa_RazaoSocial').val('');
+            }
+
+        };
+
+        $("#Placa_PlacaArgentina_CUIT").focusout(function() {
+            console.log('entrou');
+            var valor = $('#Placa_PlacaArgentina_CUIT').val().replace(/\D/g, '');
+            Placa.prototype.mudarMascaraArgentina(valor);
+            buscarTransportadora(valor);
+        });
+
+        if ($("#Placa_PlacaArgentina_CUIT").val() != undefined && $("#Placa_PlacaArgentina_CUIT").val() != '') {
+            var valor = $('#Placa_PlacaArgentina_CUIT').val().replace(/\D/g, '');
+            Placa.prototype.mudarMascaraArgentina(valor);
+        }
+    });
+
+    $(document).keydown(function (e) {
+        if (e.wich == 39 || e.keyCode == 39) {
+            $('.nav-tabs.placas > .active').next('li').find('a').trigger('click');
+        }
+
+        if (e.wich == 37 || e.keyCode == 37) {
+            $('.nav-tabs.placas > .active').prev('li').find('a').trigger('click');
+        }
+    });
+</script>
+
+@if (Model.Placa != null && Model.Placa.ID > 0)
+{
+    <script>
+        var placaNova = '@Model.Placa.PlacaVeiculo';
+        var placaNovaId = '@Model.Placa.ID';
+
+        if($('#placaAdicionar').val() != undefined && $('#placaAdicionar').val() != '')
+        {
+            $('#Composicao_Placa'+$('#placaAdicionar').val()).val(placaNova);
+            $('#Composicao_IDPlaca'+$('#placaAdicionar').val()).val(placaNovaId);
+            raizenCoreJs.Composicao.placaChange('#Composicao_Placa'+$('#placaAdicionar').val(), $('#placaAdicionar').val(), true, "false");
+        }
+    </script>
+}
+
+<div class="box border raizen" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event);" id="containerEdicaoPlaca">
+    <div class="box-title">
+        <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Edición Patente</span></h4>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-12">
+                <form id="frmEdicaoPlaca" class="form-horizontal frmEdicaoPlaca">
+                    @Html.HiddenFor(model => model.Operacao, new { @Id = "IdOperacaoCRUDEdit" })
+                    @Html.HiddenFor(model => model.IdPais, new { @Value = (int)EnumPais.Argentina })
+                    @Html.HiddenFor(model => model.Placa.IDPais, new { @Value = EnumPais.Argentina })
+                    @Html.HiddenFor(model => model.ChavePrimaria)
+                    @Html.HiddenFor(model => model.Placa.idPlacaOficial)
+                    @Html.HiddenFor(model => model.Aprovar)
+                    @Html.HiddenFor(model => model.Placa.LinhaNegocio)
+                    @Html.HiddenFor(model => model.Placa.Numero)
+                    @Html.HiddenFor(model => model.Placa.idUsuario)
+                    @Html.HiddenFor(model => model.Placa.idTipoParteVeiculo)
+                    @Html.HiddenFor(model => model.Placa.idTipoComposicao)
+                    @Html.HiddenFor(model => model.IDComposicao)
+                    @Html.Hidden("isClienteAcs", isClienteAcs)
+
+                    <label id="lbl_Usuario" style="display:none">Usuário</label>
+
+                    @if (Model != null && Model.Placa != null)
+                    {
+                    <div id="Tabs" class="nav-tabs-custom" role="tabpanel" style="margin-top: 10px;">
+                        <ul class="nav nav-tabs placas">
+                            <li class="active"><a href="#tabPlaca" data-toggle="tab">Vehículo</a></li>
+                            @if (Model.Placa.Operacao != "FOB" || Model.Placa.LinhaNegocio == (int)EnumEmpresa.EAB)
+                            {
+                                <li><a href="#tabProprietario" data-toggle="tab">Complemento</a></li>
+                            }
+                            <li><a href="#tabDocumentacao" data-toggle="tab">Documentación</a></li>
+
+                            @if (Model.Placa.Operacao == "CIF" || Model.Placa.idTipoComposicao == 1 || Model.Placa.idTipoComposicao == 10 ||
+                                (Model.Placa.LinhaNegocio == 1 && Model.Placa.idTipoParteVeiculo == 1) ||
+                                (Model.Placa.LinhaNegocio == 2 && Model.Placa.idTipoParteVeiculo == 2) ||
+                                (Model.Placa.LinhaNegocio == 3 && Model.Placa.idTipoParteVeiculo == 1))
+                            {
+                                <li><a href="#tabPermissao" data-toggle="tab">Permiso</a></li>
+                            }
+                        </ul>
+
+                        @{bool habilitar = Session["ibmUsuario"] == null; string divClass = ""; }
+
+                        @if (habilitar) { divClass = ""; } else { divClass = "disabledbutton"; }
+
+                        <div class="tab-content">
+                            <div class="tab-pane active @divClass" id="tabPlaca">
+                                <div class="row">
+                                    @if (Model.Placa.ID == 0 && Model.Placa.StatusComposicao == 0 && (Model != null || Model.Placa != null || Model.Placa.PlacaVeiculo != null || Model.Placa.PlacaVeiculo.Length < 7))
+                                    {
+                                        if (Model.Placa.IDTipoVeiculo == 2 || Model.Placa.IDTipoVeiculo == 4)
+                                        {
+                                            @Html.BootstrapTextBoxFor(model => model.Placa.PlacaVeiculo, null, "Patente", new { maxlength = 7, style = "text-transform:uppercase", onkeyup = "raizenCoreJs.Composicao.checarPlacaRepetida(this,true);" }, new HtmlHelperOption() { colunas = "col-md-2", isFormGroup = true }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsPlacaVeiculoAlterado ? Model.PlacaOficial.PlacaVeiculo : null)
+                                        }
+                                        else
+                                        {
+                                            @Html.BootstrapTextBoxFor(model => model.Placa.PlacaVeiculo, null, "Patente", new { maxlength = 7, style = "text-transform:uppercase" }, new HtmlHelperOption() { colunas = "col-md-2", isFormGroup = true }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsPlacaVeiculoAlterado ? Model.PlacaOficial.PlacaVeiculo : null)
+                                        }
+                                    }
+                                    else
+                                    {
+                                        @Html.BootstrapTextBoxFor(model => model.Placa.PlacaVeiculo, null, "Patente", new { maxlength = 7, style = "text-transform:uppercase" }, new HtmlHelperOption() { colunas = "col-md-2" }, true, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsPlacaVeiculoAlterado ? Model.PlacaOficial.PlacaVeiculo : null)
+                                        @Html.HiddenFor(model => model.Placa.PlacaVeiculo)
+                                    }
+
+                                    @if ((string.IsNullOrEmpty(Model.Placa.Operacao)))
+                                    {
+                                        @Html.BootstrapDropDownListFor(model => model.Placa.Operacao, new SelectList(GenericDelegate.CifFobOuAmbos(), "ID", "Nome"), "Operación", new { onchange = "raizenCoreJs.Placa.carregarDocumentos(1)", title = "Modo de carga" }, new HtmlHelperOption() { colunas = "col-md-2" })
+                                    }
+                                    else
+                                    {
+                                        @Html.BootstrapDropDownListFor(model => model.Placa.Operacao, new SelectList(GenericDelegate.CifFobOuAmbos(), "ID", "Nome"), "Operación", null, new HtmlHelperOption() { colunas = "col-md-2" }, true, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsOperacaoAlterado ? Model.PlacaOficial.Operacao : null)
+                                        @Html.HiddenFor(model => model.Placa.Operacao)
+                                    }
+                                    @if (Model.Placa.IDTipoVeiculo > 0)
+                                    {
+                                        @Html.BootstrapDropDownListFor(model => model.Placa.IDTipoVeiculo, new SelectList(GenericDelegate.Listar<TipoVeiculo>(), "ID", "Nome"), "Tipo", new { @onchange = "raizenCoreJs.Placa.ExibirSetas(this);" }, new HtmlHelperOption() { colunas = "col-md-2" }, true, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsIDTipoVeiculoAlterado ? Model.PlacaOficial.TipoVeiculo : null)
+                                        @Html.HiddenFor(model => model.Placa.IDTipoVeiculo)
+                                    }
+                                    else
+                                    {
+                                        @Html.BootstrapDropDownListFor(model => model.Placa.IDTipoVeiculo, new SelectList(GenericDelegate.Listar<TipoVeiculo>(), "ID", "Nome"), "Tipo", new { @onchange = "raizenCoreJs.Placa.ExibirSetas(this);" }, new HtmlHelperOption() { colunas = "col-md-2" }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsIDTipoVeiculoAlterado ? Model.PlacaOficial.TipoVeiculo : null)
+                                    }
+
+                                    @{ string value = Model.Placa != null && Model.Placa.Tara > 0 ? Model.Placa.Tara.ToString("0.00") : "0,00";}
+                                    <div class="col-md-2">
+                                        <label class="control-label" for="Placa_Tara" id="lbl_Placa_Tara">Tara <span style="color:red">(Toneladas)</span></label>
+                                        <input class="form-control text-right"
+                                               currency-precision="0"
+                                               data-currency-field="True"
+                                               data-currency-field-inline="False"
+                                               data-val="true"
+                                               data-val-number="The field Tara must be a number."
+                                               data-val-range="Preenchimento Obrigatório!"
+                                               data-val-range-max="1E+16"
+                                               data-val-range-min="0"
+                                               data-val-required="Preenchimento Obrigatório!"
+                                               id="Placa_Tara"
+                                               name="Placa.Tara"
+                                               maxlength="5"
+                                               type="text"
+                                               value=@value>
+                                        @{
+                                            if (Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsTaraAlterado)
+                                            {
+                                                @Html.Raw(string.Format(@"<div class='fa fa-exclamation alertExclamation' title='{0:0.00}'></div>", Model.PlacaOficial.Tara))
+                                            }
+                                        }
+                                        @Html.Raw("<div class='fa fa-question alertQuestion' id='Placa_Tara_Help'></div>")
+                                    </div>
+
+                                    @if (Model.Placa.IDTipoVeiculo == (int)EnumTipoVeiculo.Tractor 
+                                        || Model.Placa.IDTipoVeiculo == (int)EnumTipoVeiculo.Semiremolque
+                                        || Model.Placa.IDTipoVeiculo == (int)EnumTipoVeiculo.Truck_Arg)
+                                    {
+                                        @Html.BootstrapNumberBoxFor(model => model.Placa.NumeroEixos, null, "Nº Ejes", new { maxlength = 1, min = 0 }, new HtmlHelperOption() { colunas = "col-md-1" }, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsNumeroEixosAlterado ? Model.PlacaOficial.NumeroEixos.ToString() : null, true)
+                                        @Html.BootstrapTextBoxFor(model => model.Placa.PlacaArgentina.PBTC, (Model.Placa.PlacaArgentina != null && Model.Placa.PlacaArgentina.PBTC != null ? Model.Placa.PlacaArgentina.PBTC.Value.ToString("F2") : null), "PBTC (t)", new { style = "text-align:right;" }, new HtmlHelperOption() { colunas = "col-md-2" })
+                                    }
+
+                                </div>
+                                <div class="row">
+                                    @{ var exibirTruckCarreta = "display:none";}
+                                    @if (Model.Placa.IDTipoVeiculo == (int)EnumTipoVeiculo.Semiremolque || Model.Placa.IDTipoVeiculo == (int)EnumTipoVeiculo.Truck_Arg)
+                                    {
+                                        exibirTruckCarreta = "";
+                                    }
+                                    <div class="tipoCarretaTruck" style="@exibirTruckCarreta">
+                                        @if (Model.Placa.LinhaNegocio == (int)EnumEmpresa.EAB || Model.Placa.LinhaNegocio == (int)EnumEmpresa.Ambos)
+                                        {
+                                            @Html.BootstrapDropDownListFor(model => model.Placa.IDTipoProduto, new SelectList(GenericDelegate.ListarTipoProdutoEabArgentina(), "ID", "Nome"), "Producto a Cargar", null, new HtmlHelperOption() { colunas = "col-md-3", mostraTextoVazio = false }, true, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsIDTipoProdutoAlterado ? Model.PlacaOficial.TipoProduto : null)
+                                            @Html.HiddenFor(model => model.Placa.IDTipoProduto)
+                                        }
+                                        else
+                                        {
+                                            @Html.BootstrapDropDownListFor(model => model.Placa.IDTipoProduto, new SelectList(GenericDelegate.ListarComplex<TipoProduto>(x => x.Pais == EnumPais.Argentina), "ID", "Nome"), "Producto a Cargar ", new { onchange = "" }, new HtmlHelperOption() { colunas = "col-md-3" }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsIDTipoProdutoAlterado ? Model.PlacaOficial.TipoProduto : null)
+                                        }
+
+                                    </div>
+
+                                    @{ var exibir = "display:none";}
+                                    @if (Model.Placa.EixosPneusDuplos)
+                                    {
+                                        exibir = "";
+                                    }
+
+                                    @{ exibir = "display:none";}
+                                    @if (Model.Placa.EixosPneusDuplos)
+                                    {
+                                        exibir = "";
+                                    }
+                                    <div id="NumeroEixosDistanciados" style="@exibir">
+                                        @Html.BootstrapNumberBoxFor(model => model.Placa.NumeroEixosDistanciados, null, "Nº Ejes Separados", new { maxlength = 1, min = 0, max = 3 }, new HtmlHelperOption() { colunas = "col-md-2" }, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsNumeroEixosDistanciadosAlterado ? Model.PlacaOficial.NumeroEixosDistanciados.ToString() : null)
+                                    </div>
+                                    <div class="tipoCarretaTruck" style="@exibirTruckCarreta">
+                                        @Html.BootstrapDropDownListFor(model => model.Placa.IDTipoCarregamento, new SelectList(GenericDelegate.Listar<TipoCarregamento>(), "ID", "NomeEs"), "Cargando", null, new HtmlHelperOption() { colunas = "col-md-2", isFormGroup = true }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsIDTipoCarregamentoAlterado ? Model.PlacaOficial.TipoCarregamento : null)
+                                        @Html.BootstrapDropDownListFor(model => model.Placa.MultiSeta, new SelectList(GenericDelegate.VerdadeiroOuFalso((int)EnumPais.Argentina), "Flag", "Nome"), "Flechas Múltiples", new { @onchange = "raizenCoreJs.Placa.ExibirSeta(this)" }, new HtmlHelperOption() { colunas = "col-md-2", isFormGroup = true }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsMultiSetaAlterado ? Model.PlacaOficial.MultiSeta ? "Sim" : "Não" : null)
+                                    </div>
+                                </div>
+                                <label id="lbl_Compartimento" style="visibility: hidden">Compartimiento</label>
+                                <label id="lbl_Documento_DataVencimento" style="visibility: hidden">Fecha de Vencimiento</label>
+                                <div class="row">
+                                    <div class="col-md-12 tipoCarretaTruck" style="@exibirTruckCarreta">
+                                        @if (Model.Placa.LinhaNegocio == (int)EnumEmpresa.Combustiveis)
+                                        {
+                                            Html.RenderPartial("_CompartimentoSetaArgentina", Model.Placa);
+                                        }
+                                        else
+                                        {
+                                            Html.RenderPartial("_CompartimentoSetaComLacresArgentina", Model.Placa);
+                                        }
+                                        <div class="col-md-12">
+                                            @Html.BootstrapButtonAdd("add", "", ButtonType.BUTTON, null, "title='Seleccione para insertar más flechas'") Para incluir flechas y compartimentos, haga clic en el icono
+                                            <br />
+                                            @Html.BootstrapButtonDelete("Remover", "", ButtonType.BUTTON, null, "title='Seleccione para eliminar flechas'") Para eliminar flechas y compartimentos, haga clic en el icono
+                                            <br />
+                                            <img style="height: 30px; margin: 3px;" src="~/Content/img/sistema/check.png" />
+                                            Para elegir la flecha a usar, seleccione la opción Principal
+                                        </div>
+                                    </div>
+                                </div>
+                                <br />
+                                <div class="row">
+                                    <div style="text-align:left" class="col-md-6">
+
+                                    </div>
+
+                                    <div style="text-align:right" class="col-md-6">
+                                        <button type="button" class="btn btn-custom btnNext">Adelante <i class="fa fa-arrow-right"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            @if (Model.Placa.Operacao != "FOB" || Model.Placa.LinhaNegocio == (int)EnumEmpresa.EAB)
+                            {
+                                <div class="tab-pane @divClass" id="tabProprietario">
+
+                                    <div class="row">
+                                        @if (Model.Placa.IDTipoVeiculo == (int)EnumTipoVeiculo.Tractor 
+                                            || Model.Placa.IDTipoVeiculo == (int)EnumTipoVeiculo.Semiremolque
+                                            || Model.Placa.IDTipoVeiculo == (int)EnumTipoVeiculo.Truck_Arg)
+                                        {
+                                            @Html.BootstrapTextBoxFor(model => model.Placa.Marca, null, "Marca", new { maxlength = 200 }, new HtmlHelperOption() { colunas = "col-md-2" }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsMarcaAlterado ? Model.PlacaOficial.Marca : null)
+                                            @Html.BootstrapTextBoxFor(model => model.Placa.Modelo, null, "Modelo", new { maxlength = 200 }, new HtmlHelperOption() { colunas = "col-md-2" }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsModeloAlterado ? Model.PlacaOficial.Modelo : null)
+
+                                            if (Model.Placa.IDTipoVeiculo == (int)EnumTipoVeiculo.Semiremolque || Model.Placa.IDTipoVeiculo == (int)EnumTipoVeiculo.Truck_Arg)
+                                            {
+                                                @Html.BootstrapTextBoxFor(model => model.Placa.PlacaArgentina.Material, null, "Material", new { maxlength = 200 }, new HtmlHelperOption() { colunas = "col-md-2" }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsMaterialAlterado ? Model.PlacaOficial.Material : null)
+                                            }
+                                        }
+
+                                        @if (Model.Placa.IDTipoVeiculo == (int)EnumTipoVeiculo.Tractor)
+                                        {
+                                            @Html.BootstrapTextBoxFor(model => model.Placa.PlacaArgentina.Potencia, null, "Poder", new { maxlength = 200 }, new HtmlHelperOption() { colunas = "col-md-2" }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsPotenciaAlterado ? Model.PlacaOficial.Potencia : null)
+                                            @Html.BootstrapTextBoxFor(model => model.Placa.Chassi, null, "Nº Chassis", new { maxlength = 17, style = "text-transform:uppercase" }, new HtmlHelperOption() { colunas = "col-md-2" }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsChassiAlterado ? Model.PlacaOficial.Chassi : null)
+                                            @Html.BootstrapTextBoxFor(model => model.Placa.PlacaArgentina.NrMotor, null, "Nº Motor", new { maxlength = 200 }, new HtmlHelperOption() { colunas = "col-md-2" }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsNrMotorAlterado ? Model.PlacaOficial.NrMotor : null)
+                                        }
+                                    </div>
+
+                                    @if (Model.Placa.IDTipoVeiculo == (int)EnumTipoVeiculo.Tractor)
+                                    {
+                                        <div class="row">
+                                            @Html.BootstrapTextBoxFor(model => model.Placa.PlacaArgentina.SatelitalMarca, null, "Sistema Satelital - Marca", new { maxlength = 200 }, new HtmlHelperOption() { colunas = "col-md-2" }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsSatelitalMarcaAlterado ? Model.PlacaOficial.SatelitalMarca : null)
+                                            @Html.BootstrapTextBoxFor(model => model.Placa.PlacaArgentina.SatelitalModelo, null, "Sistema Satelital - Modelo", new { maxlength = 200 }, new HtmlHelperOption() { colunas = "col-md-3" }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsSatelitalModeloAlterado ? Model.PlacaOficial.SatelitalModelo : null)
+                                            @Html.BootstrapTextBoxFor(model => model.Placa.PlacaArgentina.SatelitalNrInterno, null, "Sistema Satelital - N° Interno", new { maxlength = 200 }, new HtmlHelperOption() { colunas = "col-md-3" }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsSatelitalNrInternoAlterado ? Model.PlacaOficial.SatelitalNrInterno : null)
+                                            @Html.BootstrapTextBoxFor(model => model.Placa.PlacaArgentina.SatelitalEmpresa, null, "Sistema Satelital – Empresa", new { maxlength = 200 }, new HtmlHelperOption() { colunas = "col-md-3" }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsSatelitalEmpresaAlterado ? Model.PlacaOficial.SatelitalEmpresa : null)
+                                        </div>
+                                    }
+
+                                    <div class="row">
+                                        <div style="text-align:left" class="col-md-6">
+                                            <button class="btn btn-custom btnPrevious" type="button"><i class="fa fa-arrow-left"></i> Anterior</button>
+                                        </div>
+
+                                        <div style="text-align:right" class="col-md-6">
+                                            <button class="btn btn-custom btnNext" type="button">Adelante <i class="fa fa-arrow-right"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            <div id="tabDocumentacao" class="tab-pane @divClass">
+                                <div class="row">
+                                    @Html.BootstrapTextBoxFor(model => model.Placa.PlacaArgentina.CUIT, null, "CUIT Del Transportitsta", new { maxlength = 400, title = "Entra en el Carrier Cuit" }, new HtmlHelperOption() { colunas = "col-md-2" }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsCuitAlterado ? Model.PlacaOficial.Cuit : null)
+                                    @Html.BootstrapTextBoxFor(model => model.Placa.RazaoSocial, null, "Razón Social de Transportista", new { maxlength = 400, title = "Ingrese el nombre de la compañía del transportista" }, new HtmlHelperOption() { colunas = "col-md-3" }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsRazaoSocialAlterado ? Model.PlacaOficial.RazaoSocial : null)
+                                    @Html.BootstrapDropDownListFor(model => model.Placa.IDCategoriaVeiculo, new SelectList(CategoriaVeiculoDelegate.ListarVeiculo(), "ID", "NomeEs"), "Categoría de Vehículo", new { onchange = "raizenCoreJs.Placa.carregarDocumentos(2)", title = "Complete de acuerdo con la categoría de vehículo indicada en el Certificado de registro y licencia de vehículo (CRLV)" }, new HtmlHelperOption() { colunas = "col-md-2" }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsIDCategoriaVeiculoAlterado ? Model.PlacaOficial.CategoriaVeiculo : null, true)
+
+                                </div>
+
+                                <br />
+
+                                <div id="documentos">
+                                    @if (Model.Placa.Documentos != null)
+                                    {
+                                        Model.Placa.Documentos.ForEach(p => p.Aprovar = Model.Aprovar);
+                                        Html.RenderPartial("~/Views/PlacaArgentina/Partial/_Documentos.cshtml", Model.Placa.Documentos);
+                                    }
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6" id="anexoPlaca">
+                                        <label id="lbl_Documentos" style="display: none;">Docs</label>
+                                        @Html.HiddenFor(model => model.Placa.Anexo, new { @id = "Anexo-" + Model.Placa.ID })
+                                        <label id="lbl_Placa_Anexo">Use esta opción para adjuntar la documentación en un solo archivo.</label>
+                                        @if (string.IsNullOrEmpty(Model.Placa.Anexo))
+                                        {
+                                            <input id="input-701-@Model.Placa.ID" type="file" name="@Html.NameFor(p => p.Placa.Anexo)" class="anexoCount" data-buttonText="Selecione" data-iconName="glyphicon glyphicon-file">
+                                        }
+                                        else
+                                        {
+                                            <a href="@Url.Action("Download", "Arquivo")?file=@(Model.Placa.Anexo)" class="anexoCount" target="_blank" id="linkAnexo-@Model.Placa.ID">@Model.Placa.Anexo</a>
+                                            <button type="button" tabindex="500" id="limparAnexo-@Model.Placa.ID" title="Limpar" class="btn btn-default fileinput-remove fileinput-remove-button" onclick="RemoverAnexo(@Model.Placa.ID);"><i class="glyphicon glyphicon-trash"></i> </button>
+                                            <div id="inputDiv-@Model.Placa.ID" style="display:none">
+                                                <input id="input-701-@Model.Placa.ID" type="file" name="@Html.NameFor(p => p.Placa.Anexo)" class="anexoCount" data-buttonText="Selecione" data-iconName="glyphicon glyphicon-file">
+                                            </div>
+                                        }
+
+                                        <script>
+                                                function RemoverAnexo(id) {
+                                                    $('#Anexo-' + id).val('');
+                                                    $('#limparAnexo-'+id).hide();
+                                                    $('#linkAnexo-'+id).hide();
+                                                    $("#inputDiv-"+id).show(800);
+                                                }
+
+                                                $("#input-701-@Model.Placa.ID").fileinput({
+                                                    uploadUrl: '@Url.Action("AnexarArquivo", "Arquivo")',
+                                                    dropZoneEnabled: false,
+                                                    showUpload: false,
+                                                    showPreview: false,
+                                                    browseLabel: '',
+                                                    uploadLabel: '',
+                                                    removeLabel: '',
+                                                    layoutTemplates: {
+                                                        progress: ''
+                                                    },
+                                                });
+
+                                                $('#input-701-@Model.Placa.ID').on('fileloaded', function (event, file, previewId, index, reader) {
+
+                                                    var formData = new FormData();
+
+                                                    formData.append('file', file);
+                                                    raizenCoreJs.raizenHelpers.AbrirLoading();
+                                                    $.ajax({
+                                                        url: '@Url.Action("AnexarArquivo", "Arquivo")',
+                                                        data: formData,
+                                                        cache: false,
+                                                        contentType: false,
+                                                        processData: false,
+                                                        type: 'POST',
+                                                        success: function (response) {
+                                                            raizenCoreJs.raizenHelpers.FecharLoading();
+
+                                                            if (response == 'O Arquivo selecionado está vazio!') {
+                                                                $('#anexoPlaca .glyphicon.glyphicon-trash').trigger('click');
+                                                                ShowErrorMenssage('¡El archivo seleccionado está vacío!');
+                                                            }
+                                                            else if (response == 'Tamanho Arquivo')
+                                                            {
+                                                                ShowErrorMenssage('El archivo debe ser menor que 20 MB, inténtelo nuevamente', 20);
+                                                                $('#anexoPlaca .glyphicon.glyphicon-trash').trigger('click');
+                                                            }
+                                                            else if (response.indexOf('Formato de Arquivo Inválido') >= 0) {
+                                                                ShowErrorMenssage('Formato de archivo inválido', 20);
+                                                                $('#anexoPlaca .glyphicon.glyphicon-trash').trigger('click');
+                                                            }
+                                                            else {
+                                                                $('#Anexo-@Model.Placa.ID').val(response);
+                                                            }
+                                                        },
+                                                        error: function (response) {
+                                                            ShowErrorMenssage('El archivo debe ser menor que 20 MB, inténtelo nuevamente', 20);
+                                                        }
+                                                    });
+                                                });
+
+                                        </script>
+                                    </div>
+                                </div>
+
+                                <br />
+
+                                <div class="row">
+                                    <div style="text-align:left" class="col-md-6">
+                                        <button class="btn btn-custom btnPrevious" type="button"><i class="fa fa-arrow-left"></i> Anterior</button>
+                                    </div>
+
+                                    <div style="text-align:right" class="col-md-6">
+                                        <button class="btn btn-custom btnNext" type="button">Adelante <i class="fa fa-arrow-right"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane" id="tabPermissao">
+                                @{ Html.RenderPartial("~/Views/PlacaArgentina/Partial/_Permissao.cshtml", Model); }
+                                <br />
+                                <div class="row">
+                                    <div style="text-align:left" class="col-md-6">
+                                        <button class="btn btn-custom btnPrevious" type="button"><i class="fa fa-arrow-left"></i> Anterior</button>
+                                    </div>
+
+                                    <div style="text-align:right" class="col-md-6">
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modalQuestion" class="modalDropQuestion" style="display: none">
+</div>

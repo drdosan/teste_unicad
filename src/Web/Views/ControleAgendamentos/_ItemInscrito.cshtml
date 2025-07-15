@@ -1,0 +1,25 @@
+﻿@using Raizen.UniCad.Model;
+@model  Raizen.UniCad.Model.View.ControlePresencaMotoristaView
+
+<tr class="gradeX">
+    @using (Html.BeginCollectionItem("listaControles"))
+    {
+        @Html.HiddenFor(model => model.idAgendamentoHorario)
+        @Html.HiddenFor(model => model.idMotorista)
+        @Html.HiddenFor(model => model.idAgendamentoTreinamento)
+        @Html.HiddenFor(model => model.Usuario)
+        @Html.HiddenFor(model => model.Data)
+        @Html.HiddenFor(model => model.Operacao)
+        @Html.HiddenFor(model => model.IDEmpresaCongenere)
+        @Html.HiddenFor(model => model.Cpf)
+        @Html.HiddenFor(model => model.Nome)
+        <td style="word-wrap: break-word;">@Model.Horario</td>
+        <td style="word-wrap: break-word;">@Model.LinhaNegocio</td>
+        <td style="word-wrap: break-word;">@Model.Operacao</td>
+        <td style="word-wrap: break-word;">@Convert.ToUInt64(Model.Cpf).ToString(@"000\.000\.000\-00")</td>
+        <td style="word-wrap: break-word;">@Model.Nome</td>
+        <td style="word-wrap: break-word;">
+            @Html.BootstrapDropDownListFor(model => model.Situacao, new SelectList(GenericDelegate.ListarEnum<EnumSituacaoAgendamento>(), "Value", "Key"), null, null, new HtmlHelperOption() { colunas = "col-md-12", hideLabel=true })
+        </td>
+    }
+</tr>

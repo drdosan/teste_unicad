@@ -1,0 +1,15 @@
+﻿@model Raizen.UniCad.Model.View.PlacaClienteView
+<tr id="linha-cliente-@Model.ID" class="gradeX">
+    @using (Html.BeginCollectionItem("Placa.Clientes"))
+    {
+        @Html.HiddenFor(item => item.IDCliente, new { @class = "IDCliente" })
+        @Html.HiddenFor(item => item.RazaoSocial)
+        <td style="width: 75%; word-wrap: break-word">
+            @Html.PopoverTextFor(item => item.RazaoSocial, 80, "right")
+        </td>
+        <td style="width: 25%; word-wrap: break-word">
+            @(Model.DataAprovacao.HasValue? Model.DataAprovacao.Value.ToString("dd/MM/yyyy HH:mm") : "")
+            @Html.HiddenFor(item => item.DataAprovacao)
+        </td>
+    }
+</tr>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DiscoveryClientResultsFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Results>
+    <DiscoveryClientResult referenceType="System.Web.Services.Discovery.ContractReference" url="http://cpsvsappiq01.cosan.rede:50000/dir/wsdl?p=ic/037b681fb71d38828058b442ea884f94" filename="Veiculo_Out.wsdl" />
+  </Results>
+</DiscoveryClientResultsFile>

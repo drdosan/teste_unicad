@@ -1,0 +1,172 @@
+﻿@using Raizen.Framework.Models
+@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.UniCad.Model;
+
+@model Raizen.UniCad.Web.Models.ModelAgendamentoTerminal
+@{
+    var urlValidacao = @Url.Action("ValidarObjetos", "AgendamentoTerminal");
+
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $(document).ready(function () {
+            AgendamentoTerminal.prototype.verificarSeEhPool();
+            $('#dateRange').multiDatesPicker({ dateFormat: "dd/mm/yy", minDate: "today" });
+            $(document).keyup(function (e) {
+                if (e.keyCode === 27) raizenCoreJs.AgendamentoTerminal.fecharModal();   // esc
+            });
+        });
+
+        raizenCoreJs.raizenCRUD.urlSalvar = '@Url.Action("Salvar", "AgendamentoTerminal")';
+
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        raizenCoreJs.raizenHelpers.urlValidacao = "@urlValidacao";
+    });
+
+</script>
+<style>
+    .tab-pane {
+        border-left: 1px solid silver;
+        border-bottom: 1px solid silver;
+        border-right: 1px solid silver;
+        border-radius: 0px 0px 5px 5px;
+        padding: 30px;
+        margin-bottom: 20px;
+    }
+
+    .invisivel {
+        display: none;
+    }
+
+    .roxoRaizen {
+        background-color: #6f376c !important;
+    }
+
+    .modal-dialog {
+        max-width: 90% !important;
+    }
+</style>
+<div class="box border raizen" onkeypress="if (event.which == 13) return raizenCoreJs.AgendamentoTerminal.adicionarHorario();" id="containerEdicaoAgendamento">
+    <div class="box-title">
+        <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Edição de Agendamento de Terminais</span></h4>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <form id="frmEdicao" class="form-horizontal">
+                <div class="col-md-12">
+                    <div class="row">
+                        @{var idHoraAgenda = Model.AgendamentoTerminalHorario != null ? Model.AgendamentoTerminalHorario.idHoraAgenda : 0;}
+                        <input type="hidden" id="idHoraAgenda" value="@idHoraAgenda">
+                        @Html.HiddenFor(model => model.ChavePrimaria)
+                        @Html.HiddenFor(model => model.Operacao)
+                        @Html.HiddenFor(model => model.AgendamentoTerminalHorario.OperacaoUsuario)
+                        @Html.HiddenFor(model => model.AgendamentoTerminalHorario.IDEmpresaUsuario)
+                        @if (Model.Operacao != OperacoesCRUD.Editando)
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.AgendamentoTerminal.IDTerminal, new SelectList(GenericDelegate.ListarTerminal().OrderBy(p => p.Nome), "ID", "Nome"), "Terminal", new { onchange = "RaizenCoreJs.prototype.AgendamentoTerminal.pesquisarHorarios();AgendamentoTerminal.prototype.verificarSeEhPool();" }, new HtmlHelperOption() { colunas = "col-md-3" })
+                            @Html.BootstrapDropDownListFor(model => model.AgendamentoTerminal.IDTipoAgenda, new SelectList(GenericDelegate.Listar<TipoAgenda>().OrderBy(p => p.Nome), "ID", "Nome"), "Tipo da Agenda", new { onchange = "RaizenCoreJs.prototype.AgendamentoTerminal.pesquisarHorarios();" }, new HtmlHelperOption() { colunas = "col-md-3" })
+                            @Html.BootstrapDateBoxFor(model => model.AgendamentoTerminal.Data, "Data da Agenda", new { @class = "dataValidade form-control", @onkeyup = "mascaraData(this, event);", onchange = "RaizenCoreJs.prototype.AgendamentoTerminal.pesquisarHorarios();" }, new HtmlHelperOption { colunas = "col-md-3" })
+                        }
+                        else
+                        {
+                            @Html.BootstrapDropDownListFor(model => model.AgendamentoTerminal.IDTerminal, new SelectList(GenericDelegate.ListarTerminal().OrderBy(p => p.Nome), "ID", "Nome"), "Terminal", new { onchange = "RaizenCoreJs.prototype.AgendamentoTerminal.pesquisarHorarios();" }, new HtmlHelperOption() { colunas = "col-md-3" },true)
+                            @Html.BootstrapDropDownListFor(model => model.AgendamentoTerminal.IDTipoAgenda, new SelectList(GenericDelegate.Listar<TipoAgenda>().OrderBy(p => p.Nome), "ID", "Nome"), "Tipo da Agenda", new { onchange = "RaizenCoreJs.prototype.AgendamentoTerminal.pesquisarHorarios();" }, new HtmlHelperOption() { colunas = "col-md-3" },true)
+                            @Html.BootstrapDateBoxFor(model => model.AgendamentoTerminal.Data, "Data da Agenda", new { @class = "dataValidade form-control", @onkeyup = "mascaraData(this, event);", onchange = "RaizenCoreJs.prototype.AgendamentoTerminal.pesquisarHorarios();" }, new HtmlHelperOption { colunas = "col-md-3" },null,false,true)
+                            @Html.HiddenFor(model => model.AgendamentoTerminal.IDTerminal)
+                            @Html.HiddenFor(model => model.AgendamentoTerminal.IDTipoAgenda)
+                            @Html.HiddenFor(model => model.AgendamentoTerminal.Data)
+                        }
+                        @Html.BootstrapDropDownListFor(model => model.AgendamentoTerminal.Ativo, new SelectList(GenericDelegate.AtivoInativo(), "Flag", "Nome"), "Status", null, new HtmlHelperOption() { colunas = "col-md-3" })
+                    </div>
+
+                </div>
+
+                <br />
+                <div class="col-md-12">
+                    <div class="box border raizen">
+                        <div class="box-title">
+                            <h4><i class="fa fa-calendar"></i><span class="hidden-inline-mobile">Horários</span></h4>
+                        </div>
+                        <div class="box-body">
+                            <div class="row">
+                                @Html.BootstrapTimeBoxFor(model => model.AgendamentoTerminalHorario.HoraInicio, "Início", null, new HtmlHelperOption { colunas = "col-md-2" })
+                                @Html.BootstrapTimeBoxFor(model => model.AgendamentoTerminalHorario.HoraFim, "Fim", null, new HtmlHelperOption { colunas = "col-md-2" })
+
+                                @if (Model != null && Model.AgendamentoTerminalHorario != null && (Model.AgendamentoTerminalHorario.IDEmpresa == null || Model.AgendamentoTerminalHorario.IDEmpresa == 0 || Model.AgendamentoTerminalHorario.IDEmpresa == 3))
+                                {
+                                    @Html.BootstrapDropDownListFor(model => model.AgendamentoTerminalHorario.IDEmpresa, new SelectList(GenericDelegate.Listar<Empresa>(), "ID", "Nome"), "Linha de Negócio", null, new HtmlHelperOption() { colunas = "col-md-2" })
+                                }
+                                else
+                                {
+                                    @Html.BootstrapDropDownListFor(model => model.AgendamentoTerminalHorario.IDEmpresa, new SelectList(GenericDelegate.Listar<Empresa>(), "ID", "Nome"), "Linha de Negócio", null, new HtmlHelperOption() { colunas = "col-md-2" }, true)
+                                    @Html.HiddenFor(model => model.AgendamentoTerminalHorario.IDEmpresa)
+
+                                }
+
+                                @if (Model != null && Model.AgendamentoTerminalHorario != null && (string.IsNullOrEmpty(Model.AgendamentoTerminalHorario.Operacao) || Model.AgendamentoTerminalHorario.Operacao == "Ambos"))
+                                {
+                                    @Html.BootstrapDropDownListFor(model => model.AgendamentoTerminalHorario.Operacao, new SelectList(GenericDelegate.CifFobOuAmbos(), "ID", "Nome"), "Operação", null, new HtmlHelperOption() { colunas = "col-md-2" })
+                                }
+                                else
+                                {
+                                    @Html.BootstrapDropDownListFor(model => model.AgendamentoTerminalHorario.Operacao, new SelectList(GenericDelegate.CifFobOuAmbos(), "ID", "Nome"), "Operação", null, new HtmlHelperOption() { colunas = "col-md-2" }, true)
+                                    @Html.HiddenFor(model => model.AgendamentoTerminalHorario.Operacao)
+                                }
+                                @Html.BootstrapNumberBoxFor(model => model.AgendamentoTerminalHorario.Vagas, null, "Vagas", new { min = 1, max = 10000 }, new HtmlHelperOption() { colunas = "col-md-2" })
+                                @Html.BootstrapButtonAdd("btnAdd", null, ButtonType.BUTTON, "raizenCoreJs.AgendamentoTerminal.adicionarHorario()", "style=margin-top:23px;")
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table id="docTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover">
+                                        <thead>
+                                            <tr class="table-raizen">
+                                                <th style="word-wrap: break-word; width:10%">
+                                                    Horário
+                                                </th>
+                                                <th style="word-wrap: break-word; width:30%">
+                                                    Linha de Negócio
+                                                </th>
+                                                <th style="word-wrap: break-word; width:10%">
+                                                    Operação
+                                                </th>
+                                                <th style="word-wrap: break-word; width:20%;">
+                                                    Vagas
+                                                </th>
+                                                <th style="word-wrap: break-word; width:30%">
+                                                    Operações
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="horarios">
+                                            @{Html.RenderPartial("~/Views/AgendamentoTerminal/_Horario.cshtml", Model.AgendamentoTerminal); }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="row" style="text-align:center">
+                <div class="col-md-12">
+                    <button class="btn btn-custom voltar" type="button" tabindex="2" onclick="raizenCoreJs.AgendamentoTerminal.salvar();" aria-hidden="true">
+                        <i class="fa fa-save"></i> Salvar
+                    </button>
+                    <button class="btn btn-custom voltar" type="button" tabindex="2" onclick="raizenCoreJs.AgendamentoTerminal.fecharModal();" aria-hidden="true">
+                        <i class="fa fa-long-arrow-left"></i> Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<label id="lbl_Horario" style="visibility:hidden">Horário</label>

@@ -1,0 +1,27 @@
+﻿@model  Raizen.UniCad.Model.View.AgendamentoTerminalHorarioView
+
+@{
+    string funcaoEdit = "RaizenCoreJs.prototype.AgendamentoTerminal.editarHorario(" + @Model.ID.ToString() + ")";
+    string funcaoExcluir = "excluirHorario(" + @Model.ID.ToString() + ")";
+}
+<tr id="linhaHorario-@Model.ID" class="gradeX">
+    <input type="hidden" id="HoraInicio" value="@Model.HoraInicio" />
+    <input type="hidden" id="HoraFim" value="@Model.HoraFim" />
+    <input type="hidden" id="IdLinhaNegocios" value="@Model.IdLinhaNegocios" />
+    <input type="hidden" id="Operacao" value="@Model.Operacao" />
+    <input type="hidden" id="NumVagas" value="@Model.NumVagas" />
+    <td style="word-wrap: break-word;">@Model.Horario</td>
+    <td style="word-wrap: break-word;">@Model.LinhaNegocios</td>
+    <td style="word-wrap: break-word;">@Html.Raw(Model.Operacao=="con" ? "Congênere" : Model.Operacao) </td>
+    <td style="word-wrap: break-word;">@Model.NumVagas</td>
+    <td align="center" style="width: 15%;">
+        <div class="btn-group center" style="float: none;">
+            <button class="btn btn-custom" type="button" title="Editar" onclick="@Html.Raw(funcaoEdit)">
+                <i class="fa fa-pencil"></i>
+            </button>
+            <button class="btn btn-custom" type="button" title="Remover" onclick="@Html.Raw(funcaoExcluir)">
+                <i class="fa fa-trash-o"></i>
+            </button>
+        </div>
+    </td>
+</tr>

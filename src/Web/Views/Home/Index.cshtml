@@ -1,0 +1,260 @@
+﻿@{
+    ViewBag.Title = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .price {
+        background: #bb5bb4;
+        cursor: pointer;
+    }
+
+    .pricing_table h3 {
+        background: #bb5bb4;
+        cursor: pointer;
+    }
+
+    .btn-custom {
+        background: #ffffff;
+    }
+
+        .btn-custom:hover, .btn-custom:focus, .btn-custom:active, .btn-custom.active, .open .dropdown-toggle.btn-custom {
+            background: #ffffff;
+        }
+
+    .price_block:hover h3 {
+        background: #b743ae;
+    }
+
+    .price_tenure {
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .fa-5x {
+        color: #555555;
+    }
+</style>
+
+<div class="box-body">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-12">
+                <br />
+                <div class="row">
+                    <ul class="pricing_table row">
+                        @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "Composicao" && p.TagAcao == "load") != null)
+                        {
+                            <li id="linkComposicao" class="price_block col-md-4 col-xs-12 " onclick="verComposicao()">
+                                <h3 onclick="verComposicao()">Veículo</h3>
+                                <ul class="features" onclick="verComposicao()">
+                                    <div onclick="verComposicao()"><a onclick="verComposicao()" class="btn btn-xs btn-custom input-block-level"><i class="fa fa-truck fa-5x"></i></a></div>
+                                </ul>
+                                <div onclick="verComposicao()" class="price default">
+                                    <div class="price_figure">
+                                        <span class="price_number"></span>
+                                        <span class="price_tenure" onclick="verComposicao()">Listagem de Veículos</span>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                        @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "Motorista" && p.TagAcao == "load") != null)
+                        {
+                            <li id="linkMotorista" class="price_block col-md-4 col-xs-12 " onclick="verMotorista()">
+                                <h3 onclick="verMotorista()">Motorista</h3>
+                                <ul class="features" onclick="verMotorista()">
+                                    <div onclick="verMotorista()"><a class="btn btn-xs btn-custom input-block-level"><i class="fa fa-user  fa-5x"></i></a></div>
+                                </ul>
+                                <div class="price default" onclick="verMotorista()">
+                                    <div class="price_figure" onclick="verMotorista()">
+                                        <span class="price_number"></span>
+                                        <span class="price_tenure" onclick="verMotorista()">Listagem de Motoristas</span>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="row">
+                    <ul class="pricing_table row">
+                        @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "AgendamentoChecklist" && p.TagAcao == "load") != null)
+                        {
+                            <li id="linkComposicao" class="price_block col-md-4 col-xs-12 " onclick="verAgendamentoChecklist()">
+                                <h3 onclick="verAgendamentoChecklist()">Checklist</h3>
+                                <ul class="features" onclick="verAgendamentoChecklist()">
+                                    <div onclick="verAgendamentoChecklist()"><a onclick="verAgendamentoChecklist()" class="btn btn-xs btn-custom input-block-level"><i class="fa fa-check-square fa-5x"></i></a></div>
+                                </ul>
+                                <div onclick="verAgendamentoChecklist()" class="price default">
+                                    <div class="price_figure">
+                                        <span class="price_number"></span>
+                                        <span class="price_tenure" onclick="verAgendamentoChecklist()">Agendamento de Checklist</span>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                        @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "AgendamentoTreinamento" && p.TagAcao == "load") != null)
+                        {
+                            <li id="linkMotorista" class="price_block col-md-4 col-xs-12 " onclick="verAgendamentoTreinamento()">
+                                <h3 onclick="verAgendamentoChecklist()">Treinamento</h3>
+                                <ul class="features" onclick="verAgendamentoTreinamento()">
+                                    <div onclick="verAgendamentoChecklist()"><a class="btn btn-xs btn-custom input-block-level"><img style="height: 52px; margin: 4px; width: 47px;" src="~/Content/img/background/clipboard-list.png" /></a></div>
+                                </ul>
+                                <div class="price default" onclick="verAgendamentoTreinamento()">
+                                    <div class="price_figure" onclick="verAgendamentoTreinamento()">
+                                        <span class="price_number"></span>
+                                        <span class="price_tenure" onclick="verAgendamentoTreinamento()">Agendamento de Treinamento</span>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="box-body">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-12">
+                <br />
+                <div class="row">
+                    <ul class="pricing_table row">
+                        @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "ComposicaoArgentina" && p.TagAcao == "load") != null)
+                        {
+                            <li id="linkComposicaoArgentina" class="price_block col-md-4 col-xs-12 " onclick="verComposicaoArgentina()">
+                                <h3 onclick="verComposicaoArgentina()">Vehículo</h3>
+                                <ul class="features" onclick="verComposicaoArgentina()">
+                                    <div onclick="verComposicaoArgentina()"><a onclick="verComposicaoArgentina()" class="btn btn-xs btn-custom input-block-level"><i class="fa fa-truck fa-5x"></i></a></div>
+                                </ul>
+                                <div onclick="verComposicaoArgentina()" class="price default">
+                                    <div class="price_figure">
+                                        <span class="price_number"></span>
+                                        <span class="price_tenure" onclick="verComposicaoArgentina()">Lista de Vehículos</span>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                        @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "MotoristaArgentina" && p.TagAcao == "load") != null)
+                        {
+                            <li id="linkMotoristaArgentina" class="price_block col-md-4 col-xs-12 " onclick="verMotoristaArgentina()">
+                                <h3 onclick="verMotoristaArgentina()">Conductor</h3>
+                                <ul class="features" onclick="verMotoristaArgentina()">
+                                    <div onclick="verMotoristaArgentina()"><a class="btn btn-xs btn-custom input-block-level"><i class="fa fa-user  fa-5x"></i></a></div>
+                                </ul>
+                                <div class="price default" onclick="verMotoristaArgentina()">
+                                    <div class="price_figure" onclick="verMotoristaArgentina()">
+                                        <span class="price_number"></span>
+                                        <span class="price_tenure" onclick="verMotoristaArgentina()">Lista de Conductores</span>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="box-body">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-12">
+                <br />
+                <div class="row">
+                    <ul class="pricing_table row">
+                        @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "ImpressaoCracha" && p.TagAcao == "load") != null)
+                        {
+                            <li id="linkImpressaoCracha" class="price_block col-md-4 col-xs-12 " onclick="verImpressaoCracha()">
+                                <h3 onclick="verImpressaoCracha()">Imprimir</h3>
+                                <ul class="features" onclick="verImpressaoCracha()">
+                                    <div onclick="verImpressaoCracha()"><a onclick="verImpressaoCracha()" class="btn btn-xs btn-custom input-block-level"><i class="fa fa-print fa-5x"></i></a></div>
+                                </ul>
+                                <div onclick="verImpressaoCracha()" class="price default">
+                                    <div class="price_figure">
+                                        <span class="price_number"></span>
+                                        <span class="price_tenure" onclick="verImpressaoCracha()">Crachá Motorista</span>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+
+                        @if (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "ImpressaoCrachaArgentina" && p.TagAcao == "load") != null)
+                        {
+                            <li id="linkImpressaoCrachaArgentina" class="price_block col-md-4 col-xs-12 " onclick="verImpressaoCrachaArgentina()">
+                                <h3 onclick="verImpressaoCrachaArgentina()">Imprimir</h3>
+                                <ul class="features" onclick="verImpressaoCracha()">
+                                    <div onclick="verImpressaoCrachaArgentina()"><a onclick="verImpressaoCrachaArgentina()" class="btn btn-xs btn-custom input-block-level"><i class="fa fa-print fa-5x"></i></a></div>
+                                </ul>
+                                <div onclick="verImpressaoCrachaArgentina()" class="price default">
+                                    <div class="price_figure">
+                                        <span class="price_number"></span>
+                                        <span class="price_tenure" onclick="verImpressaoCrachaArgentina()">Placa de Conductor</span>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts {
+    <script type="text/javascript">
+
+        var urlComposicao = '@Url.Action("Index", "Composicao")';
+        var urlMotoristas = '@Url.Action("Index", "Motorista")';
+
+        var urlAgendamentoTreinamento = '@Url.Action("Index", "AgendamentoTreinamento")';
+        var urlAgendamentoChecklist = '@Url.Action("Index", "AgendamentoChecklist")';
+
+        var urlComposicaoArgentina = '@Url.Action("Index", "ComposicaoArgentina")';
+        var urlMotoristaArgentina = '@Url.Action("Index", "MotoristaArgentina")';
+
+        var urlImpressaoCracha = '@Url.Action("Index", "ImpressaoCracha")';
+
+        var urlImpressaoCrachaArgentina = '@Url.Action("Index", "ImpressaoCrachaArgentina")';
+
+        function verComposicao() {
+            window.location.href = urlComposicao;
+        }
+
+        function verMotorista() {
+            window.location.href = urlMotoristas;
+        }
+
+        function verAgendamentoTreinamento() {
+            window.location.href = urlAgendamentoTreinamento;
+        }
+
+        function verAgendamentoChecklist() {
+            window.location.href = urlAgendamentoChecklist;
+        }
+
+        function verComposicaoArgentina() {
+            window.location.href = urlComposicaoArgentina;
+        }
+
+        function verMotoristaArgentina() {
+            window.location.href = urlMotoristaArgentina;
+        }
+
+        function verImpressaoCracha() {
+            window.location.href = urlImpressaoCracha;
+        }
+
+        function verImpressaoCrachaArgentina() {
+            window.location.href = urlImpressaoCrachaArgentina;
+        }
+
+    </script>
+}
+
+

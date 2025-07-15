@@ -1,0 +1,169 @@
+﻿@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Models
+@using Raizen.Framework.Models
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.UniCad.Model;
+
+@model Raizen.UniCad.Web.Models.ModelImpressaoCracha
+
+@{
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+
+    var tabIndiceCrudEdicao = new int[2];
+    tabIndiceCrudEdicao[0] = 4;
+    tabIndiceCrudEdicao[1] = 5;
+
+}
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.ImpressaoCracha.js")"></script>
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Motorista.js")"></script>
+
+<script type="text/javascript">
+
+    $(".hidden-inline-mobile").replaceWith("<span> Impresión de Placa </span>");
+    function VerificarDNI() {
+        if ($('#Filtro_DNI').val() == '' || $('#Filtro_DNI').val().length < 10) {
+            ShowErrorMenssage('Por favor escriba un DNI');
+            return false;
+        }
+        if (!ValidarDNI($('#Filtro_DNI').val() )) {
+            ShowErrorMenssage('DNI Inválido');
+            return false;
+        }
+        return true;
+
+    }
+
+    
+    $("#frmPesquisa").submit(function (event) {
+        if(VerificarDNI())
+            return
+
+        event.preventDefault();
+    });
+    
+
+    
+    $("#Foto").fileinput({
+        language: "es",
+        dropZoneEnabled: false,
+        showUpload: false,
+        showPreview: false,
+        browseLabel: '',
+        uploadLabel: '',
+        removeLabel: '',
+        required: true,
+        initialCaption: "Seleccione una foto de 3x4 con tamaño máximo: 2 MB",
+        maxFileSize: 2048,
+        allowedFileExtensions: ["jpg", "png"],
+        layoutTemplates: {
+            progress: ''
+        },
+
+    });
+
+    $('#Foto').on('fileerror', function (event, data, msg) {
+        ShowErrorMenssage(msg, 15);
+        $(".btnCracha").prop("disabled", true);
+    });
+
+
+    $('#Foto').on('fileloaded', function (event, file, previewId, fileId, index, reader) {
+        $(".btnCracha").prop("disabled", false);
+    });
+
+
+    $('#Foto').on('fileclear', function (event) {
+        $(".btnCracha").prop("disabled", true);
+    });
+
+
+
+
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        raizenCoreJs.raizenCRUD.urlPesquisa = '@Url.Action("Pesquisar", "ImpressaoCrachaArgentina")';
+        RaizenCoreJs.prototype.ImpressaoCracha.urlVisualizarCracha = '@Url.Action("VisualizarCracha", "ImpressaoCrachaArgentina")';
+        RaizenCoreJs.prototype.ImpressaoCracha.urlImprimirCracha = '@Url.Action("DownloadCracha", "ImpressaoCrachaArgentina")';;
+
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        raizenCoreJs.raizenMensagens.ExibirMensagemOperacao();
+    });
+</script>
+
+
+@using (Html.BeginForm("DownloadCracha", "ImpressaoCrachaArgentina", FormMethod.Post, new { id = "frmPesquisa", @class = "form-horizontal", encType = "multipart/form-data" }))
+{
+    <div class="row">
+        @Html.BootstrapDNIBoxFor(model => model.Filtro.DNI, "DNI Conductor", null, new HtmlHelperOption() { colunas = "col-md-3" })
+    </div>
+
+
+
+    <div class="row" id="containerBotoes">
+        <div class="col-md-5">
+            <div class="form-group">
+                <label class="col-sm-5 control-label"></label>
+                <div class="col-sm-12">
+                    <div class="btn-group center" style="float: none;">
+                        <button class="btn btn-custom" type="button" tabindex="4" onclick="if(VerificarDNI()) raizenCoreJs.raizenCRUD.RealizarPesquisa();">
+                            <i class="fa fa-search"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-6">
+        @if (Model.ImpressaoCrachaRetornoView.AptoParaImpressaoDeCracha)
+        {
+            @Html.BootstrapFileFor(model => model.Foto, "Foto", false, new { accept = "image/*" })
+        }
+    </div>
+
+
+
+    <div id="datatable2_wrapper" class="dataTables_wrapper form-inline" role="grid">
+        <div class="row" style="padding-top:20px; padding-bottom:20px">
+            <div id="dvExibirCracha" type="application/pdf" class="col-md-12 center">
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row" style="text-align:center">
+        <div class="col-md-12">
+            @if (Model.ImpressaoCrachaRetornoView.AptoParaImpressaoDeCracha)
+            {
+                <button class="btn btn-custom btnCracha" type="button" disabled tabindex="2" onclick="if(VerificarDNI()) raizenCoreJs.ImpressaoCracha.VisualizarCracha();">
+                    <i class="fa fa-eye"></i> Para ver
+                </button>
+                <button class="btn btn-custom btnCracha" type="submit" disabled tabindex="2">
+                    <i class="fa fa-save"></i> Descargar
+                </button>
+            }
+            <button class="btn btn-custom voltar" type="button" tabindex="2" onclick="window.location = '@Url.Action("Index","Home")'">
+                <i class="fa fa-long-arrow-left"></i> Cerrar
+            </button>
+        </div>
+    </div>
+
+}
+
+<div class="col-md-12">
+    <script type='text/javascript'>
+       @if (!string.IsNullOrWhiteSpace(Model.ImpressaoCrachaRetornoView.MensagemSituacao))
+       {
+           var stringHtml = Html.Raw(Html.Partial("_Alerta").ToHtmlString());
+           <text>ShowMessageSucess( `@stringHtml `)</text>
+       }
+    </script>
+</div>

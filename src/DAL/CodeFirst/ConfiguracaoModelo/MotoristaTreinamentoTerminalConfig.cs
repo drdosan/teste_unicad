@@ -1,0 +1,26 @@
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Data.Entity.ModelConfiguration;
+using System.ComponentModel.DataAnnotations.Schema;
+
+using Raizen.UniCad.Model;
+
+namespace Raizen.UniCad.DAL.CodeFirst
+{
+    public class MotoristaTreinamentoTerminalConfig : EntityTypeConfiguration<MotoristaTreinamentoTerminal>
+    {
+        public MotoristaTreinamentoTerminalConfig()
+        {
+            this.ToTable("MotoristaTreinamentoTerminal");
+            this.HasKey(chave => chave.ID);
+            this.Property(t => t.ID).HasColumnName("ID").HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            this.Property(t => t.IDMotorista).HasColumnName("IDMotorista");
+            this.Property(t => t.IDTerminal).HasColumnName("IDTerminal");
+            this.Property(t => t.DataValidade).HasColumnName("DataValidade");
+        }
+    }
+}
+

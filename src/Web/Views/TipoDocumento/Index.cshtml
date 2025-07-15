@@ -1,0 +1,19 @@
+﻿@model Raizen.UniCad.Web.Models.ModelTipoDocumento
+@{
+    ViewBag.Title = "Tipo de Documento";
+    ViewBag.TituloModulo = "Tipo de Documento";
+    Layout = "~/Views/Shared/_Panel.cshtml";
+    
+    var tabIndexToolBoxCrudPesquisa = new int[2];
+    tabIndexToolBoxCrudPesquisa[0] = 3;
+    tabIndexToolBoxCrudPesquisa[1] = 4;
+}
+
+@section pesquisa
+    {
+    @Html.Partial("_Pesquisa", Model)
+}
+@section cadastro
+    {
+    @Html.Partial("_Edicao", Model)
+}

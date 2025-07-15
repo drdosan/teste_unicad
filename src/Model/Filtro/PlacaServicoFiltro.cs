@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Raizen.UniCad.Model.Filtro
+{
+    public class PlacaServicoFiltro
+    {
+        public string PlacaVeiculo { get; set; }
+        public int? LinhaNegocio { get; set; }
+
+        public string Operacao { get; set; }
+        public int? IDPlaca {get;set; }
+    }
+}

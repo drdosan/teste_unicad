@@ -1,0 +1,530 @@
+﻿@using Raizen.Framework.Models
+@using Raizen.Framework.Web.MVC.Extensions
+@using Raizen.Framework.Web.MVC.Models
+@using Raizen.Framework.Utils.Extensions
+@using Raizen.Framework.Web.MVC.Extensions;
+@using Raizen.UniCad.Model;
+
+<style>
+    .tab-pane {
+        border-left: 1px solid silver;
+        border-bottom: 1px solid silver;
+        border-right: 1px solid silver;
+        border-radius: 0px 0px 5px 5px;
+        padding: 30px;
+        margin-bottom: 20px;
+    }
+
+    .invisivel {
+        display: none;
+    }
+
+    .roxoRaizen {
+        background-color: #6f376c !important;
+    }
+
+    .modal-dialog {
+        max-width: 90% !important;
+    }
+</style>
+
+@model Raizen.UniCad.Web.Models.ModelMotoristaArgentina
+@{
+
+
+    var urlValidacao = @Url.Action("ValidarObjetos", "MotoristaArgentina");
+    var mensagemOperacao = Html.Raw((Model.Resultado == null || string.IsNullOrEmpty(Model.Resultado.Mensagem) ? @"""""" : @"""" + Model.Resultado.Mensagem + @""""));
+    var dadosValidacoes = Html.Raw((Model.ValidacoesModelo.IsNullOrEmpty() ? @"""""" : Json.Encode(Model.ValidacoesModelo)));
+    var contemErros = Html.Raw((string.IsNullOrEmpty(Model.ContemErrosModel) ? @"""N""" : @"""" + Model.ContemErrosModel + @""""));
+    var aprovar = Model.Aprovar.ToString();
+}
+
+<link href="~/Content/css/Unicad.css" rel="stylesheet" />
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.Mensagens.js")"></script>
+<script type="text/javascript" src="@Url.ResolverUrlComVersao("~/Content/js/Raizen/UniCad/Raizen.UniCad.EdicaoMotoristaArgentina.js")"></script>
+<script type="text/javascript">
+    function VerificarSeDeveLimpar() {
+        if ($("#ClienteAuto").val() == '') {
+            $("#Cliente").val('');
+            $("#ClienteNome").val('');
+        }
+    }
+
+    function carregarPermissao() {
+        var urlCarregarPermissaoCif = '@Url.Action("CarregarPermissaoCif", "MotoristaArgentina")';
+        var urlCarregarPermissaoFob = '@Url.Action("CarregarPermissaoFob", "MotoristaArgentina")';
+        var idMotorista = $('#Motorista_ID').val();
+        if(idMotorista == "0" || idMotorista == '')
+        {
+            idMotorista = $('#Motorista_IDMotorista').val();
+        }
+
+        if ($('#Motorista_IDEmpresa').val() == '' || $('#Motorista_Operacao').val() == '') {
+            $('#linhaTransportadoraFob').empty();
+            $('#linhaTransportadoraFob').hide();
+            $('#linhaTransportadoraCif').empty();
+            $('#linhaTransportadoraCif').hide;
+            $('#Motorista.Observacao').val('');
+            $('#observacao').hide('');
+            $('#linhaSelecione').show();
+            return;
+        }
+        raizenCoreJs.raizenHelpers.AbrirLoading();
+
+        $('#observacao').show('');
+        if ($('#Motorista_Operacao').val() == 'CIF') {
+            var idTransportadora = $('#idTransportadora').val();
+            $.ajax({
+                type: "POST",
+                url: urlCarregarPermissaoCif,
+                data: { IDMotorista: idMotorista, IDEmpresa: $('#Motorista_IDEmpresa').val(), IDTransportadora: idTransportadora, novo: '@Model.Novo'},
+                success: function (partialView) {
+                    $('#linhaTransportadoraFob').empty();
+                    $('#linhaTransportadoraFob').hide();
+                    $('#linhaTransportadoraCif').empty();
+                    $('#linhaTransportadoraCif').html(partialView);
+                    $('#linhaTransportadoraCif').show();
+                    $('#linhaSelecione').hide();
+                    raizenCoreJs.raizenHelpers.FecharLoading();
+                },
+                error: function (partialView) {
+                    ShowMessage(partialView);
+                    raizenCoreJs.raizenHelpers.FecharLoading();
+                }    
+            });
+        }
+        else if ($('#Motorista_Operacao').val() == 'FOB') {
+            dados = $('#frmClientes').serialize();
+            $.ajax({
+                type: "POST",
+                url: urlCarregarPermissaoFob,
+                data: "?Motorista=" + dados + '&IDMotorista=' + idMotorista + '&IDEmpresa=' + $('#Motorista_IDEmpresa').val(),
+                success: function (partialView) {
+                    $('#linhaTransportadoraCif').empty();
+                    $('#linhaTransportadoraCif').hide();
+                    $('#linhaTransportadoraFob').empty();
+                    $('#linhaTransportadoraFob').show();
+                    $('#linhaTransportadoraFob').append(partialView);
+                    $('#linhaSelecione').hide();
+                    raizenCoreJs.raizenHelpers.FecharLoading();
+                },
+                error: function (partialView) {
+                    ShowMessage(partialView);
+                    raizenCoreJs.raizenHelpers.FecharLoading();
+                }
+            });
+        }
+        else {
+            $('#linhaClienteCif').empty();
+            $('#linhaTransportadoraFob').empty();
+            $('#linhaSelecione').show();
+        }
+        raizenCoreJs.raizenHelpers.FecharLoading();
+    }
+
+    // Impede que sejam adicionados 2 produtos/composições ao clicar rapidamente
+    $('#BtnIncluir').on('click', function(){
+        $('#BtnIncluir').prop('disabled',true);
+        setTimeout(function(){
+           $('#BtnIncluir').prop('disabled',false);
+        },300); 
+    });
+
+    $('#BtnIncluirComposicaoMotorista').on('click', function(){
+        $('#BtnIncluirComposicaoMotorista').prop('disabled',true);
+        setTimeout(function(){
+           $('#BtnIncluirComposicaoMotorista').prop('disabled',false);
+        }, 300);
+    });
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        raizenCoreJs.raizenMensagens.MensagemOperacao = @mensagemOperacao;
+        raizenCoreJs.raizenMensagens.ContemErros = @contemErros;
+        raizenCoreJs.raizenMensagens.ValidacoesModel = @dadosValidacoes;
+        raizenCoreJs.raizenHelpers.urlValidacao = "@urlValidacao";
+
+        RaizenCoreJs.prototype.EdicaoMotoristaArgentina.urlAprovar = '@Url.Action("Aprovar", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.EdicaoMotoristaArgentina.urlSalvar = '@Url.Action("Salvar", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.EdicaoMotoristaArgentina.urlListarDocumentos = '@Url.Action("ListarDocumentos", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.EdicaoMotoristaArgentina.urlListarComposicoes = '@Url.Action("ListarComposicoes", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.EdicaoMotoristaArgentina.urlListarProdutos = '@Url.Action("ListarProdutos", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.EdicaoMotoristaArgentina.urlAdicionarTipoProduto = '@Url.Action("AdicionarTipoProduto", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.EdicaoMotoristaArgentina.urlAdicionarTipoComposicao = '@Url.Action("AdicionarComposicaoMotorista", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista.urlAdicionarCliente = '@Url.Action("AdicionarCliente", "MotoristaArgentina")';
+        RaizenCoreJs.prototype.Motorista._idPais = 2;
+        carregarPermissao();
+    });
+
+    $(document).keydown(function (e) {
+        if (e.wich == 39 || e.keyCode == 39) {
+            $('.nav-tabs.motoristas > .active').next('li').find('a').trigger('click');
+        }
+
+        if (e.wich == 37 || e.keyCode == 37) {
+            $('.nav-tabs.motoristas > .active').prev('li').find('a').trigger('click');
+        }
+    });
+
+</script>
+
+<div class="box border raizen" onkeypress="return raizenCoreJs.raizenHelpers.EnterSalvar(event);" id="containerEdicaoMotoristaArgentina">
+    <div class="box-title">
+        <h4><i class="fa fa-columns"></i><span class="hidden-inline-mobile">Edición del Conductor</span></h4>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-12">
+                <label id="lbl_Motorista_Transportadora" style="visibility:hidden">Transportista</label>
+                <label id="lbl_Documentos" style="visibility:hidden">Documentación</label>
+                <form id="frmEdicao" class="form-horizontal frmEdicaoMotorista">
+                    @if (!Model.Aprovar && Model.Motorista.IDStatus != (int)EnumStatusComposicao.Reprovado && Model.Operacao != OperacoesCRUD.Editando)
+                    {
+                        <input type="hidden" name="@Html.NameFor(model => model.Operacao)" value="Insert" />
+                    }
+                    else
+                    {
+                        <input type="hidden" name="@Html.NameFor(model => model.Operacao)" value="Editando" />
+                    }
+                    @Html.HiddenFor(model => model.ChavePrimaria)
+                    @Html.HiddenFor(model => model.Acao)
+                    @Html.HiddenFor(model => model.Motorista.ID)
+                    @Html.HiddenFor(model => model.Motorista.IDMotorista)
+                    @Html.HiddenFor(model => model.Motorista.CodigoEasyQuery)
+                    @Html.HiddenFor(model => model.Operacao)
+                    @Html.HiddenFor(model => model.Aprovar)
+                    @Html.HiddenFor(model => model.Reprovar)
+                    @Html.HiddenFor(model => model.Motorista.naoAprovado)
+                    @Html.HiddenFor(model => model.Motorista.IDStatus)
+                    @Html.HiddenFor(model => model.UsuarioPerfil)
+                    @Html.HiddenFor(model => model.Motorista.LoginUsuario)
+                    @Html.HiddenFor(model => model.Motorista.MotoristaArgentina.DNI)
+                    @Html.HiddenFor(model => model.Motorista.IDEmpresa)
+                    <label style="visibility:hidden" id="lbl_Motorista">Conductor</label>
+                    <div id="Tabs" class="nav-tabs-custom" role="tabpanel" style="margin-top: 10px;">
+                        <ul class="nav nav-tabs motoristas">
+                            <li class="active"><a href="#tabMotorista" data-toggle="tab">Datos Generales</a></li>
+                            <li><a href="#tabDocumentacao" data-toggle="tab">Documentación</a></li>
+                            <li><a href="#tabPermissao" data-toggle="tab">Permiso</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tabMotorista">
+                                <div class="row">
+                                    @if ((Model != null && Model.Motorista != null && (Model.Motorista.IDEmpresa == 0 || Model.Motorista.IDEmpresa == 3) && Model.Operacao != OperacoesCRUD.Editando) || (Model.Aprovar && !Model.Motorista.IDMotorista.HasValue))
+                                    {
+                                        @Html.BootstrapDropDownListFor(model => model.Motorista.IDEmpresa, new SelectList(GenericDelegate.LinhaDeNegocioAgentina(), "ID", "Nome"), "Tipo de Negocio", new { onchange = "raizenCoreJs.EdicaoMotoristaArgentina.carregarDocumentos(" + @Model.Aprovar.ToString().ToLowerInvariant() + "); carregarPermissao()" }, new HtmlHelperOption() { colunas = "col-md-2", argentina = true }, true, Model.Alteracoes != null && Model.Alteracoes.IsEmpresaAlterado ? Model.Alteracoes.EmpresaAlterado : null)
+                                    }
+                                    else
+                                    {
+                                        @Html.BootstrapDropDownListFor(model => model.Motorista.IDEmpresa, new SelectList(GenericDelegate.LinhaDeNegocioAgentina(), "ID", "Nome"), "Tipo de Negocio", null, new HtmlHelperOption() { colunas = "col-md-2", argentina = true }, true, Model.Alteracoes != null && Model.Alteracoes.IsEmpresaAlterado ? Model.Alteracoes.EmpresaAlterado : null)
+                                    }
+
+                                    @if (string.IsNullOrEmpty(Model.Motorista.MotoristaArgentina.DNI) || (Model.Aprovar && !Model.Motorista.IDMotorista.HasValue))
+                                    {
+                                       @Html.BootstrapTextBoxFor(model => model.Motorista.MotoristaArgentina.DNI, null, "DNI", new { maxlength = 10 }, new HtmlHelperOption() { colunas = "col-md-2" }, true, Model.Alteracoes != null && Model.Alteracoes.IsDNIAlterado ? Model.Alteracoes.DNIAlterado : null)
+                                    }
+                                    else
+                                    {
+                                        @Html.BootstrapTextBoxFor(model => model.Motorista.MotoristaArgentina.DNI, null, "DNI", new { maxlength = 10 }, new HtmlHelperOption() { colunas = "col-md-2" }, true, Model.Alteracoes != null && Model.Alteracoes.IsDNIAlterado ? Model.Alteracoes.DNIAlterado : null)
+                                    }
+
+                                    @Html.BootstrapTextBoxFor(model => model.Motorista.MotoristaArgentina.Apellido, null, "Apellido", new { maxlength = 100 }, new HtmlHelperOption() { colunas = "col-md-3" }, false, Model.Alteracoes != null && Model.Alteracoes.IsNomeAlterado ? Model.Alteracoes.NomeAlterado : null)
+                                    @Html.BootstrapTextBoxFor(model => model.Motorista.Nome, null, "Nombre", new { maxlength = 100 }, new HtmlHelperOption() { colunas = "col-md-3" }, false, Model.Alteracoes != null && Model.Alteracoes.IsNomeAlterado ? Model.Alteracoes.NomeAlterado : null)
+
+
+                                    @if (Model != null && String.IsNullOrEmpty(Model.Motorista.OperacaoUsuario))
+                                    {
+                                        @Html.BootstrapDropDownListFor(model => model.Motorista.Operacao, new SelectList(GenericDelegate.CifOuFob(), "ID", "Nome"), "Operación", new { onchange = "raizenCoreJs.EdicaoMotoristaArgentina.carregarDocumentos(" + @Model.Aprovar.ToString().ToLowerInvariant() + ");carregarPermissao();", title = "Modo de carga" }, new HtmlHelperOption() { colunas = "col-md-2", argentina = true }, false, Model.Alteracoes != null && Model.Alteracoes.IsOperacaoAlterado ? Model.Alteracoes.OperacaoAlterado : null)
+                                    }
+                                    else
+                                    {
+                                        @Html.BootstrapDropDownListFor(model => model.Motorista.Operacao, new SelectList(GenericDelegate.CifOuFob(), "ID", "Nome"), "Operación", new { title = "Modo de carga" }, new HtmlHelperOption() { colunas = "col-md-2", argentina = true }, true)
+                                        @Html.HiddenFor(model => model.Motorista.Operacao)
+                                    }
+                                </div>
+                                <div class="row">
+                                    @Html.BootstrapTextBoxFor(model => model.Motorista.MotoristaArgentina.LicenciaNacionalConducir, null, "Licencia Nac Conducir", new { maxlength = 20 }, new HtmlHelperOption() { colunas = "col-md-3" }, false, Model.Alteracoes != null && Model.Alteracoes.IsLNCAlterado ? Model.Alteracoes.LNCAlterado : null)
+                                    @Html.BootstrapTextBoxFor(model => model.Motorista.MotoristaArgentina.LicenciaNacionalHabilitante, null, "Licencia Nac Habilitante", new { maxlength = 20 }, new HtmlHelperOption() { colunas = "col-md-3" }, false, Model.Alteracoes != null && Model.Alteracoes.IsLNHAlterado ? Model.Alteracoes.LNHAlterado : null)
+                                    @Html.BootstrapTextBoxFor(model => model.Motorista.MotoristaArgentina.CUITTransportista, null, "CUIT Del Transportista", new { maxlength = 11 }, new HtmlHelperOption() { colunas = "col-md-3" }, false, Model.Alteracoes != null && Model.Alteracoes.IsCUITAlterado ? Model.Alteracoes.CUITAlterado : null)
+
+                                    @if (Model.Aprovar && (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "MotoristaArgentina" && p.NomeAcao == "Aprovar") != null))
+                                    {
+                                        @Html.BootstrapTextBoxFor(model => model.Motorista.MotoristaArgentina.Tarjeta, null, "Tarjeta de Acceso", new { maxlength = 20 }, new HtmlHelperOption() { colunas = "col-md-2" }, false, Model.Alteracoes != null && Model.Alteracoes.IsTarjetalterado ? Model.Alteracoes.TarjetaAlterado : null)
+                                    }
+                                    else
+                                    {
+                                        @Html.BootstrapTextBoxFor(model => model.Motorista.MotoristaArgentina.Tarjeta, null, "Tarjeta de Acceso", new { maxlength = 20, @readonly = true }, new HtmlHelperOption() { colunas = "col-md-2" }, false, Model.Alteracoes != null && Model.Alteracoes.IsTarjetalterado ? Model.Alteracoes.TarjetaAlterado : null)
+                                    }
+
+                                </div>
+                                <div class="row">
+                                    <script type="text/javascript">
+                                        function isNumberKey(evt) {
+                                            var charCode = (evt.which) ? evt.which : event.keyCode;
+                                            if (charCode != 46 && charCode > 31
+                                                && (charCode < 48 || charCode > 57))
+                                                return false;
+
+                                            return true;
+                                        }
+                                    </script>
+                                </div>
+                                <div class="row">
+                                    @if (Model.Aprovar && (Raizen.Framework.UserSystem.Client.UserSession.GetCurrentInfoUserSystem().InformacoesPermissao.FirstOrDefault(p => p.MVCController == "MotoristaArgentina" && p.NomeAcao == "Aprovar") != null))
+                                    {
+                                        @Html.BootstrapTextAreaFor(model => model.Motorista.Justificativa, "Justificación", new { maxlength = 200 }, new HtmlHelperOption() { colunas = "col-md-6" })
+                                    }
+                                    else if (!string.IsNullOrWhiteSpace(Model.Motorista.Justificativa))
+                                    {
+                                        @Html.BootstrapTextAreaFor(model => model.Motorista.Justificativa, "Justificación", new { maxlength = 200 }, new HtmlHelperOption() { colunas = "col-md-6" }, true)
+                                        @Html.HiddenFor(model => model.Motorista.Justificativa)
+                                    }
+                                </div>
+                                <br />
+                                <div class="row">
+                                    <div style="text-align:left" class="col-md-6">
+                                        <button class="btn btn-custom btnPrevious" type="button"><i class="fa fa-arrow-left"></i> Anterior</button>
+                                    </div>
+
+                                    <div style="text-align:right" class="col-md-6">
+                                        <button class="btn btn-custom btnNext" type="button"> Avanzar <i class="fa fa-arrow-right"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane" id="tabDocumentacao">
+
+                                <div id="produtosSelecao">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            @using (Html.BootstrapCollapsiblePanel("Producto a Cargar", "TiposProdutoPanel", false, "fa fa-product-hunt", null, new { style = "max-height:300px; overflow-x:visible; overflow-y:visible; margin-top:10px; " }))
+                                            {
+                                                @Html.BootstrapDropDownListFor(model => model.Filtro.IdTipoProduto, new SelectList(GenericDelegate.Listar<TipoProduto>().Where(p => p.Pais == EnumPais.Argentina), "ID", "Nome"), "Producto a Cargar", new { onchange = "carregarPermissao();" }, new HtmlHelperOption() { colunas = "col-md-6", argentina = true });
+                                                @Html.BootstrapButtonAdd("BtnIncluir", "Incluir", ButtonType.BUTTON, "raizenCoreJs.EdicaoMotoristaArgentina.adicionarTipoProduto(" + @Model.Aprovar.ToString().ToLowerInvariant() + "); carregarPermissao()", "style='margin-top: 25px;'")
+                                                <table id="TipoProdutoMotoristaTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover" style="margin-top:15px">
+                                                    <thead>
+                                                        <tr class="table-raizen">
+                                                            <th>Tipo de Producto</th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="tiposProduto">
+                                                        @if (Model.ListaTipoProduto != null)
+                                                        {
+                                                            foreach (var tipoProduto in Model.ListaTipoProduto)
+                                                            {
+                                                                <tr id="linha-produto-@tipoProduto.ID" class="gradeX">
+
+                                                                    @Html.HiddenFor(item => tipoProduto.ID, new { @class = "IDTipoProduto" })
+                                                                    @Html.HiddenFor(item => tipoProduto.Nome, new { @class = "Nome" })
+                                                                    <td style="width: 95%; word-wrap: break-word">
+                                                                        @Html.PopoverTextFor(item => tipoProduto.Nome, 80, "right")
+                                                                    </td>
+                                                                    <td style="width: 5%; word-wrap: break-word">
+                                                                        @Html.BootstrapButtonDelete("", "", ButtonType.BUTTON, "raizenCoreJs.EdicaoMotoristaArgentina.removerTipoProduto(" + tipoProduto.ID + ", false)")
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        }
+
+                                                    </tbody>
+                                                </table>
+                                            }
+                                        </div>
+                                        <div class="col-md-6">
+                                            @using (Html.BootstrapCollapsiblePanel("Tipos de Vehículos", "linhaTipoComposicaoMotoristaPanel", false, "fa fa-truck", null, new { style = "max-height:300px; overflow-x:visible; overflow-y:visible; margin-top:10px;" }))
+                                            {
+                                                @Html.BootstrapDropDownListFor(model => model.Filtro.IdTipoComposicao, new SelectList(GenericDelegate.Listar<TipoComposicao>().Where(m => m.IdPais == (int)EnumPais.Argentina), "ID", "Nome"), "Tipo de Vehículo", new { onchange = "carregarPermissao();" }, new HtmlHelperOption() { colunas = "col-md-6", argentina = true });
+                                                @Html.BootstrapButtonAdd("BtnIncluirComposicaoMotorista", "Incluir", ButtonType.BUTTON, "raizenCoreJs.EdicaoMotoristaArgentina.adicionarTipoComposicao(" + @Model.Aprovar.ToString().ToLowerInvariant() + ");carregarPermissao();", "style='margin-top: 25px;'")
+                                                <table id="TipoComposicaoMotoristaTable" cellpadding="0" cellspacing="0" border="0" class="datatable table table-striped table-bordered table-hover" style="margin-top:15px">
+                                                    <thead>
+                                                        <tr class="table-raizen">
+                                                            <th>Tipo de Vehículo</th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="tiposComposicao">
+
+                                                        @if (Model.ListaTipoComposicao != null)
+                                                        {
+                                                            foreach (var tipoComposicao in Model.ListaTipoComposicao)
+                                                            {
+                                                                <tr id="linha-composicao-motorista-@tipoComposicao.ID" class="gradeX">
+
+                                                                    @Html.HiddenFor(item => tipoComposicao.ID, new { @class = "IDTipoComposicao" })
+                                                                    @Html.HiddenFor(item => tipoComposicao.Nome, new { @class = "Nome" })
+                                                                    <td style="width: 95%; word-wrap: break-word">
+                                                                        @Html.PopoverTextFor(item => tipoComposicao.Nome, 80, "right")
+                                                                    </td>
+                                                                    <td style="width: 5%; word-wrap: break-word">
+                                                                        @Html.BootstrapButtonDelete("", "", ButtonType.BUTTON, "raizenCoreJs.EdicaoMotoristaArgentina.removerTipoComposicaoMotorista(" + tipoComposicao.ID + ",false)")
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        }
+
+                                                    </tbody>
+                                                </table>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="documentos">
+                                    @if (Model.Motorista != null && Model.Motorista.Documentos != null)
+                                    {
+                                        Html.RenderPartial("~/Views/MotoristaArgentina/_Documentos.cshtml", Model.Motorista.Documentos);
+                                    }
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6" id="anexoMotorista">
+                                        @Html.HiddenFor(model => model.Motorista.Anexo, new { @id = "Anexo-" + Model.Motorista.ID })
+                                        <label id="lbl_Motorista_Anexo">
+                                            Use esta opción para adjuntar la documentación en un solo archivo.
+                                        </label>
+                                        @if (string.IsNullOrEmpty(Model.Motorista.Anexo) && Model.Motorista.naoAprovado == 0)
+                                        {
+                                            <input id="input-701-@Model.Motorista.ID" type="file" name="@Html.NameFor(p => p.Motorista.Anexo)" class="anexoCount" data-buttonText="Selecione" data-iconName="glyphicon glyphicon-file">
+                                        }
+                                        else
+                                        {
+                                            <a href="@Url.Action("Download", "Arquivo")?file=@(Model.Motorista.Anexo)" class="anexoCount" target="_blank" id="linkAnexo-@Model.Motorista.ID">@Model.Motorista.Anexo</a>
+                                            <button type="button" tabindex="500" id="limparAnexo-@Model.Motorista.ID" title="Limpiar" class="btn btn-default fileinput-remove fileinput-remove-button" onclick="RemoverAnexo(@Model.Motorista.ID);"><i class="glyphicon glyphicon-trash"></i> </button>
+                                            <div id="inputDiv-@Model.Motorista.ID" style="display:none">
+                                                <input id="input-701-@Model.Motorista.ID" type="file" name="@Html.NameFor(p => p.Motorista.Anexo)" class="anexoCount" data-buttonText="Seleccione" data-iconName="glyphicon glyphicon-file">
+                                            </div>
+                                        }
+                                        <script>
+                                            function RemoverAnexo(id) {
+                                                //Procura todos os inputs que começam com "Anexo-" e seta vazio para o seu conteudo, a fim de limpar a model "Motorista.Anexo"
+                                                $('input[name="Motorista.Anexo"][id^="Anexo-' + id + '"]').each(function(){ this.value = '' });
+                                                $('#limparAnexo-'+id).hide();
+                                                $('#linkAnexo-'+id).hide();
+                                                $("#inputDiv-"+id).show(800);
+                                            }
+
+                                            $("#input-701-@Model.Motorista.ID").fileinput({
+                                                uploadUrl: '@Url.Action("AnexarArquivo", "Arquivo")',
+                                                dropZoneEnabled: false,
+                                                showUpload: false,
+                                                showPreview: false,
+                                                browseLabel: '',
+                                                uploadLabel: '',
+                                                removeLabel: '',
+                                                layoutTemplates: {
+                                                    progress: ''
+                                                },
+                                            });
+
+                                            $('#input-701-@Model.Motorista.ID').on('fileloaded', function (event, file, previewId, index, reader) {
+
+                                                //Adiciona uma ação de limpeza no onclick do botao de Limpar anexo
+                                                $("#Anexo-@Model.Motorista.ID").closest('div#anexoMotorista').find(".fileinput-remove").on('click', function () {
+                                                    $('input[name="Motorista.Anexo"][id^="Anexo-@Model.Motorista.ID"]').each(function(){ this.value = '' });
+                                                });
+
+                                                var formData = new FormData();
+
+                                                formData.append('file', file);
+                                                raizenCoreJs.raizenHelpers.AbrirLoading();
+                                                $.ajax({
+                                                    url: '@Url.Action("AnexarArquivo", "Arquivo")',
+                                                    data: formData,
+                                                    cache: false,
+                                                    contentType: false,
+                                                    processData: false,
+                                                    type: 'POST',
+                                                    success: function (response) {
+                                                        raizenCoreJs.raizenHelpers.FecharLoading();
+
+
+
+                                                        if (response == 'O Arquivo selecionado está vazio!') {
+                                                            $('#anexoMotorista .glyphicon.glyphicon-trash').trigger('click');
+                                                            ShowErrorMenssage('¡El archivo seleccionado está vacío!');
+                                                        }
+                                                        else if (response == 'Tamanho Arquivo')
+                                                        {
+                                                            ShowErrorMenssage('El archivo debe ser menor que 20 MB, inténtelo nuevamente', 20);
+                                                            $('#anexoMotorista .glyphicon.glyphicon-trash').trigger('click');
+                                                        }
+                                                        else if (response.indexOf('Formato de Arquivo Inválido') >= 0) {
+                                                            ShowErrorMenssage('Formato de archivo inválido', 20);
+                                                            $('#anexoMotorista .glyphicon.glyphicon-trash').trigger('click');
+                                                        }
+                                                        else {
+                                                            $('#Anexo-@Model.Motorista.ID').val(response);
+                                                        }
+                                                    },
+                                                    error: function (response) {
+                                                        ShowErrorMenssage('El archivo debe ser menor que 20 MB, inténtelo nuevamente', 20);
+                                                        raizenCoreJs.raizenHelpers.FecharLoading();
+                                                    }
+                                                });
+                                            });
+
+                                        </script>
+                                    </div>
+                                </div>
+
+                                <br />
+                                <div class="row">
+                                    <div style="text-align:left" class="col-md-6">
+                                        <button class="btn btn-custom btnPrevious" type="button"><i class="fa fa-arrow-left"></i> Anterior</button>
+                                    </div>
+
+                                    <div style="text-align:right" class="col-md-6">
+                                        <button class="btn btn-custom btnNext" type="button">Avanzar <i class="fa fa-arrow-right"></i></button>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tabPermissao">
+                                @{ Html.RenderPartial("_Permissao", Model); }
+                                <br />
+                                <div class="row">
+                                    <div style="text-align:left" class="col-md-6">
+                                        <button class="btn btn-custom btnPrevious" type="button"><i class="fa fa-arrow-left"></i> Anterior</button>
+                                    </div>
+
+                                    <div style="text-align:right" class="col-md-6">
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="text-align:center">
+                        <div class="col-md-12">
+                            @if (Model.Aprovar)
+                            {
+                                <button class="btn btn-custom" id="btnCrudSalvar" type="button" tabindex="1" onclick="raizenCoreJs.EdicaoMotoristaArgentina.Salvar(2, false)">
+                                    <i class="fa fa-save"></i> Aprobar
+                                </button>
+                                <button class="btn btn-custom" id="btnCrudSalvar" type="button" tabindex="1" onclick="raizenCoreJs.EdicaoMotoristaArgentina.Salvar(2, true)">
+                                    <i class="fa fa-save"></i> Aprobar con advertencias
+                                </button>
+                                <button class="btn btn-custom" id="btnCrudSalvar" type="button" tabindex="1" onclick="raizenCoreJs.EdicaoMotoristaArgentina.Reprovar(4,false)">
+                                    <i class="fa fa-save"></i> Desaprobar
+                                </button>
+                            }
+                            else if (Model.Motorista.naoAprovado == 0 || (Model.Motorista.naoAprovado == 1 && Model.Motorista.Operacao == "FOB" ))
+                            {
+                                // Para motoristas FOB, a edição é permitida a partir da opção Novo Motorista, com CPF de Motorista Reprovado.
+                                <button class="btn btn-custom" id="btnCrudSalvar" type="button" tabindex="1" onclick="raizenCoreJs.EdicaoMotoristaArgentina.Salvar(1, false)">
+                                    <i class="fa fa-save"></i> Guardar
+                                </button>
+                            }
+                            <button class="btn btn-custom voltar" type="button" tabindex="2" onclick="raizenCoreJs.EdicaoMotoristaArgentina.fecharModalMotorista();">
+                                <i class="fa fa-long-arrow-left"></i> Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@{Html.RenderPartial("_Confirm", new Raizen.Framework.Web.MVC.Models.ModalConfirm() { MessageConfirm = "¿Realmente quieres desaprobar este controlador?", MessageYes = "Si", MessageNot = "No" });}
