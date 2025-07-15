@@ -38,7 +38,8 @@ namespace Raizen.UniCad.Extensions
         {
             if (s.IsNullOrEmpty()) return s;
             var arr = s.ToCharArray();
-            arr = Array.FindAll(arr, (c => char.IsDigit(c) && !c.Equals('.')));
+            // Preserve letters and digits, removing special characters
+            arr = Array.FindAll(arr, c => char.IsLetterOrDigit(c));
             var str = new string(arr);
             return str;
         }

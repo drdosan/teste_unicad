@@ -85,64 +85,19 @@ namespace Raizen.UniCad.Utils
             return true;
         }
 
+        /// <summary>
+        /// Validates CNPJ/CUIT allowing alphanumeric values (14 to 18 characters).
+        /// </summary>
         public static bool ValidaCNPJ(string vrCNPJ)
         {
-            string CNPJ = vrCNPJ.Replace(".", "");
-            CNPJ = CNPJ.Replace("/", "");
-            CNPJ = CNPJ.Replace("-", "");
-
-            int[] digitos, soma, resultado;
-            int nrDig;
-            string ftmt;
-            bool[] CNPJOk;
-
-            ftmt = "6543298765432";
-            digitos = new int[14];
-            soma = new int[2];
-            soma[0] = 0;
-            soma[1] = 0;
-            resultado = new int[2];
-            resultado[0] = 0;
-            resultado[1] = 0;
-            CNPJOk = new bool[2];
-            CNPJOk[0] = false;
-            CNPJOk[1] = false;
-
-            try
-            {
-                for (nrDig = 0; nrDig < 14; nrDig++)
-                {
-                    digitos[nrDig] = int.Parse(
-                        CNPJ.Substring(nrDig, 1));
-                    if (nrDig <= 11)
-                        soma[0] += (digitos[nrDig] *
-                          int.Parse(ftmt.Substring(
-                          nrDig + 1, 1)));
-                    if (nrDig <= 12)
-                        soma[1] += (digitos[nrDig] *
-                          int.Parse(ftmt.Substring(
-                          nrDig, 1)));
-                }
-
-                for (nrDig = 0; nrDig < 2; nrDig++)
-                {
-                    resultado[nrDig] = (soma[nrDig] % 11);
-                    if ((resultado[nrDig] == 0) || (
-                         resultado[nrDig] == 1))
-                        CNPJOk[nrDig] = (
-                        digitos[12 + nrDig] == 0);
-                    else
-                        CNPJOk[nrDig] = (
-                        digitos[12 + nrDig] == (
-                        11 - resultado[nrDig]));
-                }
-
-                return (CNPJOk[0] && CNPJOk[1]);
-            }
-            catch
-            {
+            if (string.IsNullOrEmpty(vrCNPJ))
                 return false;
-            }
+            // Remove common separators
+            var clean = Regex.Replace(vrCNPJ, "[.\-/]", string.Empty);
+            // Remove any other non-alphanumeric characters
+            clean = Regex.Replace(clean, "[^A-Za-z0-9]", string.Empty);
+            // Validate length and alphanumeric content
+            return Regex.IsMatch(clean, "^[A-Za-z0-9]{14,18}$");
         }
 
         public static bool IsTransportadora(this string perfil)
