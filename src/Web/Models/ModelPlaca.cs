@@ -239,7 +239,7 @@ namespace Raizen.UniCad.Web.Models
 				{
 					this.Placa.PlacaBrasil.CPFCNPJ = this.Placa.PlacaBrasil.CPFCNPJ.RemoveCharacter();
 
-					placaCnpj = this.Placa.PlacaBrasil.CPFCNPJ.Length > 11;
+					placaCnpj = this.Placa.PlacaBrasil.CPFCNPJ.Length >= 14;
 					valido = placaCnpj ? ValidacoesUtil.ValidaCNPJ(Placa.PlacaBrasil.CPFCNPJ) : ValidacoesUtil.ValidaCPF(Placa.PlacaBrasil.CPFCNPJ);
 
 					if (valido && !placaCnpj && !Placa.DataNascimento.HasValue)
@@ -621,7 +621,7 @@ namespace Raizen.UniCad.Web.Models
 		}
 		private bool ValidaRazaoSocial(string razaoSocial, string CPFCNPJCUIT)
 		{
-			return string.IsNullOrEmpty(razaoSocial) && CPFCNPJCUIT.Length > 11;
+			return string.IsNullOrEmpty(razaoSocial) && CPFCNPJCUIT.Length >= 14;
 		}
 		private bool UsuarioNaoCadastrado()
 		{

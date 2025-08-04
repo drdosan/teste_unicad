@@ -133,27 +133,6 @@ Composicao.prototype.LimparFiltros = function LimparFiltros() {
 
 function FormatarCnpj() {
 
-    if ($("#Composicao_CPFCNPJ").val() != undefined) {
-        var tamanho = $("#Composicao_CPFCNPJ").val().length;
-
-        if (tamanho <= 11) {
-            $("#Composicao_CPFCNPJ").mask("999.999.999-99");
-            mostrarCpfComp();
-        } else {
-            $("#Composicao_CPFCNPJ").mask("99.999.999/9999-99");
-            mostrarCnpjComp();
-        }
-    }
-
-    //if ($("#Composicao_CPFCNPJArrendamento").val() != undefined) {
-    //    var tamanhoArr = $("#Composicao_CPFCNPJArrendamento").val().length;
-
-    //    if (tamanhoArr <= 11) {
-    //        $("#Composicao_CPFCNPJArrendamento").mask("999.999.999-99");
-    //    } else {
-    //        $("#Composicao_CPFCNPJArrendamento").mask("99.999.999/9999-99");
-    //    }
-    //}
 }
 
 $(document).ready(function () {
@@ -180,50 +159,13 @@ $(document).ready(function () {
     }
     catch (e) { }
 
+
     try {
-        $("#Composicao_CPFCNPJ").unmask();
-        $("#Composicao_CPFCNPJArrendamento").unmask();
+        $("#Composicao_CPFCNPJ, #Composicao_CPFCNPJArrendamento").unmask();
     } catch (e) { }
 
-    //FormatarCnpj();
-    if ($("#Composicao_CPFCNPJ").val() != undefined) {
-        var tamanho = $("#Composicao_CPFCNPJ").val().length;
-
-        if (tamanho <= 11) {
-            $("#Composicao_CPFCNPJ").mask("999.999.999-99");
-            mostrarCpfComp();
-        } else {
-            $("#Composicao_CPFCNPJ").mask("99.999.999/9999-99");
-            mostrarCnpjComp();
-        }
-    }
-
-    $("#Composicao_CPFCNPJ").keydown(function (key) {
-        if (key.key == "0" ||
-            key.key == "1" ||
-            key.key == "2" ||
-            key.key == "3" ||
-            key.key == "4" ||
-            key.key == "5" ||
-            key.key == "6" ||
-            key.key == "7" ||
-            key.key == "8" ||
-            key.key == "9") {
-            try {
-                $("#Composicao_CPFCNPJ").unmask();
-            } catch (e) { }
-
-            var tamanho = $("#Composicao_CPFCNPJ").val().length;
-
-            if (tamanho < 11) {
-                $("#Composicao_CPFCNPJ").mask("999.999.999-99");
-                mostrarCpfComp();
-            } else {
-                $("#Composicao_CPFCNPJ").mask("99.999.999/9999-99");
-                mostrarCnpjComp();
-            }
-        }
-    });
+    // Apply alphanumeric CNPJ mask (14 to 18 characters)
+    $("#Composicao_CPFCNPJ, #Composicao_CPFCNPJArrendamento").inputmask({ regex: "[A-Za-z0-9]{14,18}" });
 
 
 

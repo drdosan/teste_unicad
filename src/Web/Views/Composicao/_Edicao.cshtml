@@ -539,7 +539,7 @@
                                             <div class="box-body">
                                                 <div class="row">
                                                     @Html.BootstrapDropDownList("Arrendamento", new SelectList(GenericDelegate.VerdadeiroOuFalso(), "Flag", "Nome"), "Arrendamento", null, new HtmlHelperOption() { colunas = "col-md-2", mostraTextoVazio = true })
-                                                    @Html.BootstrapTextBoxFor(model => model.Composicao.CPFCNPJArrendamento, null, "CPF/CNPJ do Arrendamento", new { maxlength = 20, title = "Digite o CNPJ ou CPF que está na CRLV do Veículo" }, new HtmlHelperOption() { colunas = "col-md-3" }, false)
+                                                    @Html.BootstrapTextBoxFor(model => model.Composicao.CPFCNPJArrendamento, null, "CPF/CNPJ do Arrendamento", new { maxlength = 18, title = "Digite o CNPJ ou CPF que está na CRLV do Veículo" }, new HtmlHelperOption() { colunas = "col-md-3" }, false)
                                                     @Html.BootstrapTextBoxFor(model => model.Composicao.RazaoSocialArrendamento, null, "Nome/Razão Social", new { maxlength = 400, title = "Digite a Nome/Razão Social do CPF/CNPJ do Arrendamento" }, new HtmlHelperOption() { colunas = "col-md-5" }, false)
                                                 </div>
                                                 <br />

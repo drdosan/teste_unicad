@@ -437,7 +437,7 @@
                                 <div class="tab-pane" id="tabDocumentacao">
                                     <div class="row">
                                         @{
-                                            @Html.BootstrapTextBoxFor(model => model.Placa.PlacaBrasil.CPFCNPJ, null, "CPF/CNPJ do CRLV", new { maxlength = 20, title = "Digite o CNPJ ou CPF que está na CRLV do Veículo" }, new HtmlHelperOption() { colunas = "col-md-2" }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsCPFCNPJAlterado ? Model.PlacaOficial.CPFCNPJ : null)
+                                            @Html.BootstrapTextBoxFor(model => model.Placa.PlacaBrasil.CPFCNPJ, null, "CPF/CNPJ do CRLV", new { maxlength = 18, title = "Digite o CNPJ ou CPF que está na CRLV do Veículo" }, new HtmlHelperOption() { colunas = "col-md-2" }, false, Model.Placa.PlacaAlteracoes != null && Model.Placa.PlacaAlteracoes.IsCPFCNPJAlterado ? Model.PlacaOficial.CPFCNPJ : null)
                                             var exibirRazao = "";
                                             if (Model.Placa.PlacaBrasil.CPFCNPJ != null && Model.Placa.PlacaBrasil.CPFCNPJ.Length <= 11)
                                             {
