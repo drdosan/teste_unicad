@@ -149,13 +149,13 @@
 
         $("#Placa_CPFCNPJ").focusout(function() {
             console.log('entrou');
-            var valor = $('#Placa_CPFCNPJ').val().replace(/\D/g, '');
+            var valor = $('#Placa_CPFCNPJ').val().replace(/[^A-Za-z0-9]/g, '');
             Placa.prototype.mudarMascara(valor);
             buscarTransportadora(valor);
         });
 
         if ($("#Placa_CPFCNPJ").val() != undefined && $("#Placa_CPFCNPJ").val() != '') {
-            var valor = $('#Placa_CPFCNPJ').val().replace(/\D/g, '');
+            var valor = $('#Placa_CPFCNPJ').val().replace(/[^A-Za-z0-9]/g, '');
             Placa.prototype.mudarMascara(valor);
         }
     });

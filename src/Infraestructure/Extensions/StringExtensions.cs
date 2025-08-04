@@ -36,11 +36,16 @@ namespace Raizen.UniCad.Extensions
         /// <returns></returns>
         public static string RemoveCharacter(this string s)
         {
-            if (s.IsNullOrEmpty()) return s;
-            var arr = s.ToCharArray();
-            arr = Array.FindAll(arr, (c => char.IsDigit(c) && !c.Equals('.')));
-            var str = new string(arr);
-            return str;
+            if (string.IsNullOrEmpty(s)) return s;
+            var sb = new StringBuilder();
+            foreach (var c in s)
+            {
+                if (char.IsLetterOrDigit(c))
+                {
+                    sb.Append(c);
+                }
+            }
+            return sb.ToString();
         }
     }
 }
