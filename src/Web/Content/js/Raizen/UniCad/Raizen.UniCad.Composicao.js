@@ -137,10 +137,10 @@ function FormatarCnpj() {
         var tamanho = $("#Composicao_CPFCNPJ").val().length;
 
         if (tamanho <= 11) {
-            $("#Composicao_CPFCNPJ").mask("999.999.999-99");
+            $("#Composicao_CPFCNPJ").mask("AAA.AAA.AAA-AA");
             mostrarCpfComp();
         } else {
-            $("#Composicao_CPFCNPJ").mask("99.999.999/9999-99");
+            $("#Composicao_CPFCNPJ").mask("AA.AAA.AAA/AAAA-AA");
             mostrarCnpjComp();
         }
     }

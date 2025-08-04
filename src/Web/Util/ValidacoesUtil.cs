@@ -87,62 +87,48 @@ namespace Raizen.UniCad.Utils
 
         public static bool ValidaCNPJ(string vrCNPJ)
         {
-            string CNPJ = vrCNPJ.Replace(".", "");
-            CNPJ = CNPJ.Replace("/", "");
-            CNPJ = CNPJ.Replace("-", "");
-
-            int[] digitos, soma, resultado;
-            int nrDig;
-            string ftmt;
-            bool[] CNPJOk;
-
-            ftmt = "6543298765432";
-            digitos = new int[14];
-            soma = new int[2];
-            soma[0] = 0;
-            soma[1] = 0;
-            resultado = new int[2];
-            resultado[0] = 0;
-            resultado[1] = 0;
-            CNPJOk = new bool[2];
-            CNPJOk[0] = false;
-            CNPJOk[1] = false;
-
-            try
+            // sanitize input: remove punctuation
+            string cnpj = vrCNPJ.Replace(".", "").Replace("/", "").Replace("-", "");
+            // accept alphanumeric CNPJ (14 to 18 letters or digits)
+            if (Regex.IsMatch(cnpj, @"^[A-Za-z0-9]{14,18}$"))
             {
-                for (nrDig = 0; nrDig < 14; nrDig++)
+                // if pure numeric and standard length, apply numeric validation
+                if (cnpj.Length == 14 && Regex.IsMatch(cnpj, @"^\d{14}$"))
                 {
-                    digitos[nrDig] = int.Parse(
-                        CNPJ.Substring(nrDig, 1));
-                    if (nrDig <= 11)
-                        soma[0] += (digitos[nrDig] *
-                          int.Parse(ftmt.Substring(
-                          nrDig + 1, 1)));
-                    if (nrDig <= 12)
-                        soma[1] += (digitos[nrDig] *
-                          int.Parse(ftmt.Substring(
-                          nrDig, 1)));
+                    int[] digitos = new int[14];
+                    int[] soma = new int[2];
+                    int[] resultado = new int[2];
+                    string ftmt = "6543298765432";
+                    bool[] CNPJOk = new bool[2];
+                    try
+                    {
+                        for (int nrDig = 0; nrDig < 14; nrDig++)
+                        {
+                            digitos[nrDig] = int.Parse(cnpj.Substring(nrDig, 1));
+                            if (nrDig <= 11)
+                                soma[0] += digitos[nrDig] * int.Parse(ftmt.Substring(nrDig + 1, 1));
+                            if (nrDig <= 12)
+                                soma[1] += digitos[nrDig] * int.Parse(ftmt.Substring(nrDig, 1));
+                        }
+                        for (int nrDig = 0; nrDig < 2; nrDig++)
+                        {
+                            resultado[nrDig] = soma[nrDig] % 11;
+                            if (resultado[nrDig] == 0 || resultado[nrDig] == 1)
+                                CNPJOk[nrDig] = digitos[12 + nrDig] == 0;
+                            else
+                                CNPJOk[nrDig] = digitos[12 + nrDig] == 11 - resultado[nrDig];
+                        }
+                        return CNPJOk[0] && CNPJOk[1];
+                    }
+                    catch
+                    {
+                        return false;
+                    }
                 }
-
-                for (nrDig = 0; nrDig < 2; nrDig++)
-                {
-                    resultado[nrDig] = (soma[nrDig] % 11);
-                    if ((resultado[nrDig] == 0) || (
-                         resultado[nrDig] == 1))
-                        CNPJOk[nrDig] = (
-                        digitos[12 + nrDig] == 0);
-                    else
-                        CNPJOk[nrDig] = (
-                        digitos[12 + nrDig] == (
-                        11 - resultado[nrDig]));
-                }
-
-                return (CNPJOk[0] && CNPJOk[1]);
+                // alphanumeric or non-standard numeric CNPJ accepted
+                return true;
             }
-            catch
-            {
-                return false;
-            }
+            return false;
         }
 
         public static bool IsTransportadora(this string perfil)

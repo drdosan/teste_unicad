@@ -478,7 +478,7 @@ namespace Raizen.UniCad.Web.Controllers
 
             if (Model.Placa?.PlacaBrasil.CPFCNPJ != null)
             {
-                Model.Placa.PlacaBrasil.CPFCNPJ = Model.Placa.PlacaBrasil.CPFCNPJ.RemoveCharacter();
+                Model.Placa.PlacaBrasil.CPFCNPJ = Model.Placa.PlacaBrasil.CPFCNPJ.RemoveSpecialCharacters();
             }
 
             if (Model.IdPais == (int)EnumPais.Brasil)

@@ -237,7 +237,7 @@ namespace Raizen.UniCad.Web.Models
 
 				if (this.Placa.PlacaBrasil.CPFCNPJ != null)
 				{
-					this.Placa.PlacaBrasil.CPFCNPJ = this.Placa.PlacaBrasil.CPFCNPJ.RemoveCharacter();
+					this.Placa.PlacaBrasil.CPFCNPJ = this.Placa.PlacaBrasil.CPFCNPJ.RemoveSpecialCharacters();
 
 					placaCnpj = this.Placa.PlacaBrasil.CPFCNPJ.Length > 11;
 					valido = placaCnpj ? ValidacoesUtil.ValidaCNPJ(Placa.PlacaBrasil.CPFCNPJ) : ValidacoesUtil.ValidaCPF(Placa.PlacaBrasil.CPFCNPJ);

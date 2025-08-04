@@ -410,11 +410,11 @@ namespace Raizen.UniCad.Web.Controllers
 			}
 			 if (Model.Composicao != null)
 			{
-				if (Model.Composicao.CPFCNPJ != null)
-					Model.Composicao.CPFCNPJ = Model.Composicao.CPFCNPJ.RemoveCharacter();
+			if (Model.Composicao.CPFCNPJ != null)
+				Model.Composicao.CPFCNPJ = Model.Composicao.CPFCNPJ.RemoveSpecialCharacters();
 
-				if (Model.Composicao.CPFCNPJArrendamento != null)
-					Model.Composicao.CPFCNPJArrendamento = Model.Composicao.CPFCNPJArrendamento.RemoveCharacter();
+			if (Model.Composicao.CPFCNPJArrendamento != null)
+				Model.Composicao.CPFCNPJArrendamento = Model.Composicao.CPFCNPJArrendamento.RemoveSpecialCharacters();
 
 				if (Model.Composicao != null)
 					Model.Composicao.ComposicaoEixo = CarregarEixos(Model.Composicao.IDTipoComposicao);
