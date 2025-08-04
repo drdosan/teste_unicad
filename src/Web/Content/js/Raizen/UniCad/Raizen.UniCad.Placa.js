@@ -79,30 +79,17 @@ $(document).ready(function () {
 });
 
 Placa.prototype.mudarMascara = function mudarMascara(valor) {
-    try {
-        $("#Placa_PlacaBrasil_CPFCNPJ").unmask();
-    } catch (e) { }
-
-    var tamanho = valor.length;
-    if (tamanho == 11) {
-        $("#Placa_PlacaBrasil_CPFCNPJ").val(valor.substring(0, 3) +
-            "." +
-            valor.substring(3, 6) +
-            "." +
-            valor.substring(6, 9) +
-            "-" +
-            valor.substring(9, 11));
+    var input = $("#Placa_PlacaBrasil_CPFCNPJ");
+    // Remover formatação anterior e atualizar conforme valor
+    input.val(valor);
+    if (/^\d{11}$/.test(valor)) {
+        input.val(valor.substring(0, 3) + "." + valor.substring(3, 6) + "." + valor.substring(6, 9) + "-" + valor.substring(9, 11));
         mostrarCpf();
-    } else if (tamanho == 14) {
-        $("#Placa_PlacaBrasil_CPFCNPJ").val(valor.substring(0, 2) +
-            "." +
-            valor.substring(2, 5) +
-            "." +
-            valor.substring(5, 8) +
-            "/" +
-            valor.substring(8, 12) +
-            "-" +
-            valor.substring(12, 14));
+    } else if (/^\d{14}$/.test(valor)) {
+        input.val(valor.substring(0, 2) + "." + valor.substring(2, 5) + "." + valor.substring(5, 8) + "/" + valor.substring(8, 12) + "-" + valor.substring(12, 14));
+        mostrarCnpj();
+    } else if (/^[A-Za-z0-9]{14,18}$/.test(valor)) {
+        input.val(valor);
         mostrarCnpj();
     }
 }

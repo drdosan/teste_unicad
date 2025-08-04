@@ -131,30 +131,6 @@ Composicao.prototype.LimparFiltros = function LimparFiltros() {
     $("#Filtro_DataFim").val('');
 }
 
-function FormatarCnpj() {
-
-    if ($("#Composicao_CPFCNPJ").val() != undefined) {
-        var tamanho = $("#Composicao_CPFCNPJ").val().length;
-
-        if (tamanho <= 11) {
-            $("#Composicao_CPFCNPJ").mask("999.999.999-99");
-            mostrarCpfComp();
-        } else {
-            $("#Composicao_CPFCNPJ").mask("99.999.999/9999-99");
-            mostrarCnpjComp();
-        }
-    }
-
-    //if ($("#Composicao_CPFCNPJArrendamento").val() != undefined) {
-    //    var tamanhoArr = $("#Composicao_CPFCNPJArrendamento").val().length;
-
-    //    if (tamanhoArr <= 11) {
-    //        $("#Composicao_CPFCNPJArrendamento").mask("999.999.999-99");
-    //    } else {
-    //        $("#Composicao_CPFCNPJArrendamento").mask("99.999.999/9999-99");
-    //    }
-    //}
-}
 
 $(document).ready(function () {
     //atp
@@ -180,50 +156,19 @@ $(document).ready(function () {
     }
     catch (e) { }
 
-    try {
-        $("#Composicao_CPFCNPJ").unmask();
-        $("#Composicao_CPFCNPJArrendamento").unmask();
-    } catch (e) { }
-
-    //FormatarCnpj();
-    if ($("#Composicao_CPFCNPJ").val() != undefined) {
-        var tamanho = $("#Composicao_CPFCNPJ").val().length;
-
-        if (tamanho <= 11) {
-            $("#Composicao_CPFCNPJ").mask("999.999.999-99");
+    // Atualiza exibição de CPF ou CNPJ com base no comprimento do valor
+    function updateCpfCnpjDisplay() {
+        var val = $("#Composicao_CPFCNPJ").val();
+        if (val === undefined) return;
+        if (val.length <= 11) {
             mostrarCpfComp();
         } else {
-            $("#Composicao_CPFCNPJ").mask("99.999.999/9999-99");
             mostrarCnpjComp();
         }
     }
 
-    $("#Composicao_CPFCNPJ").keydown(function (key) {
-        if (key.key == "0" ||
-            key.key == "1" ||
-            key.key == "2" ||
-            key.key == "3" ||
-            key.key == "4" ||
-            key.key == "5" ||
-            key.key == "6" ||
-            key.key == "7" ||
-            key.key == "8" ||
-            key.key == "9") {
-            try {
-                $("#Composicao_CPFCNPJ").unmask();
-            } catch (e) { }
-
-            var tamanho = $("#Composicao_CPFCNPJ").val().length;
-
-            if (tamanho < 11) {
-                $("#Composicao_CPFCNPJ").mask("999.999.999-99");
-                mostrarCpfComp();
-            } else {
-                $("#Composicao_CPFCNPJ").mask("99.999.999/9999-99");
-                mostrarCnpjComp();
-            }
-        }
-    });
+    $("#Composicao_CPFCNPJ").on("input", updateCpfCnpjDisplay);
+    updateCpfCnpjDisplay();
 
 
 
@@ -997,7 +942,6 @@ function FormatarCuitCnpj(idPais) {
     if (idPais === 1) {
         FormatarCnpj();
     } else {
-        $("#Composicao_CPFCNPJ").mask("99-99999999-9");
     }
 }
 
@@ -1041,7 +985,6 @@ Composicao.prototype.carregarCuitAr = function carregarCuitAr(cuit, razaoSocial)
     $('[name="Composicao.CPFCNPJ"]').val(cuit);
     $('[name="Composicao.RazaoSocial"]').val(razaoSocial);
 
-    $('[name="Composicao.CPFCNPJ"]').mask("99-99999999-9");
 }
 
 Composicao.prototype.checarPlacaRepetida = function checarPlacaRepetida(placa, isFromPlaca) {

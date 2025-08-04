@@ -107,39 +107,6 @@
         });
 
 
-        function mudarMascara(valor) {
-            try {
-                $("#Placa_CPFCNPJ").unmask();
-            } catch (e) { }
-
-            var tamanho = valor.length;
-            console.log(tamanho);
-            if (tamanho == 11) {
-                $("#Composicao_CPFCNPJArrendamento").val(valor.substring(0, 3) +
-                    "." +
-                    valor.substring(3, 6) +
-                    "." +
-                    valor.substring(6, 9) +
-                    "-" +
-                    valor.substring(9, 11));
-            } else if (tamanho == 14) {
-                $("#Composicao_CPFCNPJArrendamento").val(valor.substring(0, 2) +
-                    "." +
-                    valor.substring(2, 5) +
-                    "." +
-                    valor.substring(5, 8) +
-                    "/" +
-                    valor.substring(8, 12) +
-                    "-" +
-                    valor.substring(12, 14));
-            }
-        }
-
-        
-        if ($("#Composicao_CPFCNPJArrendamento").val() != undefined && $("#Composicao_CPFCNPJArrendamento").val() != "") {
-            var valor = $('#Composicao_CPFCNPJArrendamento').val().replace(/\D/g, '');
-            mudarMascara(valor);
-        }
 
         function buscarTransportadoraArrendamento(valor) {
             if (valor.length > 10) {
