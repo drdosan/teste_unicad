@@ -678,7 +678,7 @@ namespace Raizen.UniCad.BLL
             using (UniCadDalRepositorio<PlacaBrasil> placaBrasilRepositorio = new UniCadDalRepositorio<PlacaBrasil>())
             {
                 placaBrasil.IDPlaca = idPlacaInserida;
-                placaBrasil.CPFCNPJ = placaBrasil.CPFCNPJ.RemoveCharacter();
+                placaBrasil.CPFCNPJ = placaBrasil.CPFCNPJ.RemoveSpecialCharacters();
                 placaBrasilRepositorio.Add(placaBrasil);
             }
         }
@@ -1108,7 +1108,7 @@ namespace Raizen.UniCad.BLL
 						outrosDadosAlterados = true;
 
 					//Uma vez verificado os campos comuns da tabela Placa (acima), 
-					//verifica agora os campos das tabelas específicas de cada país.
+					//verifica agora os campos das tabelas especficas de cada pas.
 					if (!outrosDadosAlterados && VerificaAlteracoesPaises(placaSolicitacao, placaOficial))
 						outrosDadosAlterados = true;
 
@@ -1228,7 +1228,7 @@ namespace Raizen.UniCad.BLL
                         retorno = true;
 
                     //Uma vez verificado os campos comuns da tabela Placa (acima), 
-                    //verifica agora os campos das tabelas específicas de cada país.
+                    //verifica agora os campos das tabelas especficas de cada pas.
                     if (!retorno && VerificaAlteracoesPaises(placaSolicitacao, placaOficial))
                         retorno = true;
 
@@ -1333,7 +1333,7 @@ namespace Raizen.UniCad.BLL
 
                 if (composicaoAprovado)
                 {
-                    //não está adicionando novos clientes
+                    //no est adicionando novos clientes
                     var Clientes = PlacaClienteBusiness.ListarClientesPorPlaca(PlacaOld.ID);
                     if (Clientes != null && Clientes.Any())
                         PlacaOld.Clientes.AddRange(Clientes);
@@ -1450,7 +1450,7 @@ namespace Raizen.UniCad.BLL
                 if (Placa.idUsuario > 0)
                     usuario = UsuarioBusiness.Selecionar(Placa.idUsuario);
 
-                //se for cliente EAB ou FOB irá carregar apenas os clientes daquele usuário e manipular somente esses
+                //se for cliente EAB ou FOB ir carregar apenas os clientes daquele usurio e manipular somente esses
                 if (Placa.idUsuario > 0 && (usuario != null && usuario.Externo))
                 {
                     var placaCls = PlacaClienteBusiness.ListarClientesPorPlaca(Placa.ID, Placa.idUsuario);
@@ -1625,7 +1625,7 @@ namespace Raizen.UniCad.BLL
             using (UniCadDalRepositorio<PlacaBrasil> placaBrasilRepositorio = new UniCadDalRepositorio<PlacaBrasil>())
             {
                 placaBrasil.IDPlaca = idPlacaAlterada;
-                placaBrasil.CPFCNPJ = placaBrasil.CPFCNPJ.RemoveCharacter();
+                placaBrasil.CPFCNPJ = placaBrasil.CPFCNPJ.RemoveSpecialCharacters();
 
                 placaBrasilRepositorio.Update(placaBrasil);
             }
@@ -1935,7 +1935,7 @@ namespace Raizen.UniCad.BLL
             }
             //else if (placaFiltro?.WarningAdviceTime != null && documento.DataVencimento.Value.AddDays(alerta) < DateTime.Today)
             //{
-            //    msgRetorno.Mensagem = $"Veiculo {placaDoVeiculo} ficará com {xDocumento} vencido em {documento.DataVencimento?.ToString("dd/MM/yyyy")}. Continue o carregamento hoje, mas providencie a atualização até esta data.\r\n";
+            //    msgRetorno.Mensagem = $"Veiculo {placaDoVeiculo} ficar com {xDocumento} vencido em {documento.DataVencimento?.ToString("dd/MM/yyyy")}. Continue o carregamento hoje, mas providencie a atualizao at esta data.\r\n";
             //    msgRetorno.RestringirOperacao = false;
             //}
             return msgRetorno;
@@ -1956,7 +1956,7 @@ namespace Raizen.UniCad.BLL
                 if (msgRet != null && msgRet.Count > 0)
                     lstMsgReturn.AddRange(msgRet);
 
-                msgRet = ValidarListaDocumentos(dadosComposicao?.PlacaCarreta2, placaFiltro, "da 2ª carreta");
+                msgRet = ValidarListaDocumentos(dadosComposicao?.PlacaCarreta2, placaFiltro, "da 2 carreta");
                 if (msgRet != null && msgRet.Count > 0)
                     lstMsgReturn.AddRange(msgRet);
 
@@ -1969,7 +1969,7 @@ namespace Raizen.UniCad.BLL
             {
                 lstMsgReturn.Add(new MensagemValidacaoView
                 {
-                    Mensagem = "Veículo validado com sucesso, sem restrição de documento",
+                    Mensagem = "Veculo validado com sucesso, sem restrio de documento",
                     RestringirOperacao = false
                 });
             }
@@ -2057,4 +2057,3 @@ namespace Raizen.UniCad.BLL
         }
     }
 }
-

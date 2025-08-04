@@ -137,7 +137,7 @@
 
         
         if ($("#Composicao_CPFCNPJArrendamento").val() != undefined && $("#Composicao_CPFCNPJArrendamento").val() != "") {
-            var valor = $('#Composicao_CPFCNPJArrendamento').val().replace(/\D/g, '');
+            var valor = $('#Composicao_CPFCNPJArrendamento').val().replace(/[^A-Za-z0-9]/g, '');
             mudarMascara(valor);
         }
 
@@ -216,7 +216,7 @@
 
         OperacaoChange = function OperacaoChange() {
             this.tipoChange();
-            var valor = $('#Composicao_CPFCNPJArrendamento').val().replace(/\D/g, '');
+            var valor = $('#Composicao_CPFCNPJArrendamento').val().replace(/[^A-Za-z0-9]/g, '');
             buscarTransportadoraArrendamento(valor);
         };
 

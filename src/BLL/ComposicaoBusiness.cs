@@ -348,8 +348,8 @@ namespace Raizen.UniCad.BLL
 
                     composicao.IdPais = (int)_pais;
                     composicao.DataAtualizacao = DateTime.Now;
-                    composicao.CPFCNPJ = composicao.CPFCNPJ.RemoveCharacter();
-                    composicao.CPFCNPJArrendamento = composicao.CPFCNPJArrendamento.RemoveCharacter();
+                    composicao.CPFCNPJ = composicao.CPFCNPJ.RemoveSpecialCharacters();
+                    composicao.CPFCNPJArrendamento = composicao.CPFCNPJArrendamento.RemoveSpecialCharacters();
                     composicao.PBTC = composicao.PBTC == null ? 0 : composicao.PBTC;
 
                     composicaoRepositorio.Add(composicao);
@@ -709,10 +709,10 @@ namespace Raizen.UniCad.BLL
             if (composicao.Operacao == "FOB")
             {
                 if (!string.IsNullOrEmpty(composicao.CPFCNPJArrendamento))
-                    cnpj = composicao.CPFCNPJArrendamento.RemoveCharacter();
+                    cnpj = composicao.CPFCNPJArrendamento.RemoveSpecialCharacters();
 
                 else if (!string.IsNullOrEmpty(composicao.CPFCNPJ))
-                    cnpj = composicao.CPFCNPJ.RemoveCharacter();
+                    cnpj = composicao.CPFCNPJ.RemoveSpecialCharacters();
 
                 if (cnpj != string.Empty)
                     SelecionarTransportadora(composicao, transportadoraBll, cnpj);
@@ -723,8 +723,8 @@ namespace Raizen.UniCad.BLL
                 SelecionarTransportadora(composicao, transportadora, transportadora2);
 
             composicao.DataAtualizacao = DateTime.Now;
-            composicao.CPFCNPJ = composicao.CPFCNPJ.RemoveCharacter();
-            composicao.CPFCNPJArrendamento = composicao.CPFCNPJArrendamento.RemoveCharacter();
+            composicao.CPFCNPJ = composicao.CPFCNPJ.RemoveSpecialCharacters();
+            composicao.CPFCNPJArrendamento = composicao.CPFCNPJArrendamento.RemoveSpecialCharacters();
 
             if (string.IsNullOrEmpty(composicao.CPFCNPJ) && cnpjTransportadora != null)
             {
