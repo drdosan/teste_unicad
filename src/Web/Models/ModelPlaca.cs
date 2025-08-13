@@ -237,7 +237,8 @@ namespace Raizen.UniCad.Web.Models
 
 				if (this.Placa.PlacaBrasil.CPFCNPJ != null)
 				{
-					this.Placa.PlacaBrasil.CPFCNPJ = this.Placa.PlacaBrasil.CPFCNPJ.RemoveCharacter();
+					// CNPJ deve aceitar alfanuméricos (14 a 18). Mantemos CPF numérico (11).
+					this.Placa.PlacaBrasil.CPFCNPJ = this.Placa.PlacaBrasil.CPFCNPJ.RemoveSpecialCharacters();
 
 					placaCnpj = this.Placa.PlacaBrasil.CPFCNPJ.Length > 11;
 					valido = placaCnpj ? ValidacoesUtil.ValidaCNPJ(Placa.PlacaBrasil.CPFCNPJ) : ValidacoesUtil.ValidaCPF(Placa.PlacaBrasil.CPFCNPJ);
