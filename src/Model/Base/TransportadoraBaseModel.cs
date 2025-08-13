@@ -21,7 +21,7 @@ namespace Raizen.UniCad.Model.Base
         [Required(ErrorMessageResourceType = typeof(MensagensPadrao), ErrorMessageResourceName = "CampoObrigatorio")]
         [StringLength(200, ErrorMessageResourceType = typeof(MensagensPadrao), ErrorMessageResourceName = "TamanhoIrregular")]
         public virtual string RazaoSocial { get; set; }
-        [StringLength(16, ErrorMessageResourceType = typeof(MensagensPadrao), ErrorMessageResourceName = "TamanhoIrregular")]
+        [StringLength(18, ErrorMessageResourceType = typeof(MensagensPadrao), ErrorMessageResourceName = "TamanhoIrregular")]
         public virtual string CNPJCPF { get; set; }
         [StringLength(100, ErrorMessageResourceType = typeof(MensagensPadrao), ErrorMessageResourceName = "TamanhoIrregular")]
         public virtual string Tipo { get; set; }

@@ -117,12 +117,13 @@
 
         function buscarTransportadora(valor) {
             console.log(valor);
-            if (valor.replace(/\D/g, '').length > 13){
+            var limpo = valor.replace(/[^A-Za-z0-9]/g, '');
+            if (limpo.length >= 14){
                 raizenCoreJs.raizenHelpers.AbrirLoading();
                 $.ajax({
                     type: "POST",
                     url: '@Url.Action("BuscarTransportadora", "Placa")',
-                    data: { cnpj: valor, frete: $('#Placa_Operacao').val(), idEmpresa: $('#Composicao_IDEmpresa').val(), idPais: 1 },
+                    data: { cnpj: limpo, frete: $('#Placa_Operacao').val(), idEmpresa: $('#Composicao_IDEmpresa').val(), idPais: 1 },
                     success: function (retorno) {
                         $('#Placa_RazaoSocial').val(retorno);
                         raizenCoreJs.raizenHelpers.FecharLoading();
@@ -140,14 +141,14 @@
 
         $("#Placa_PlacaBrasil_CPFCNPJ").focusout(function() {
             console.log('entrou');
-            var valor = $('#Placa_PlacaBrasil_CPFCNPJ').val().replace(/\D/g, '');
-            Placa.prototype.mudarMascara(valor);
-            buscarTransportadora(valor);
+            var limpo = $('#Placa_PlacaBrasil_CPFCNPJ').val().replace(/[^A-Za-z0-9]/g, '');
+            Placa.prototype.mudarMascara(limpo);
+            buscarTransportadora(limpo);
         });
 
         if ($("#Placa_PlacaBrasil_CPFCNPJ").val() != undefined && $("#Placa_PlacaBrasil_CPFCNPJ").val() != '') {
-            var valor = $('#Placa_PlacaBrasil_CPFCNPJ').val().replace(/\D/g, '');
-            Placa.prototype.mudarMascara(valor);
+            var limpo = $('#Placa_PlacaBrasil_CPFCNPJ').val().replace(/[^A-Za-z0-9]/g, '');
+            Placa.prototype.mudarMascara(limpo);
         }
     });
 

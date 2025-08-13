@@ -201,7 +201,8 @@ namespace Raizen.UniCad.BLL
         public Transportadora BuscarTranportadora(string cnpj, string frete, int idEmpresa)
         {
             Transportadora transp;
-            cnpj = cnpj.RemoveCharacter();
+            // CNPJ pode ser alfanumérico (14 a 18)
+            cnpj = cnpj.RemoveSpecialCharacters();
 
             if (frete == "FOB" && idEmpresa == (int)EnumEmpresa.Combustiveis)
             {
@@ -232,4 +233,3 @@ namespace Raizen.UniCad.BLL
         }
     }
 }
-

@@ -79,30 +79,14 @@ $(document).ready(function () {
 });
 
 Placa.prototype.mudarMascara = function mudarMascara(valor) {
-    try {
-        $("#Placa_PlacaBrasil_CPFCNPJ").unmask();
-    } catch (e) { }
-
+    try { $("#Placa_PlacaBrasil_CPFCNPJ").unmask(); } catch (e) { }
     var tamanho = valor.length;
-    if (tamanho == 11) {
-        $("#Placa_PlacaBrasil_CPFCNPJ").val(valor.substring(0, 3) +
-            "." +
-            valor.substring(3, 6) +
-            "." +
-            valor.substring(6, 9) +
-            "-" +
-            valor.substring(9, 11));
+    if (tamanho === 11) {
+        $("#Placa_PlacaBrasil_CPFCNPJ").val(valor.substring(0, 3) + "." + valor.substring(3, 6) + "." + valor.substring(6, 9) + "-" + valor.substring(9, 11));
         mostrarCpf();
-    } else if (tamanho == 14) {
-        $("#Placa_PlacaBrasil_CPFCNPJ").val(valor.substring(0, 2) +
-            "." +
-            valor.substring(2, 5) +
-            "." +
-            valor.substring(5, 8) +
-            "/" +
-            valor.substring(8, 12) +
-            "-" +
-            valor.substring(12, 14));
+    } else if (tamanho >= 14 && tamanho <= 18) {
+        // CNPJ alfanumérico sem máscara, mantém até 18 caracteres
+        $("#Placa_PlacaBrasil_CPFCNPJ").val(valor.substring(0, 18).toUpperCase());
         mostrarCnpj();
     }
 }

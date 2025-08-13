@@ -111,7 +111,8 @@ namespace Raizen.UniCad.Web.Controllers
         {
             var pais = GetPaisEnum(idPais);
             var searchTypeAheadEntity = new List<SearchTypeAheadEntityArredView>();
-            nome = nome.RemoveCharacter();
+            // Aceita CNPJ alfanumérico
+            nome = nome.RemoveSpecialCharacters();
             int? idEmpresa = null;
             if (!string.IsNullOrEmpty(empresa) && empresa != "3")
                 idEmpresa = Convert.ToInt32(empresa);

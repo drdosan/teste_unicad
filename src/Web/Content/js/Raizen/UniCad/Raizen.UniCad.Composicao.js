@@ -185,43 +185,34 @@ $(document).ready(function () {
         $("#Composicao_CPFCNPJArrendamento").unmask();
     } catch (e) { }
 
-    //FormatarCnpj();
+    // Inicializa máscara: CPF com máscara; CNPJ alfanumérico 14-18 sem máscara
     if ($("#Composicao_CPFCNPJ").val() != undefined) {
-        var tamanho = $("#Composicao_CPFCNPJ").val().length;
-
-        if (tamanho <= 11) {
+        var valor = $("#Composicao_CPFCNPJ").val();
+        var limpo = valor.replace(/[^A-Za-z0-9]/g, '');
+        if (limpo.length <= 11) {
+            $("#Composicao_CPFCNPJ").unmask();
             $("#Composicao_CPFCNPJ").mask("999.999.999-99");
             mostrarCpfComp();
         } else {
-            $("#Composicao_CPFCNPJ").mask("99.999.999/9999-99");
+            try { $("#Composicao_CPFCNPJ").unmask(); } catch (e) { }
+            $("#Composicao_CPFCNPJ").attr('maxlength', '18');
             mostrarCnpjComp();
         }
     }
 
-    $("#Composicao_CPFCNPJ").keydown(function (key) {
-        if (key.key == "0" ||
-            key.key == "1" ||
-            key.key == "2" ||
-            key.key == "3" ||
-            key.key == "4" ||
-            key.key == "5" ||
-            key.key == "6" ||
-            key.key == "7" ||
-            key.key == "8" ||
-            key.key == "9") {
-            try {
-                $("#Composicao_CPFCNPJ").unmask();
-            } catch (e) { }
-
-            var tamanho = $("#Composicao_CPFCNPJ").val().length;
-
-            if (tamanho < 11) {
-                $("#Composicao_CPFCNPJ").mask("999.999.999-99");
-                mostrarCpfComp();
-            } else {
-                $("#Composicao_CPFCNPJ").mask("99.999.999/9999-99");
-                mostrarCnpjComp();
-            }
+    $("#Composicao_CPFCNPJ").on('input', function () {
+        var valor = $(this).val();
+        var limpo = valor.replace(/[^A-Za-z0-9]/g, '');
+        if (limpo.length <= 11) {
+            try { $(this).unmask(); } catch (e) { }
+            $(this).mask("999.999.999-99");
+            mostrarCpfComp();
+        } else {
+            try { $(this).unmask(); } catch (e) { }
+            $(this).attr('maxlength', '18');
+            // Mantém apenas alfanuméricos para CNPJ
+            $(this).val(limpo.substring(0, 18).toUpperCase());
+            mostrarCnpjComp();
         }
     });
 

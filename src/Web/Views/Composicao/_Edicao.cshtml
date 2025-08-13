@@ -122,32 +122,26 @@
                     valor.substring(6, 9) +
                     "-" +
                     valor.substring(9, 11));
-            } else if (tamanho == 14) {
-                $("#Composicao_CPFCNPJArrendamento").val(valor.substring(0, 2) +
-                    "." +
-                    valor.substring(2, 5) +
-                    "." +
-                    valor.substring(5, 8) +
-                    "/" +
-                    valor.substring(8, 12) +
-                    "-" +
-                    valor.substring(12, 14));
+            } else if (tamanho >= 14 && tamanho <= 18) {
+                // CNPJ alfanumérico sem máscara
+                $("#Composicao_CPFCNPJArrendamento").val(valor.substring(0, 18).toUpperCase());
             }
         }
 
         
         if ($("#Composicao_CPFCNPJArrendamento").val() != undefined && $("#Composicao_CPFCNPJArrendamento").val() != "") {
-            var valor = $('#Composicao_CPFCNPJArrendamento').val().replace(/\D/g, '');
+            var valor = $('#Composicao_CPFCNPJArrendamento').val().replace(/[^A-Za-z0-9]/g, '');
             mudarMascara(valor);
         }
 
         function buscarTransportadoraArrendamento(valor) {
-            if (valor.length > 10) {
+            var limpo = valor.replace(/[^A-Za-z0-9]/g, '');
+            if (limpo.length >= 14) {
                 raizenCoreJs.raizenHelpers.AbrirLoading();
                 $.ajax({
                     type: "POST",
                     url: '@Url.Action("BuscarTransportadora", "Composicao")',
-                    data: { cnpj: $('#Composicao_CPFCNPJArrendamento').val(), frete: $('#Composicao_Operacao').val(), idEmpresa: $('#Composicao_IDEmpresa').val(), idPais: 1 },
+                    data: { cnpj: limpo, frete: $('#Composicao_Operacao').val(), idEmpresa: $('#Composicao_IDEmpresa').val(), idPais: 1 },
                     success: function (retorno) {
                         $('#Composicao_RazaoSocialArrendamento').val(retorno);
                         raizenCoreJs.raizenHelpers.FecharLoading();
@@ -216,12 +210,12 @@
 
         OperacaoChange = function OperacaoChange() {
             this.tipoChange();
-            var valor = $('#Composicao_CPFCNPJArrendamento').val().replace(/\D/g, '');
+            var valor = $('#Composicao_CPFCNPJArrendamento').val().replace(/[^A-Za-z0-9]/g, '');
             buscarTransportadoraArrendamento(valor);
         };
 
         $("#Composicao_CPFCNPJArrendamento").change(function() {
-            var valor = $('#Composicao_CPFCNPJArrendamento').val().replace(/\D/g, '');
+            var valor = $('#Composicao_CPFCNPJArrendamento').val().replace(/[^A-Za-z0-9]/g, '');
             mudarMascara(valor);
             buscarTransportadoraArrendamento(valor);
         });

@@ -425,7 +425,8 @@ namespace Raizen.UniCad.Web.Models
                     var cnpj = string.Empty;
                     if (!string.IsNullOrEmpty(this.Composicao.CPFCNPJArrendamento))
                     {
-                        cnpj = this.Composicao.CPFCNPJArrendamento.RemoveCharacter();
+                        // CNPJ arrendamento: aceitar alfanumérico (14 a 18)
+                        cnpj = this.Composicao.CPFCNPJArrendamento.RemoveSpecialCharacters();
                         transp = transpBll.Selecionar(p => p.CNPJCPF == cnpj && p.IDEmpresa == this.Composicao.IDEmpresa && (p.Operacao == "FOB" || this.Composicao.IDEmpresa == (int)EnumEmpresa.EAB) && (_pais != EnumPais.Brasil || p.IBM.StartsWith("T")));
 
                         if (transp == null)
@@ -441,7 +442,8 @@ namespace Raizen.UniCad.Web.Models
                     }
                     else
                     {
-                        cnpj = this.Composicao.CPFCNPJ.RemoveCharacter();
+                        // CNPJ principal: aceitar alfanumérico (14 a 18)
+                        cnpj = this.Composicao.CPFCNPJ.RemoveSpecialCharacters();
                         transp = transpBll.Selecionar(p => p.CNPJCPF == cnpj && p.IDEmpresa == this.Composicao.IDEmpresa && (p.Operacao == "FOB" || this.Composicao.IDEmpresa == (int)EnumEmpresa.EAB && (_pais != EnumPais.Brasil || p.IBM.StartsWith("T"))));
                         if (transp == null)
                         {
@@ -464,7 +466,7 @@ namespace Raizen.UniCad.Web.Models
 
                     if (!string.IsNullOrEmpty(this.Composicao.CPFCNPJArrendamento))
                     {
-                        cnpj = this.Composicao.CPFCNPJArrendamento.RemoveCharacter();
+                        cnpj = this.Composicao.CPFCNPJArrendamento.RemoveSpecialCharacters();
                         transp = transpBll.Selecionar(p => p.CNPJCPF == cnpj && p.IDEmpresa == this.Composicao.IDEmpresa && (p.Operacao == "FOB" || this.Composicao.IDEmpresa == (int)EnumEmpresa.EAB));
                         if (transp == null)
                         {
@@ -479,7 +481,7 @@ namespace Raizen.UniCad.Web.Models
                     }
                     else
                     {
-                        cnpj = this.Composicao.CPFCNPJ.RemoveCharacter();
+                        cnpj = this.Composicao.CPFCNPJ.RemoveSpecialCharacters();
                         transp = transpBll.Selecionar(p => p.CNPJCPF == cnpj && p.IDEmpresa == this.Composicao.IDEmpresa && (p.Operacao == "FOB" || this.Composicao.IDEmpresa == (int)EnumEmpresa.EAB));
                         if (transp == null)
                         {
